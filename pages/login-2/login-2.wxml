@@ -1,0 +1,35 @@
+<!--pages/login-2/login-2.wxml-->
+<view class="l-container">
+  <text class = "title">登录</text>
+  <view class="input-area">
+    <text class="label">姓名：</text>
+    <input class="input-box" bindinput="onInput" data-field="childName" value="{{childName}}" />
+  </view>
+  <view class="input-area">
+    <text class="label">年龄：</text>
+    <input class="input-box" bindinput="onInput" data-field="age" type="number" value="{{age}}" />
+  </view>
+  <view class="input-area">
+    <text class="label">性别：</text>
+    <input class="input-box" bindinput="onInput" data-field="gender" value="{{gender}}" />
+  </view>
+  <view class="input-area">
+    <text class="label">亲属关系：</text>
+    <input class="input-box-1" bindinput="onInput" data-field="relationship" value="{{relationship}}" />
+  </view>
+  <view class="input-area">
+    <text class="label">家长姓名：</text>
+    <input class="input-box-1" bindinput="onInput" data-field="parentName" value="{{parentName}}" />
+  </view>
+  <view class="input-area">
+    <text class="label">家长电话：</text>
+    <input class="input-box-1" bindinput="onInput" data-field="phoneNumber" type="number" value="{{phoneNumber}}" />
+  </view>
+  <view class="bind-section" bindtap="goToIndex">
+    <text class="bind-text">继续绑定和添加儿童信息</text>
+    <view class="plus-circle">
+      <text class="plus-icon">＋</text>
+    </view>
+  </view>
+  <button class = "success-btn" bind:tap="confirmAndGoHome">确定</button>
+</view>

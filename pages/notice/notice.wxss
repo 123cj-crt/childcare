@@ -1,0 +1,114 @@
+/* 页面整体容器 */
+.notice-wrap {
+  min-height: 100vh;
+  padding: 30rpx 30rpx 140rpx;
+  box-sizing: border-box;
+  background: linear-gradient(180deg, #f5f7fc 0%, #fff8e8 100%);
+}
+
+/* 顶部标题区 水平居中核心 */
+.notice-header {
+  margin-bottom: 40rpx;
+  text-align: center;
+}
+
+.notice-header .title {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.notice-header .subtitle {
+  font-size: 28rpx;
+  color: #8c8c8c;
+}
+
+/* 通知列表 */
+.notice-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+/* 通知卡片 点击按压效果 */
+.notice-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx;
+  transition: all 0.2s ease;
+}
+.notice-item:active {
+  transform: scale(0.98);
+  opacity: 0.92;
+}
+
+/* 左侧图标+文字 */
+.notice-left {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  flex: 1;
+}
+
+.icon-box {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.notice-blue {background: #e8f1ff;}
+.notice-green {background: #ecfdf5;}
+.notice-purple {background: #f0e7ff;}
+
+.icon-text {
+  font-size: 36rpx;
+}
+
+.notice-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+.notice-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #333;
+}
+.notice-desc {
+  font-size: 26rpx;
+  color: #8c8c8c;
+  line-height: 1.5;
+}
+
+/* 右侧角标 */
+.notice-right {
+  display: flex;
+  align-items: center;
+}
+.badge {
+  min-width: 36rpx;
+  height: 36rpx;
+  line-height: 36rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: #fff;
+  background: #ff4d4f;
+  border-radius: 18rpx;
+  padding: 0 8rpx;
+}
+
+/* 底部提示 */
+.notice-tip {
+  margin-top: 60rpx;
+  text-align: center;
+}
+.tip-text {
+  font-size: 24rpx;
+  color: #aaa;
+  line-height: 1.6;
+}

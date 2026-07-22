@@ -1,0 +1,69 @@
+/* 页面整体容器 */
+.schedule-wrap {
+  padding: 30rpx 0 140rpx;
+}
+
+/* 顶部日期筛选卡片布局 */
+.date-filter {
+  display: flex;
+  gap: 20rpx;
+  padding: 30rpx;
+}
+.date-item {
+  flex: 1;
+  text-align: center;
+}
+.date-label {
+  font-size: 30rpx;
+  color: #333;
+  display: block;
+  margin-bottom: 12rpx;
+}
+/* 日期选择框样式，替代原来input */
+.date-picker-box {
+  width: 100%;
+  height: 70rpx;
+  line-height: 70rpx;
+  background: #f5f7fc;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  color: #555;
+}
+
+/* 课程列表间距 */
+.schedule-list {
+  margin-top: 20rpx;
+}
+
+/* 单条课程卡片头部：图标+标题横向排列 */
+.schedule-header {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-bottom: 20rpx;
+}
+.course-icon {
+  width: 80rpx;
+  height: 80rpx;
+}
+.course-title {
+  font-size: 38rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 课程信息分行排版，间距舒适 */
+.schedule-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+  line-height: 1.6;
+}
+
+/* 空数据提示 */
+.empty-tip {
+  margin-top: 160rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: #aaa;
+}

@@ -1,0 +1,70 @@
+/* 页面整体容器 */
+.container {
+  padding-bottom: 40rpx;
+}
+
+/* 轮播全局尺寸 */
+.banner {
+  width: 100%;
+  height: 320rpx;
+}
+.banner-item {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  border-radius: 0 0 24rpx 24rpx;
+}
+.banner-img {
+  width: 100%;
+  height: 100%;
+}
+/* 轮播底部渐变遮罩 */
+.banner-overlay {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  padding: 30rpx;
+  background: linear-gradient(to top, rgba(0,0,0,0.55), transparent);
+}
+.banner-title {
+  font-size: 36rpx;
+  color: #fff;
+  font-weight: 500;
+}
+.banner-subtitle {
+  font-size: 24rpx;
+  color: #eee;
+  margin-top: 8rpx;
+}
+
+/* 课程区域间距 */
+.course-wrap {
+  margin-top: 20rpx;
+}
+.course-list {
+  margin-top: 20rpx;
+}
+
+/* 课程卡片内部排版 */
+.course-item {
+  padding: 32rpx;
+}
+.course-name {
+  font-size: 38rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 16rpx;
+}
+.course-date {
+  display: inline-block;
+  background: #e8f1ff;
+  color: #63a8ff;
+  padding: 8rpx 16rpx;
+  border-radius: 10rpx;
+  margin-bottom: 16rpx;
+}
+.course-description {
+  line-height: 1.7;
+}

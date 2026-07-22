@@ -1,0 +1,36 @@
+<!--profile.wxml-->
+<view class="profile-page">
+  <!-- 顶部头像区域 -->
+  <view class="avatar-section">
+    <image src="{{avatarUrl}}" class="avatar-icon" />
+    <text class="username">{{nickName}}</text>
+    
+    <!-- 登录/注册按钮 -->
+    <view wx:if="{{!isLoggedIn}}" class="login-section">
+      <button class="login-btn" bind:tap="goToLogin">登录/注册</button>
+    </view>
+  </view>
+
+  <!-- 菜单列表 -->
+  <view class="menu-list">
+    <view class="menu-item" bind:tap="viewChildren">
+      <image src="/icon/1.png" class="menu-icon" />
+      <text class="names">查看绑定的儿童</text>
+    </view>
+
+    <view class="menu-item" bind:tap="myCourses">
+      <image src="/icon/2.png" class="menu-icon" />
+      <text class="names">我的预约课程</text>
+    </view>
+
+    <view class="menu-item" bind:tap="contactUs">
+      <image src="/icon/3.png" class="menu-icon" />
+      <text class="names">联系我们</text>
+    </view>
+
+    <view class="menu-item" wx:if="{{isLoggedIn}}" bind:tap="logout">
+      <image src="/icon/4.png" class="menu-icon" />
+      <text class="names">退出登录</text>
+    </view>
+  </view>
+</view>

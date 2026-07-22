@@ -1,0 +1,23 @@
+<!--test-image.wxml-->
+<view class="container">
+  <view class="header">
+    <text class="title">图片显示测试</text>
+    <button class="test-btn" bindtap="testApiConnection">测试API连接</button>
+  </view>
+  
+  <view class="image-list">
+    <view class="image-item" wx:for="{{testImages}}" wx:key="name">
+      <view class="image-info">
+        <text class="image-name">{{item.name}}</text>
+        <text class="image-url">{{item.url}}</text>
+      </view>
+      <image 
+        class="test-image" 
+        src="{{item.url}}" 
+        mode="aspectFit"
+        binderror="onImageError"
+        data-index="{{index}}"
+      />
+    </view>
+  </view>
+</view>

@@ -1,0 +1,34 @@
+<!--index.wxml-->
+<view class="container">
+  <!-- 顶部轮播 -->
+  <swiper class="banner" indicator-dots="true" autoplay="true" interval="3000" duration="500">
+    <block wx:for="{{banners}}" wx:key="id">
+      <swiper-item>
+        <view class="banner-item" bindtap="onBannerTap" data-link="{{item.link}}" data-title="{{item.title}}">
+          <image class="banner-img" src="{{item.image}}" mode="aspectFill" binderror="onImageError" data-index="{{index}}" />
+          <view class="banner-overlay" wx:if="{{item.link}}">
+            <view class="banner-title">{{item.title}}</view>
+            <view class="banner-subtitle">点击查看详情</view>
+          </view>
+        </view>
+      </swiper-item>
+    </block>
+  </swiper>
+
+  <!-- 最新课程区域 -->
+  <view class="course-wrap">
+    <view class="section-title">最新课程</view>
+    <view class="course-list">
+      <block wx:for="{{courses}}" wx:key="id">
+        <!-- 全局卡片样式 card -->
+        <view class="card course-item" bindtap="goToCourseDetail" data-id="{{item.id}}">
+          <view class="course-info">
+            <view class="course-name">{{item.name}}</view>
+            <view class="course-date text-desc">{{item.startDate}} {{item.schedule}}</view>
+            <view class="course-description text-desc">{{item.description}}</view>
+          </view>
+        </view>
+      </block>
+    </view>
+  </view>
+</view>

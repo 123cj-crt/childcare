@@ -1,0 +1,31 @@
+<!--pages/login/login.wxml-->
+<view class="login-wrap">
+  <!-- 大标题，匹配全局 title-big 样式 -->
+  <text class="title-big">登录</text>
+  <view class="subtitle-tip text-desc">使用之前需要通过登录</view>
+  
+  <!-- 微信登录按钮，匹配全局 btn-primary -->
+  <view class="btn-primary" bind:tap="quickLogin">微信登录</view>
+  
+  <!-- 用户头像昵称区域 -->
+  <view class="card userinfo-container" wx:if="{{showUserInfoButtons}}">
+    <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+      <image class="avatar" src="{{avatarUrl}}" mode="aspectFill"></image>
+    </button>
+    <input type="nickname" class="nickname-input" placeholder="请输入昵称" model:value="{{nickName}}" />
+  </view>
+
+  <!-- 协议勾选区，匹配全局 agree-box -->
+  <view class="agree-box">
+    <checkbox-group bindchange="onAgreementChange">
+      <label>
+        <checkbox value="true"/>
+        <text class="text-desc">我已阅读并同意
+          <text class="link" bindtap="goToUserProtocol">《用户协议》</text>
+          <text class="link" bindtap="goToUserProtocol">《隐私政策》</text>
+          <text class="link" bindtap="goToUserProtocol">《儿童隐私政策》</text>
+        </text>
+      </label>
+    </checkbox-group>
+  </view>
+</view>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件上传测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="file"] { margin-bottom: 10px; }
+        button { background: #4cd964; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #3dbb54; }
+        .result { margin-top: 20px; padding: 10px; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>文件上传测试</h1>
+        
+        <div class="form-group">
+            <label for="imageFile">选择图片文件：</label>
+            <input type="file" id="imageFile" accept="image/*">
+        </div>
+        
+        <button onclick="testUpload()">上传图片</button>
+        <button onclick="testSimpleUpload()">简单上传测试</button>
+        <button onclick="testService()">测试服务</button>
+        <button onclick="testPing()">Ping测试</button>
+        
+        <div id="result"></div>
+        
+        <h2>测试说明</h2>
+        <ul>
+            <li>选择一张图片文件（JPG、PNG、GIF、WebP）</li>
+            <li>点击"上传图片"测试上传功能</li>
+            <li>点击"测试服务"检查服务状态</li>
+            <li>查看控制台获取详细日志</li>
+        </ul>
+    </div>
+
+    <script>
+        function showResult(message, type = 'info') {
+            const result = document.getElementById('result');
+            result.className = `result ${type}`;
+            result.innerHTML = message;
+        }
+
+        function testService() {
+            showResult('正在测试服务...', 'info');
+            
+            fetch('/api/upload/test')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('服务测试结果:', data);
+                    if (data.success) {
+                        showResult(`
+                            <h3>服务测试成功</h3>
+                            <p><strong>消息:</strong> ${data.message}</p>
+                            <p><strong>上传目录:</strong> ${data.uploadDir}</p>
+                            <p><strong>目录存在:</strong> ${data.dirExists}</p>
+                            <p><strong>目录可写:</strong> ${data.dirWritable}</p>
+                            <p><strong>可创建文件:</strong> ${data.canCreateFile}</p>
+                            <p><strong>最大文件大小:</strong> ${data.maxFileSize} bytes</p>
+                            <p><strong>支持类型:</strong> ${data.allowedTypes.join(', ')}</p>
+                            <p><strong>当前工作目录:</strong> ${data.currentWorkingDir}</p>
+                        `, 'success');
+                    } else {
+                        showResult(`服务测试失败: ${data.message}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('服务测试失败:', error);
+                    showResult(`服务测试失败: ${error.message}`, 'error');
+                });
+        }
+
+        function testUpload() {
+            const fileInput = document.getElementById('imageFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showResult('请先选择文件', 'error');
+                return;
+            }
+
+            console.log('开始上传文件:', {
+                name: file.name,
+                size: file.size,
+                type: file.type
+            });
+
+            showResult('正在上传文件...', 'info');
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            fetch('/api/upload/image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                console.log('上传响应状态:', response.status, response.statusText);
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        console.error('服务器错误响应:', text);
+                        throw new Error(`HTTP ${response.status}: ${response.statusText} - ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('上传响应数据:', data);
+                if (data.success && data.url) {
+                    showResult(`
+                        <h3>上传成功</h3>
+                        <p><strong>文件名:</strong> ${data.filename}</p>
+                        <p><strong>原始名称:</strong> ${data.originalName}</p>
+                        <p><strong>文件大小:</strong> ${data.size} bytes</p>
+                        <p><strong>访问URL:</strong> <a href="${data.url}" target="_blank">${data.url}</a></p>
+                        <img src="${data.url}" style="max-width: 300px; margin-top: 10px;" alt="上传的图片">
+                    `, 'success');
+                } else {
+                    showResult(`上传失败: ${data.message || '未知错误'}`, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('上传失败:', error);
+                showResult(`上传失败: ${error.message}`, 'error');
+            });
+        }
+
+        function testPing() {
+            showResult('正在测试Ping...', 'info');
+            
+            fetch('/api/upload/ping')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Ping测试结果:', data);
+                    if (data.success) {
+                        showResult(`
+                            <h3>Ping测试成功</h3>
+                            <p><strong>消息:</strong> ${data.message}</p>
+                            <p><strong>时间戳:</strong> ${new Date(data.timestamp).toLocaleString()}</p>
+                        `, 'success');
+                    } else {
+                        showResult(`Ping测试失败: ${data.message}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Ping测试失败:', error);
+                    showResult(`Ping测试失败: ${error.message}`, 'error');
+                });
+        }
+
+        function testSimpleUpload() {
+            const fileInput = document.getElementById('imageFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showResult('请先选择文件', 'error');
+                return;
+            }
+
+            console.log('开始简单上传测试:', {
+                name: file.name,
+                size: file.size,
+                type: file.type
+            });
+
+            showResult('正在简单上传测试...', 'info');
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            fetch('/api/upload/simple', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                console.log('简单上传响应状态:', response.status, response.statusText);
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        console.error('服务器错误响应:', text);
+                        throw new Error(`HTTP ${response.status}: ${response.statusText} - ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('简单上传响应数据:', data);
+                if (data.success) {
+                    showResult(`
+                        <h3>简单上传成功</h3>
+                        <p><strong>文件名:</strong> ${data.filename}</p>
+                        <p><strong>访问URL:</strong> <a href="${data.url}" target="_blank">${data.url}</a></p>
+                        <img src="${data.url}" style="max-width: 300px; margin-top: 10px;" alt="上传的图片">
+                    `, 'success');
+                } else {
+                    showResult(`简单上传失败: ${data.message || '未知错误'}`, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('简单上传失败:', error);
+                showResult(`简单上传失败: ${error.message}`, 'error');
+            });
+        }
+
+        // 页面加载时自动测试服务
+        window.onload = function() {
+            testPing();
+        };
+    </script>
+</body>
+</html>

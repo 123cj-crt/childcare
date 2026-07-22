@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智慧托育管理平台 - 预约管理</title>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <style>
+    /* 保持原有样式不变 */
+    body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    .header { background-color: #4cd964; color: white; padding: 15px 0; }
+    .header h1 { margin: 0; text-align: center; }
+
+    /* 导航栏样式 */
+    .nav { background-color: #f8f8f8; border-bottom: 1px solid #e7e7e7; }
+    .nav ul { list-style-type: none; margin: 0; padding: 0; display: flex; justify-content: center; flex-wrap: wrap; }
+    .nav li { margin: 0 10px; }
+    .nav a { display: block; padding: 10px 15px; text-decoration: none; color: #333; }
+    .nav a:hover, .nav a.active { background-color: #e7e7e7; }
+
+    /* 页面标题和按钮 */
+    .page-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .action-btn { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: all 0.2s; }
+    .action-btn.add { background-color: #4cd964; color: white; }
+    .action-btn.add:hover { background-color: #3bc053; }
+    .action-btn.export { background-color: #007aff; color: white; }
+    .action-btn.export:hover { background-color: #0066d2; }
+    .action-btn.view { background-color: #5ac8fa; color: white; }
+    .action-btn.view:hover { background-color: #32b7e8; }
+    .action-btn.edit { background-color: #ffcc00; color: #333; }
+    .action-btn.edit:hover { background-color: #e6b800; }
+    .action-btn.delete { background-color: #ff3b30; color: white; }
+    .action-btn.delete:hover { background-color: #e02e24; }
+    .action-btn.approve { background-color: #4cd964; color: white; }
+    .action-btn.approve:hover { background-color: #3bc053; }
+    .action-btn.reject { background-color: #ff9500; color: white; }
+    .action-btn.reject:hover { background-color: #e08300; }
+
+    /* 表格样式优化 */
+    .table-container {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    .table { width: 100%; border-collapse: collapse; margin: 0; }
+    .table th, .table td { padding: 12px 15px; border-bottom: 1px solid #eee; text-align: left; }
+    .table th { background-color: #f9f9f9; font-weight: bold; }
+    .table tr:hover { background-color: #fafafa; }
+    .table tr:last-child td { border-bottom: none; }
+
+    /* 状态标签样式 */
+    .status-badge { padding: 3px 10px; border-radius: 12px; font-size: 12px; color: white; font-weight: 500; }
+    .status-pending { background-color: #ff9500; }
+    .status-approved { background-color: #4cd964; }
+    .status-rejected { background-color: #ff3b30; }
+    .status-completed { background-color: #5856d6; }
+
+    /* 班级标签样式 */
+    .class-badge { background-color: #e5e7eb; padding: 3px 8px; border-radius: 12px; font-size: 12px; }
+
+    /* 搜索和筛选区域优化 */
+    .search-filter {
+      margin: 20px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      width: 300px;
+      flex: 1;
+      min-width: 250px;
+    }
+
+    .search-box input {
+      flex: 1;
+      padding: 9px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px 0 0 4px;
+      transition: border 0.2s;
+    }
+
+    .search-box input:focus {
+      border-color: #4cd964;
+      outline: none;
+    }
+
+    .search-box button {
+      padding: 9px 15px;
+      background-color: #4cd964;
+      color: white;
+      border: 1px solid #4cd964;
+      border-left: none;
+      border-radius: 0 4px 4px 0;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .search-box button:hover {
+      background-color: #3bc053;
+    }
+
+    .filter-options {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    select {
+      padding: 9px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background-color: white;
+      transition: border 0.2s;
+    }
+
+    select:focus {
+      border-color: #4cd964;
+      outline: none;
+    }
+
+    /* 模态框样式优化 */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .modal.show {
+      opacity: 1;
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 25px;
+      border: none;
+      width: 80%;
+      max-width: 600px;
+      border-radius: 10px;
+      position: relative;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+      transform: translateY(20px);
+      transition: transform 0.3s;
+    }
+
+    .modal.show .modal-content {
+      transform: translateY(0);
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .close:hover {
+      color: #ff3b30;
+    }
+
+    /* 表单样式优化 */
+    .form-group { margin-bottom: 18px; }
+    .form-row { display: flex; gap: 15px; margin-bottom: 18px; }
+    .form-col { flex: 1; }
+    label { display: block; margin-bottom: 6px; font-weight: 500; color: #555; }
+    input, select, textarea {
+      width: 100%;
+      padding: 9px 12px;
+      box-sizing: border-box;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      transition: border 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #4cd964;
+      outline: none;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-actions { margin-top: 25px; display: flex; justify-content: flex-end; gap: 10px; }
+
+    /* 导出选项 */
+    .export-options { display: flex; gap: 20px; margin: 20px 0; }
+    .export-option {
+      flex: 1;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 20px 15px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .export-option:hover {
+      background-color: #f9f9f9;
+      border-color: #ddd;
+      transform: translateY(-2px);
+    }
+
+    .export-option i { font-size: 28px; margin-bottom: 12px; color: #4cd964; }
+
+    .export-title { font-weight: 500; margin-bottom: 5px; }
+    .export-desc { font-size: 13px; color: #666; }
+
+    /* 退出按钮 */
+    .logout-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #ff3b30;
+      color: white;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      transition: all 0.2s;
+      z-index: 100;
+    }
+
+    .logout-btn:hover {
+      transform: scale(1.05);
+      background-color: #e02e24;
+    }
+
+    /* 数据同步提示 */
+    .sync-notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #4cd964;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 4px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 100;
+    }
+
+    .sync-notification.show {
+      display: block;
+      opacity: 1;
+    }
+
+    /* 空状态样式 */
+    .empty-state {
+      padding: 60px 20px;
+      text-align: center;
+      color: #999;
+    }
+
+    .empty-state i {
+      font-size: 48px;
+      margin-bottom: 15px;
+      color: #ddd;
+    }
+
+    .empty-state p {
+      margin-bottom: 20px;
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+      .search-filter {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 12px;
+      }
+
+      .search-box {
+        width: 100%;
+      }
+
+      .nav ul {
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding: 0 10px;
+      }
+
+      .modal-content {
+        width: 95%;
+        margin: 15% auto;
+        padding: 15px;
+      }
+
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .action-btn {
+        padding: 6px 10px;
+        font-size: 12px;
+      }
+
+      /* 表格响应式处理 */
+      .table th:nth-child(4),
+      .table td:nth-child(4) {
+        display: none;
+      }
+
+      .table th:nth-child(3),
+      .table td:nth-child(3) {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="header">
+  <h1>智慧托育管理平台</h1>
+</div>
+<div class="nav">
+  <ul>
+    <li><a href="index.html">首页</a></li>
+    <li><a href="teachers.html">教师团队</a></li>
+    <li><a href="courses.html">课程管理</a></li>
+    <li><a href="reservations.html" class="active">预约管理</a></li>
+    <li><a href="attendance.html">考勤管理</a></li>
+    <li><a href="students.html">学生管理</a></li>
+    <li><a href="communication.html">家园沟通</a></li>
+    <li><a href="stats.html">数据统计</a></li>
+  </ul>
+</div>
+
+<!-- 主内容区 -->
+<div class="container">
+  <div class="page-title">
+    <h2>预约管理</h2>
+    <div>
+      <button class="action-btn view" onclick="loadReservationsFromAPI()">
+        <i class="fa fa-refresh" aria-hidden="true"></i> 刷新数据
+      </button>
+      <button class="action-btn export" onclick="openExportModal()">
+        <i class="fa fa-download" aria-hidden="true"></i> 导出数据
+      </button>
+      <button class="action-btn add" onclick="openAddReservationModal()">
+        <i class="fa fa-plus" aria-hidden="true"></i> 添加预约
+      </button>
+    </div>
+  </div>
+
+  <!-- 搜索和筛选区域 -->
+  <div class="search-filter">
+    <div class="search-box">
+      <input type="text" id="reservationSearch" placeholder="搜索学生姓名、预约号...">
+      <button onclick="searchReservations()"><i class="fa fa-search"></i></button>
+    </div>
+    <div class="filter-options">
+      <select id="classFilter" onchange="filterReservations()">
+        <option value="">全部班级</option>
+        <!-- 班级选项将由JavaScript动态生成，格式为"课程名+班级" -->
+      </select>
+      <select id="statusFilter" onchange="filterReservations()">
+        <option value="">全部状态</option>
+        <option value="pending">待审核</option>
+        <option value="approved">已批准</option>
+        <option value="rejected">已拒绝</option>
+        <option value="completed">已完成</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- 预约表格 -->
+  <div class="table-container">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>预约ID</th>
+        <th>学生姓名</th>
+        <th>预约课程</th>
+        <th>预约日期</th>
+        <th>预约时间</th>
+        <th>操作</th>
+      </tr>
+      </thead>
+      <tbody id="reservationTableBody">
+      <!-- 表格内容将由JavaScript动态生成 -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 右下角退出按钮 -->
+<div class="logout-btn" onclick="logout()">
+  <i class="fa fa-sign-out" aria-hidden="true"></i>
+</div>
+
+<!-- 数据同步提示 -->
+<div id="syncNotification" class="sync-notification">数据已更新</div>
+
+<!-- 添加预约模态框 -->
+<div id="addReservationModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeAddReservationModal()">&times;</span>
+    <h3>添加新预约</h3>
+    <form id="addReservationForm">
+      <div class="form-row">
+        <div class="form-col">
+          <div class="form-group">
+            <label for="studentSelect">学生:</label>
+            <select id="studentSelect" required>
+              <option value="">请选择学生</option>
+              <!-- 学生选项将由JavaScript动态生成 -->
+            </select>
+          </div>
+        </div>
+        <div class="form-col">
+          <div class="form-group">
+            <label for="courseClassSelect">课程班级:</label>
+            <select id="courseClassSelect" required>
+              <option value="">请选择课程班级</option>
+              <!-- 课程班级选项将由JavaScript动态生成，格式为"课程名+班级" -->
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-col">
+          <div class="form-group">
+            <label for="reservationDate">预约日期:</label>
+            <input type="date" id="reservationDate" required>
+          </div>
+        </div>
+        <div class="form-col">
+          <div class="form-group">
+            <label for="reservationTime">预约时间:</label>
+            <select id="reservationTime" required>
+              <option value="">请选择时间</option>
+              <option value="09:00">09:00</option>
+              <option value="10:00">10:00</option>
+              <option value="14:00">14:00</option>
+              <option value="15:30">15:30</option>
+              <option value="16:30">16:30</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="reservationStatus">预约状态:</label>
+        <select id="reservationStatus" required>
+          <option value="pending">待审核</option>
+          <option value="approved">已批准</option>
+          <option value="rejected">已拒绝</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="reservationNotes">备注信息:</label>
+        <textarea id="reservationNotes" rows="3" placeholder="请输入预约备注信息..."></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="action-btn" onclick="closeAddReservationModal()">取消</button>
+        <button type="button" class="action-btn add" onclick="submitAddReservationForm()">保存</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 编辑预约模态框 -->
+<div id="editReservationModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeEditReservationModal()">&times;</span>
+    <h3>编辑预约信息</h3>
+    <form id="editReservationForm">
+      <input type="hidden" id="editReservationId">
+      <div class="form-row">
+        <div class="form-col">
+          <div class="form-group">
+            <label for="editStudentSelect">学生:</label>
+            <select id="editStudentSelect" required>
+              <option value="">请选择学生</option>
+              <!-- 学生选项将由JavaScript动态生成 -->
+            </select>
+          </div>
+        </div>
+        <div class="form-col">
+          <div class="form-group">
+            <label for="editCourseClassSelect">课程班级:</label>
+            <select id="editCourseClassSelect" required>
+              <option value="">请选择课程班级</option>
+              <!-- 课程班级选项将由JavaScript动态生成，格式为"课程名+班级" -->
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-col">
+          <div class="form-group">
+            <label for="editReservationDate">预约日期:</label>
+            <input type="date" id="editReservationDate" required>
+          </div>
+        </div>
+        <div class="form-col">
+          <div class="form-group">
+            <label for="editReservationTime">预约时间:</label>
+            <select id="editReservationTime" required>
+              <option value="">请选择时间</option>
+              <option value="09:00">09:00</option>
+              <option value="10:00">10:00</option>
+              <option value="14:00">14:00</option>
+              <option value="15:30">15:30</option>
+              <option value="16:30">16:30</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="editReservationStatus">预约状态:</label>
+        <select id="editReservationStatus" required>
+          <option value="pending">待审核</option>
+          <option value="approved">已批准</option>
+          <option value="rejected">已拒绝</option>
+          <option value="completed">已完成</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="editReservationNotes">备注信息:</label>
+        <textarea id="editReservationNotes" rows="3" placeholder="请输入预约备注信息..."></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="action-btn" onclick="closeEditReservationModal()">取消</button>
+        <button type="button" class="action-btn add" onclick="submitEditReservationForm()">保存</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 查看预约详情模态框 -->
+<div id="viewReservationModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeViewReservationModal()">&times;</span>
+    <h3>预约详情</h3>
+    <div id="reservationDetails">
+      <!-- 预约详情将由JavaScript动态生成 -->
+    </div>
+    <div class="form-actions">
+      <button type="button" class="action-btn" onclick="closeViewReservationModal()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 处理预约模态框 -->
+<div id="processReservationModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeProcessReservationModal()">&times;</span>
+    <h3 id="processReservationTitle">处理预约</h3>
+    <input type="hidden" id="processReservationId">
+
+    <div class="form-group">
+      <label for="processAction">处理结果:</label>
+      <select id="processAction" required>
+        <option value="approved">批准</option>
+        <option value="rejected">拒绝</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="processNotes">处理说明:</label>
+      <textarea id="processNotes" rows="3" placeholder="请输入处理说明..."></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="action-btn" onclick="closeProcessReservationModal()">取消</button>
+      <button type="button" class="action-btn add" onclick="submitProcessReservation()">确认处理</button>
+    </div>
+  </div>
+</div>
+
+<!-- 导出数据模态框 -->
+<div id="exportModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeExportModal()">&times;</span>
+    <h3>导出数据</h3>
+    <p>请选择要导出的数据类型和格式：</p>
+    <div class="export-options">
+      <div class="export-option" onclick="exportData('all', 'csv')">
+        <i class="fa fa-file-text-o"></i>
+        <div class="export-title">全部数据 (CSV)</div>
+        <div class="export-desc">导出所有预约数据为CSV文件</div>
+      </div>
+      <div class="export-option" onclick="exportData('filtered', 'csv')">
+        <i class="fa fa-filter"></i>
+        <div class="export-title">筛选数据 (CSV)</div>
+        <div class="export-desc">导出当前筛选结果为CSV文件</div>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button type="button" class="action-btn" onclick="closeExportModal()">取消</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 存储键名 - 与系统保持一致
+  const RESERVATIONS_STORAGE_KEY = 'reservationsData';
+  const STUDENTS_STORAGE_KEY = 'studentsData';
+  const COURSES_STORAGE_KEY = 'coursesData';
+  const CLASSES_STORAGE_KEY = 'classesData';
+
+  // 定义班级列表为ABCDE班
+  const ALLOWED_CLASSES = [
+    { id: 'CLA001', name: 'A班' },
+    { id: 'CLA002', name: 'B班' },
+    { id: 'CLA003', name: 'C班' },
+    { id: 'CLA004', name: 'D班' },
+    { id: 'CLA005', name: 'E班' }
+  ];
+
+  // 当前筛选状态
+  let currentFilter = {
+    search: '',
+    class: '',
+    status: ''
+  };
+
+  // 页面加载时初始化
+  window.onload = function() {
+    checkLoginStatus();
+    initializeClassesData();
+    initReservations();
+    initFiltersAndSelects();
+    // 添加键盘事件监听，支持回车键搜索
+    document.getElementById('reservationSearch').addEventListener('keyup', function(event) {
+      if (event.key === 'Enter') {
+        searchReservations();
+      }
+    });
+  };
+
+  // 初始化班级数据为ABCDE班
+  function initializeClassesData() {
+    // 仅当本地存储中没有班级数据时才初始化
+    if (!localStorage.getItem(CLASSES_STORAGE_KEY)) {
+      localStorage.setItem(CLASSES_STORAGE_KEY, JSON.stringify(ALLOWED_CLASSES));
+    }
+  }
+
+  // 检查登录状态
+  function checkLoginStatus() {
+    if (!localStorage.getItem('isAdminLoggedIn')) {
+      alert('请先登录');
+      window.location.href = 'login.html';
+    }
+  }
+
+  // 初始化筛选器和下拉选择框
+  function initFiltersAndSelects() {
+    const courses = JSON.parse(localStorage.getItem(COURSES_STORAGE_KEY) || '[]');
+    const students = JSON.parse(localStorage.getItem(STUDENTS_STORAGE_KEY) || '[]');
+
+    // 获取班级筛选器和课程班级选择框
+    const classFilter = document.getElementById('classFilter');
+    const courseClassSelect = document.getElementById('courseClassSelect');
+    const editCourseClassSelect = document.getElementById('editCourseClassSelect');
+
+    // 获取学生选择框
+    const studentSelect = document.getElementById('studentSelect');
+    const editStudentSelect = document.getElementById('editStudentSelect');
+
+    // 保存班级筛选器的第一个选项（"全部"）
+    const firstOption = classFilter.options[0];
+    classFilter.innerHTML = '';
+    classFilter.appendChild(firstOption);
+
+    // 清空课程班级选择框
+    courseClassSelect.innerHTML = '<option value="">请选择课程班级</option>';
+    editCourseClassSelect.innerHTML = '<option value="">请选择课程班级</option>';
+
+    // 清空学生选择框
+    studentSelect.innerHTML = '<option value="">请选择学生</option>';
+    editStudentSelect.innerHTML = '<option value="">请选择学生</option>';
+
+    // 添加课程班级选项（格式：课程名+班级）
+    courses.forEach(course => {
+      if (course.classIds && course.classIds.length > 0) {
+        course.classIds.forEach(classId => {
+          // 查找班级名称
+          const classInfo = ALLOWED_CLASSES.find(cls => cls.id === classId);
+          if (!classInfo) return;
+
+          const courseClassId = `${course.id}-${classId}`;
+          const displayName = `${course.name}${classInfo.name}`;
+
+          // 添加到筛选器
+          const option1 = document.createElement('option');
+          option1.value = courseClassId;
+          option1.textContent = displayName;
+          classFilter.appendChild(option1);
+
+          // 添加到添加预约表单
+          const option2 = document.createElement('option');
+          option2.value = courseClassId;
+          option2.textContent = displayName;
+          courseClassSelect.appendChild(option2);
+
+          // 添加到编辑预约表单
+          const option3 = document.createElement('option');
+          option3.value = courseClassId;
+          option3.textContent = displayName;
+          editCourseClassSelect.appendChild(option3);
+        });
+      }
+    });
+
+    // 添加学生选项
+    if (students.length > 0) {
+      students.forEach(student => {
+        // 解析学生所在班级信息
+        const [courseId, classId] = student.courseClassId ? student.courseClassId.split('-') : ['', ''];
+        const course = courses.find(c => c.id === courseId);
+        const courseName = course ? course.name : '';
+        const classInfo = ALLOWED_CLASSES.find(cls => cls.id === classId);
+        const className = classInfo ? classInfo.name : '';
+        const classDisplay = courseName && className ? `(${courseName}${className})` : '';
+
+        // 添加到添加预约表单
+        const option1 = document.createElement('option');
+        option1.value = student.id;
+        option1.textContent = `${student.name} ${classDisplay}`;
+        studentSelect.appendChild(option1);
+
+        // 添加到编辑预约表单
+        const option2 = document.createElement('option');
+        option2.value = student.id;
+        option2.textContent = `${student.name} ${classDisplay}`;
+        editStudentSelect.appendChild(option2);
+      });
+    } else {
+      // 如果没有学生数据，添加提示
+      const option1 = document.createElement('option');
+      option1.value = "";
+      option1.textContent = "暂无学生数据，请先添加学生";
+      option1.disabled = true;
+      studentSelect.appendChild(option1);
+
+      const option2 = document.createElement('option');
+      option2.value = "";
+      option2.textContent = "暂无学生数据，请先添加学生";
+      option2.disabled = true;
+      editStudentSelect.appendChild(option2);
+    }
+  }
+
+  // 初始化预约数据
+  function initReservations() {
+    loadReservationsFromAPI();
+  }
+
+  // 从后端API加载预约数据
+  function loadReservationsFromAPI() {
+    fetch('http://localhost:8080/api/reservations')
+      .then(response => response.json())
+      .then(data => {
+        // 转换后端数据格式为前端格式
+        const reservations = data.map(reservation => ({
+          id: 'RES' + reservation.id.toString().padStart(4, '0'),
+          studentId: reservation.studentId ? reservation.studentId.toString() : '',
+          courseClassId: reservation.courseId ? 'CRS' + reservation.courseId.toString().padStart(3, '0') + '-CLA001' : '',
+          courseName: reservation.course_name || reservation.courseName || '',
+          date: reservation.reservationDate || new Date().toISOString().split('T')[0],
+          time: reservation.reservationTime || '10:00',
+          status: reservation.status || 'pending',
+          notes: reservation.notes || '',
+          processedBy: reservation.processedBy || '',
+          processedAt: reservation.processedAt || '',
+          processNotes: reservation.processNotes || '',
+          childName: reservation.childName || ''
+        }));
+        
+        // 保存到localStorage以保持兼容性
+        saveReservations(reservations);
+        renderReservationTable(reservations);
+      })
+      .catch(error => {
+        console.error('加载预约数据失败:', error);
+        // 如果API失败，尝试从localStorage加载
+        let reservations = JSON.parse(localStorage.getItem(RESERVATIONS_STORAGE_KEY) || '[]');
+        renderReservationTable(reservations);
+      });
+  }
+
+  // 渲染预约表格
+  function renderReservationTable(reservations) {
+    const tableBody = document.getElementById('reservationTableBody');
+    tableBody.innerHTML = '';
+
+    // 获取相关数据
+    const students = JSON.parse(localStorage.getItem(STUDENTS_STORAGE_KEY) || '[]');
+    const courses = JSON.parse(localStorage.getItem(COURSES_STORAGE_KEY) || '[]');
+
+    // 创建映射表
+    const studentMap = {};
+    students.forEach(student => {
+      studentMap[student.id] = student;
+    });
+
+    const courseMap = {};
+    courses.forEach(course => {
+      courseMap[course.id] = course;
+    });
+
+    const classMap = {};
+    ALLOWED_CLASSES.forEach(cls => {
+      classMap[cls.id] = cls.name;
+    });
+
+    // 应用筛选
+    let filteredReservations = [...reservations];
+
+    if (currentFilter.search) {
+      const searchTerm = currentFilter.search.toLowerCase();
+      filteredReservations = filteredReservations.filter(reservation => {
+        const student = studentMap[reservation.studentId];
+        const studentName = student ? student.name.toLowerCase() : '';
+        return reservation.id.toLowerCase().includes(searchTerm) ||
+                studentName.includes(searchTerm);
+      });
+    }
+
+    if (currentFilter.class) {
+      filteredReservations = filteredReservations.filter(reservation =>
+              reservation.courseClassId === currentFilter.class
+      );
+    }
+
+    if (currentFilter.status) {
+      filteredReservations = filteredReservations.filter(reservation =>
+              reservation.status === currentFilter.status
+      );
+    }
+
+    if (filteredReservations.length === 0) {
+      // 优化空状态显示
+      tableBody.innerHTML = `
+                <tr>
+                    <td colspan="6">
+                        <div class="empty-state">
+                            <i class="fa fa-calendar-o"></i>
+                            <p>没有找到匹配的预约记录</p>
+                            <button class="action-btn add" onclick="openAddReservationModal()">
+                                <i class="fa fa-plus" aria-hidden="true"></i> 添加新预约
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+      return;
+    }
+
+    // 按日期和时间排序（最新的在前面）
+    filteredReservations.sort((a, b) => {
+      if (a.date !== b.date) {
+        return new Date(b.date) - new Date(a.date);
+      }
+      return b.time.localeCompare(a.time);
+    });
+
+    // 生成表格内容
+    filteredReservations.forEach(reservation => {
+      const row = tableBody.insertRow();
+
+      // 获取学生信息 - 优先使用childName，如果没有则从studentMap查找
+      let studentName = reservation.childName || '未知学生';
+      if (!reservation.childName && reservation.studentId) {
+        const student = studentMap[reservation.studentId];
+        if (student) {
+          studentName = student.name;
+        }
+      }
+
+    // 解析课程信息（优先使用后端返回的 course_name）
+    const [courseId, classId] = reservation.courseClassId ? reservation.courseClassId.split('-') : ['', ''];
+    const fallbackCourse = courseMap[courseId] || { name: '未知课程' };
+    const displayCourseName = reservation.courseName && reservation.courseName.trim() !== '' ? reservation.courseName : fallbackCourse.name;
+
+      // 状态显示
+      let statusDisplay = '';
+      switch(reservation.status) {
+        case 'pending':
+          statusDisplay = '<span class="status-badge status-pending">待审核</span>';
+          break;
+        case 'approved':
+          statusDisplay = '<span class="status-badge status-approved">已批准</span>';
+          break;
+        case 'rejected':
+          statusDisplay = '<span class="status-badge status-rejected">已拒绝</span>';
+          break;
+        case 'completed':
+          statusDisplay = '<span class="status-badge status-completed">已完成</span>';
+          break;
+        default:
+          statusDisplay = '<span class="status-badge">未知</span>';
+      }
+
+      // 操作按钮
+      let actionButtons = '';
+      if (reservation.status === 'pending') {
+        actionButtons = `
+                    <button class="action-btn view" onclick="viewReservation('${reservation.id}')">
+                        <i class="fa fa-eye" aria-hidden="true"></i> 查看
+                    </button>
+                    <button class="action-btn edit" onclick="editReservation('${reservation.id}')">
+                        <i class="fa fa-pencil" aria-hidden="true"></i> 编辑
+                    </button>
+                    <button class="action-btn delete" onclick="deleteReservation('${reservation.id}')">
+                        <i class="fa fa-trash" aria-hidden="true"></i> 删除
+                    </button>
+                `;
+      } else {
+        actionButtons = `
+                    <button class="action-btn view" onclick="viewReservation('${reservation.id}')">
+                        <i class="fa fa-eye" aria-hidden="true"></i> 查看
+                    </button>
+                    <button class="action-btn edit" onclick="editReservation('${reservation.id}')">
+                        <i class="fa fa-pencil" aria-hidden="true"></i> 编辑
+                    </button>
+                    <button class="action-btn delete" onclick="deleteReservation('${reservation.id}')">
+                        <i class="fa fa-trash" aria-hidden="true"></i> 删除
+                    </button>
+                `;
+      }
+
+      row.innerHTML = `
+                <td>${reservation.id}</td>
+                <td>${studentName}</td>
+                <td>${displayCourseName}</td>
+                <td>${formatDate(reservation.date)}</td>
+                <td>${reservation.time}</td>
+                <td>${actionButtons}</td>
+            `;
+    });
+  }
+
+  // 格式化日期显示
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('zh-CN');
+  }
+
+  // 搜索预约
+  function searchReservations() {
+    currentFilter.search = document.getElementById('reservationSearch').value;
+    const reservations = JSON.parse(localStorage.getItem(RESERVATIONS_STORAGE_KEY) || '[]');
+    renderReservationTable(reservations);
+  }
+
+  // 筛选预约
+  function filterReservations() {
+    currentFilter.class = document.getElementById('classFilter').value;
+    currentFilter.status = document.getElementById('statusFilter').value;
+    const reservations = JSON.parse(localStorage.getItem(RESERVATIONS_STORAGE_KEY) || '[]');
+    renderReservationTable(reservations);
+  }
+
+  // 保存预约数据
+  function saveReservations(reservations) {
+    localStorage.setItem(RESERVATIONS_STORAGE_KEY, JSON.stringify(reservations));
+  }
+
+  // 打开添加预约模态框 - 添加动画效果
+  function openAddReservationModal() {
+    document.getElementById('addReservationForm').reset();
+    // 设置默认预约日期为今天
+    document.getElementById('reservationDate').value = new Date().toISOString().split('T')[0];
+    const modal = document.getElementById('addReservationModal');
+    modal.style.display = 'block';
+    // 触发动画
+    setTimeout(() => modal.classList.add('show'), 10);
+  }
+
+  // 关闭添加预约模态框 - 添加动画效果
+  function closeAddReservationModal() {
+    const modal = document.getElementById('addReservationModal');
+    modal.classList.remove('show');
+    setTimeout(() => modal.style.display = 'none', 300);
+  }
+
+  // 提交添加预约表单
+  function submitAddReservationForm() {
+    // 获取表单数据并验证
+    const studentId = document.getElementById('studentSelect').value;
+    const courseClassId = document.getElementById('courseClassSelect').value;
+    const date = document.getElementById('reservationDate').value;
+    const time = document.getElementById('reservationTime').value;
+    const status = document.getElementById('reservationStatus').value;
+
+    // 表单验证
+    if (!studentId) {
+      alert('请选择学生');
+      return;
+    }
+
+    if (!courseClassId) {
+      alert('请选择课程班级');
+      return;
+    }
+
+    if (!date) {
+      alert('请选择预约日期');
+      return;
+    }
+
+    if (!time) {
+      alert('请选择预约时间');
+      return;
+    }
+
+    // 检查所选日期是否为过去的日期
+    const selectedDate = new Date(date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (selectedDate < today) {
+      if (!confirm('您选择的是过去的日期，确定要继续吗？')) {
+        return;
+      }
+    }
+
+    const newReservation = {
+      id: 'RES' + (Date.now() % 10000).toString().padStart(4, '0'),
+      studentId: studentId,
+      courseClassId: courseClassId,
+      date: date,
+      time: time,
+      status: status,
+      notes: document.getElementById('reservationNotes').value.trim(),
+      processedBy: status !== 'pending' ? 'admin' : '',
+      processedAt: status !== 'pending' ? new Date().toISOString() : '',
+      processNotes: ''
+    };
+
+    // 保存数据
+    let reservations = JSON.parse(localStorage.getItem(RESERVATIONS_STORAGE_KEY) || '[]');
+    reservations.unshift(newReservation);
+    saveReservations(reservations);
+
+    // 更新表格
+    renderReservationTable(reservations);
+    closeAddReservationModal();
+    showSyncNotification();
+  }
+
+  // 查看预约详情
+  function viewReservation(reservationId) {
+    const reservations = JSON.parse(localStorage.getItem(RESERVATIONS_STORAGE_KEY) || '[]');
+    const reservation = reservations.find(r => r.id === reservationId);
+
+    if (!reservation) {
+      alert('未找到该预约信息');
+      return;
+    }
+
+    // 获取相关数据
+    const students = JSON.parse(localStorage.getItem(STUDENTS_STORAGE_KEY) || '[]');
+    const courses = JSON.parse(localStorage.getItem(COURSES_STORAGE_KEY) || '[]');
+
+    // 获取学生信息 - 优先使用childName
+    let studentName = reservation.childName || '未知学生';
+    if (!reservation.childName && reservation.studentId) {
+      const student = students.find(s => s.id === reservation.studentId);
+      if (student) {
+        studentName = student.name;
+      }
+    }
+    
+    const [courseId, classId] = reservation.courseClassId ? reservation.courseClassId.split('-') : ['', ''];
+    const fallbackCourse = courses.find(c => c.id === courseId) || { name: '未知课程' };
+    const displayCourseName = reservation.courseName && reservation.courseName.trim() !== '' ? reservation.courseName : fallbackCourse.name;
+
+    // 格式化日期
+    const formattedDate = formatDate(reservation.date);
+
+    // 生成详情HTML
+    const detailsHTML = `
+      <div style="line-height: 1.8;">
+        <p><strong>预约ID：</strong>${reservation.id}</p>
+        <p><strong>学生姓名：</strong>${studentName}</p>
+        <p><strong>预约课程：</strong>${displayCourseName}</p>
+        <p><strong>预约日期：</strong>${formattedDate}</p>
+        <p><strong>预约时间：</strong>${reservation.time}</p>
+        <p><strong>备注信息：</strong>${reservation.notes || '无'}</p>
+      </div>
+    `;
+
+    document.getElementById('reservationDetails').innerHTML = detailsHTML;
+
+    // 显示模态框
+    const modal = document.getElementById('viewReservationModal');
+    modal.style.display = 'block';
+    setTimeout(() => modal.classList.add('show'), 10);
+  }
+
+  // 编辑预约
+  function editReservation(reservationId) {
+    const reservations = JSON.parse(localStorage.getItem(RESERVATIONS_STORAGE_KEY) || '[]');
+    const reservation = reservations.find(r => r.id === reservationId);
+
+    if (!reservation) {
+      alert('未找到该预约信息');
+      return;
+    }
+
+    // 填充表单数据
+    document.getElementById('editReservationId').value = reservation.id;
+    document.getElementById('editStudentSelect').value = reservation.studentId;
+    document.getElementById('editCourseClassSelect').value = reservation.courseClassId;
+    document.getElementById('editReservationDate').value = reservation.date;
+    document.getElementById('editReservationTime').value = reservation.time;
+    document.getElementById('editReservationStatus').value = reservation.status;
+    document.getElementById('editReservationNotes').value = reservation.notes || '';
+
+    // 显示模态框
+    const modal = document.getElementById('editReservationModal');
+    modal.style.display = 'block';
+    setTimeout(() => modal.classList.add('show'), 10);
+  }
+
+  // 关闭编辑预约模态框
+  function closeEditReservationModal() {
+    const modal = document.getElementById('editReservationModal');
+    modal.classList.remove('show');
+    setTimeout(() => modal.style.display = 'none', 300);
+  }
+
+  // 提交编辑预约表单
+  function submitEditReservationForm() {
+    const reservationId = document.getElementById('editReservationId').value;
+    const studentId = document.getElementById('editStudentSelect').value;
+    const courseClassId = document.getElementById('editCourseClassSelect').value;
+    const date = document.getElementById('editReservationDate').value;
+    const time = document.getElementById('editReservationTime').value;
+    const status = document.getElementById('editReservationStatus').value;
+
+    // 表单验证
+    if (!studentId) {
+      alert('请选择学生');
+      return;
+    }
+
+    if (!courseClassId) {
+      alert('请选择课程班级');
+      return;
+    }
+
+    if (!date) {
+      alert('请选择预约日期');
+      return;
+    }
+
+    if (!time) {
+      alert('请选择预约时间');
+      return;
+    }
+
+    // 更新数据
+    let reservations = JSON.parse(localStorage.getItem(RESERVATIONS_STORAGE_KEY) || '[]');
+    const index = reservations.findIndex(r => r.id === reservationId);
+
+    if (index !== -1) {
+      // 检查状态是否有变化
+      const statusChanged = reservations[index].status !== status;
+
+      reservations[index] = {
+        ...reservations[index],
+        studentId: studentId,
+        courseClassId: courseClassId,
+        date: date,
+        time: time,
+        status: status,
+        notes: document.getElementById('editReservationNotes').value.trim(),
+        // 如果状态从待审核变为其他状态，记录处理信息
+        processedBy: statusChanged && reservations[index].status === 'pending' ? 'admin' : reservations[index].processedBy,
+        processedAt: statusChanged && reservations[index].status === 'pending' ? new Date().toISOString() : reservations[index].processedAt
+      };
+
+      saveReservations(reservations);
+      renderReservationTable(reservations);
+      closeEditReservationModal();
+      showSyncNotification();
+    }
+  }
+
+  // 处理预约
+  function processReservation(reservationId) {
+    document.getElementById('processReservationId').value = reservationId;
+    document.getElementById('processNotes').value = '';
+
+    // 显示模态框
+    const modal = document.getElementById('processReservationModal');
+    modal.style.display = 'block';
+    setTimeout(() => modal.classList.add('show'), 10);
+  }
+
+  // 关闭处理预约模态框
+  function closeProcessReservationModal() {
+    const modal = document.getElementById('processReservationModal');
+    modal.classList.remove('show');
+    setTimeout(() => modal.style.display = 'none', 300);
+  }
+
+  // 提交处理预约
+  function submitProcessReservation() {
+    const reservationId = document.getElementById('processReservationId').value;
+    const action = document.getElementById('processAction').value;
+    const notes = document.getElementById('processNotes').value.trim();
+
+    if (!notes && action === 'rejected') {
+      if (!confirm('拒绝预约建议填写拒绝原因，确定要继续吗？')) {
+        return;
+      }
+    }
+
+    // 更新数据
+    let reservations = JSON.parse(localStorage.getItem(RESERVATIONS_STORAGE_KEY) || '[]');
+    const index = reservations.findIndex(r => r.id === reservationId);
+
+    if (index !== -1) {
+      reservations[index] = {
+        ...reservations[index],
+        status: action,
+        processedBy: 'admin',
+        processedAt: new Date().toISOString(),
+        processNotes: notes
+      };
+
+      saveReservations(reservations);
+      renderReservationTable(reservations);
+      closeProcessReservationModal();
+      showSyncNotification();
+    }
+  }
+
+  // 删除预约
+  function deleteReservation(reservationId) {
+    if (!confirm('确定要删除这条预约记录吗？此操作不可恢复。')) {
+      return;
+    }
+
+    let reservations = JSON.parse(localStorage.getItem(RESERVATIONS_STORAGE_KEY) || '[]');
+    reservations = reservations.filter(r => r.id !== reservationId);
+
+    saveReservations(reservations);
+    renderReservationTable(reservations);
+    showSyncNotification();
+  }
+
+  // 显示同步提示
+  function showSyncNotification() {
+    const notification = document.getElementById('syncNotification');
+    notification.classList.add('show');
+
+    setTimeout(() => {
+      notification.classList.remove('show');
+    }, 2000);
+  }
+
+  // 退出登录
+  function logout() {
+    if (confirm('确定要退出登录吗？')) {
+      localStorage.removeItem('isAdminLoggedIn');
+      window.location.href = 'login.html';
+    }
+  }
+
+  // 关闭查看预约详情模态框
+  function closeViewReservationModal() {
+    const modal = document.getElementById('viewReservationModal');
+    modal.classList.remove('show');
+    setTimeout(() => modal.style.display = 'none', 300);
+  }
+
+  // 导出数据功能实现 - 修复了中文乱码问题
+  function exportData(type, format) {
+    if (format !== 'csv') {
+      alert('目前仅支持CSV格式导出');
+      return;
+    }
+
+    let reservations = JSON.parse(localStorage.getItem(RESERVATIONS_STORAGE_KEY) || '[]');
+    const students = JSON.parse(localStorage.getItem(STUDENTS_STORAGE_KEY) || '[]');
+    const courses = JSON.parse(localStorage.getItem(COURSES_STORAGE_KEY) || '[]');
+
+    // 创建映射表
+    const studentMap = {};
+    students.forEach(student => {
+      studentMap[student.id] = student;
+    });
+
+    const courseMap = {};
+    courses.forEach(course => {
+      courseMap[course.id] = course;
+    });
+
+    const classMap = {};
+    ALLOWED_CLASSES.forEach(cls => {
+      classMap[cls.id] = cls.name;
+    });
+
+    // 根据类型筛选数据
+    let exportData = [];
+    if (type === 'filtered') {
+      // 应用当前筛选条件
+      exportData = [...reservations];
+
+      if (currentFilter.search) {
+        const searchTerm = currentFilter.search.toLowerCase();
+        exportData = exportData.filter(reservation => {
+          const student = studentMap[reservation.studentId];
+          const studentName = student ? student.name.toLowerCase() : '';
+          return reservation.id.toLowerCase().includes(searchTerm) ||
+                  studentName.includes(searchTerm);
+        });
+      }
+
+      if (currentFilter.class) {
+        exportData = exportData.filter(reservation =>
+                reservation.courseClassId === currentFilter.class
+        );
+      }
+
+      if (currentFilter.status) {
+        exportData = exportData.filter(reservation =>
+                reservation.status === currentFilter.status
+        );
+      }
+    } else {
+      // 导出全部数据
+      exportData = [...reservations];
+    }
+
+    if (exportData.length === 0) {
+      alert('没有可导出的数据');
+      closeExportModal();
+      return;
+    }
+
+    // 准备CSV数据
+    // 添加BOM头解决中文乱码问题
+    let csvContent = "\ufeff";
+    // CSV标题行
+    csvContent += "预约ID,学生姓名,所在班级,预约课程,预约日期,预约时间,状态,备注,处理人,处理时间,处理说明\n";
+
+    // 转换状态为中文
+    const statusMap = {
+      'pending': '待审核',
+      'approved': '已批准',
+      'rejected': '已拒绝',
+      'completed': '已完成'
+    };
+
+    // 处理每条数据
+    exportData.forEach(reservation => {
+      // 获取学生信息 - 优先使用childName
+      let studentName = reservation.childName || '未知学生';
+      if (!reservation.childName && reservation.studentId) {
+        const student = studentMap[reservation.studentId];
+        if (student) {
+          studentName = student.name;
+        }
+      }
+      
+      const [courseId, classId] = reservation.courseClassId ? reservation.courseClassId.split('-') : ['', ''];
+      const course = courseMap[courseId] || { name: '未知课程' };
+      const className = classMap[classId] || '未知班级';
+      const courseClassDisplay = `${course.name}${className}`;
+
+      // 处理日期格式
+      const formattedDate = formatDate(reservation.date);
+
+      // 处理特殊字符（逗号、引号、换行符）
+      const escapeCsv = (value) => {
+        if (typeof value !== 'string') value = String(value);
+        if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+          return `"${value.replace(/"/g, '""')}"`;
+        }
+        return value;
+      };
+
+      // 构建CSV行
+      const row = [
+        escapeCsv(reservation.id),
+        escapeCsv(studentName),
+        escapeCsv(courseClassDisplay),
+        escapeCsv(course.name),
+        escapeCsv(formattedDate),
+        escapeCsv(reservation.time),
+        escapeCsv(statusMap[reservation.status] || reservation.status),
+        escapeCsv(reservation.notes || ''),
+        escapeCsv(reservation.processedBy || ''),
+        escapeCsv(reservation.processedAt ? new Date(reservation.processedAt).toLocaleString() : ''),
+        escapeCsv(reservation.processNotes || '')
+      ].join(',');
+
+      csvContent += row + "\n";
+    });
+
+    // 创建并下载CSV文件
+    // 使用UTF-8编码并添加BOM头解决中文乱码
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+    if (navigator.msSaveBlob) { // IE 10+
+      navigator.msSaveBlob(blob, `预约数据_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`);
+    } else {
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+
+      link.setAttribute("href", url);
+      link.setAttribute("download", `预约数据_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`);
+      link.style.visibility = "hidden";
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    closeExportModal();
+  }
+
+  // 打开导出模态框
+  function openExportModal() {
+    const modal = document.getElementById('exportModal');
+    modal.style.display = 'block';
+    setTimeout(() => modal.classList.add('show'), 10);
+  }
+
+  // 关闭导出模态框
+  function closeExportModal() {
+    const modal = document.getElementById('exportModal');
+    modal.classList.remove('show');
+    setTimeout(() => modal.style.display = 'none', 300);
+  }
+</script>
+</body>
+</html>

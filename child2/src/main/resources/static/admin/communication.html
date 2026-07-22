@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智慧托育管理平台 - 家园沟通</title>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <style>
+    /* 基础样式 */
+    body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    .header { background-color: #4cd964; color: white; padding: 15px 0; }
+    .header h1 { margin: 0; text-align: center; }
+
+    /* 导航栏样式 */
+    .nav { background-color: #f8f8f8; border-bottom: 1px solid #e7e7e7; }
+    .nav ul { list-style-type: none; margin: 0; padding: 0; display: flex; justify-content: center; flex-wrap: wrap; }
+    .nav li { margin: 0 10px; }
+    .nav a { display: block; padding: 10px 15px; text-decoration: none; color: #333; }
+    .nav a:hover, .nav a.active { background-color: #e7e7e7; }
+
+    /* 页面标题和按钮 */
+    .page-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .action-btn { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; display: inline-flex-inline-flex; align-items: center; gap: 5px; transition: all 0.2s; }
+    .action-btn.add { background-color: #4cd964; color: white; }
+    .action-btn.add:hover { background-color: #3bc053; }
+    .action-btn.export { background-color: #007aff; color: white; }
+    .action-btn.export:hover { background-color: #0066d2; }
+    .action-btn.view { background-color: #5ac8fa; color: white; }
+    .action-btn.view:hover { background-color: #32b7e8; }
+    .action-btn.edit { background-color: #ffcc00; color: #333; }
+    .action-btn.edit:hover { background-color: #e6b800; }
+    .action-btn.delete { background-color: #ff3b30; color: white; }
+    .action-btn.delete:hover { background-color: #e02e24; }
+
+    /* 表格样式 */
+    .table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .table th, .table td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+    .table th { background-color: #f2f2f2; font-weight: bold; }
+    .table tr:hover { background-color: #f5f5f5; }
+
+    /* 班级标签样式 */
+    .class-badge { background-color: #e5e7eb; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+
+    /* 消息类型标签 */
+    .message-type { padding: 2px 6px; border-radius: 4px; font-size: 12px; color: white; }
+    .type-announcement { background-color: #007aff; }
+    .type-reminder { background-color: #ff9500; }
+    .type-individual { background-color: #4cd964; }
+
+    /* 搜索和筛选区域 */
+    .search-filter {
+      margin: 20px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      width: 300px;
+    }
+
+    .search-box input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px 0 0 4px;
+    }
+
+    .search-box button {
+      padding: 8px 15px;
+      background-color: #f2f2f2;
+      border: 1px solid #ddd;
+      border-left: none;
+      border-radius: 0 4px 4px 0;
+      cursor: pointer;
+    }
+
+    .filter-options {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    select {
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background-color: white;
+    }
+
+    /* 模态框样式 */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      margin: 3% auto;
+      padding: 0;
+      border: none;
+      width: 85%;
+      max-width: 700px;
+      border-radius: 20px;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      animation: slideIn 0.3s ease-out;
+      overflow: hidden;
+    }
+
+    @keyframes slideIn {
+      from { 
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to { 
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, #4cd964 0%, #3bc053 100%);
+      color: white;
+      padding: 25px 30px;
+      border-radius: 20px 20px 0 0;
+      position: relative;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-header h3::before {
+      content: "📢";
+      font-size: 28px;
+    }
+
+    .modal-body {
+      padding: 30px;
+    }
+
+    .close {
+      position: absolute;
+      top: 20px;
+      right: 25px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 32px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .close:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1);
+    }
+
+    /* 表单样式 */
+    .form-group { 
+      margin-bottom: 25px; 
+      position: relative;
+    }
+    
+    .form-row { 
+      display: flex; 
+      gap: 20px; 
+      margin-bottom: 25px; 
+    }
+    
+    .form-col { 
+      flex: 1; 
+    }
+    
+    label { 
+      display: block; 
+      margin-bottom: 8px; 
+      font-weight: 600; 
+      color: #333;
+      font-size: 14px;
+    }
+    
+    input, select, textarea { 
+      width: 100%; 
+      padding: 12px 16px; 
+      box-sizing: border-box; 
+      border: 2px solid #e1e5e9; 
+      border-radius: 12px; 
+      font-size: 14px;
+      transition: all 0.3s ease;
+      background-color: #fafbfc;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #4cd964;
+      background-color: white;
+      box-shadow: 0 0 0 3px rgba(76, 217, 100, 0.1);
+    }
+    
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+      font-family: inherit;
+    }
+    
+    .form-actions { 
+      margin-top: 30px; 
+      display: flex; 
+      justify-content: flex-end; 
+      gap: 15px; 
+      padding-top: 20px;
+      border-top: 1px solid #e1e5e9;
+    }
+    
+    /* 单选按钮样式 */
+    .radio-group {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-top: 10px;
+    }
+    
+    .radio-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+    
+    .radio-item:hover {
+      background-color: #f0f9ff;
+    }
+    
+    .radio-item input[type="radio"] {
+      width: auto;
+      margin: 0;
+    }
+    
+    .radio-item label {
+      margin: 0;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    
+    /* 选择器样式 */
+    .recipient-selector {
+      margin-top: 10px;
+    }
+    
+    .recipient-selector select {
+      margin-top: 8px;
+    }
+
+    /* 消息详情样式 */
+    .message-detail {
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eee;
+    }
+    .message-header {
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #e1e5e9;
+    }
+    .message-header h4 {
+      margin: 0 0 15px 0;
+      font-size: 20px;
+      color: #333;
+      font-weight: 600;
+    }
+    .message-meta {
+      color: #666;
+      font-size: 14px;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .message-meta i {
+      margin-right: 5px;
+      color: #4cd964;
+    }
+    .message-content {
+      line-height: 1.8;
+      white-space: pre-line;
+      background-color: #f8f9fa;
+      padding: 20px;
+      border-radius: 12px;
+      border-left: 4px solid #4cd964;
+      font-size: 15px;
+      color: #333;
+      margin-top: 10px;
+    }
+    .message-content label {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    /* 退出按钮 */
+    .logout-btn { position: fixed; bottom: 20px; right: 20px; background-color: #ff3b30; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+
+    /* 数据同步提示 */
+    .sync-notification { position: fixed; top: 20px; right: 20px; background-color: #4cd964; color: white; padding: 10px 20px; border-radius: 4px; display: none; }
+
+    /* 导出选项样式 */
+    .export-options {
+      display: flex;
+      gap: 20px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .export-option {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      flex: 1;
+      min-width: 200px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .export-option:hover {
+      background-color: #f5f5f5;
+      border-color: #ccc;
+    }
+
+    .export-option i {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: #007aff;
+    }
+
+    .export-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .export-desc {
+      color: #666;
+      font-size: 14px;
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+      .search-filter {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-box {
+        width: 100%;
+      }
+
+      .nav ul {
+        justify-content: flex-start;
+        overflow-x: auto;
+      }
+
+      .modal-content {
+        width: 95%;
+        margin: 10% auto;
+      }
+
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="header">
+  <h1>智慧托育管理平台</h1>
+</div>
+<div class="nav">
+  <ul>
+    <li><a href="index.html">首页</a></li>
+    <li><a href="teachers.html">教师团队</a></li>
+    <li><a href="courses.html">课程管理</a></li>
+    <li><a href="reservations.html">预约管理</a></li>
+    <li><a href="attendance.html">考勤管理</a></li>
+    <li><a href="students.html">学生管理</a></li>
+    <li><a href="communication.html" class="active">家园沟通</a></li>
+    <li><a href="stats.html">数据统计</a></li>
+  </ul>
+</div>
+
+<!-- 主内容区 -->
+<div class="container">
+  <div class="page-title">
+    <h2>家园沟通管理</h2>
+    <div>
+      <button class="action-btn export" onclick="openExportModal()">
+        <i class="fa fa-download" aria-hidden="true"></i> 导出记录
+      </button>
+      <button class="action-btn add" onclick="openAddMessageModal()">
+        <i class="fa fa-plus" aria-hidden="true"></i> 发送消息
+      </button>
+    </div>
+  </div>
+
+  <!-- 搜索和筛选区域 -->
+  <div class="search-filter">
+    <div class="search-box">
+      <input type="text" id="messageSearch" placeholder="搜索消息内容...">
+      <button onclick="searchMessages()"><i class="fa fa-search"></i></button>
+    </div>
+    <div class="filter-options">
+      <select id="messageTypeFilter" onchange="filterMessages()">
+        <option value="">全部类型</option>
+        <option value="announcement">公告通知</option>
+        <option value="reminder">提醒事项</option>
+        <option value="individual">个别沟通</option>
+      </select>
+      <select id="studentFilter" onchange="filterMessages()">
+        <option value="">全部学生</option>
+        <!-- 学生选项将由JavaScript动态生成 -->
+      </select>
+    </div>
+  </div>
+
+  <!-- 消息表格 -->
+  <div class="table-container">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>消息ID</th>
+        <th>标题</th>
+        <th>类型</th>
+        <th>接收对象</th>
+        <th>发送时间</th>
+        <th>操作</th>
+      </tr>
+      </thead>
+      <tbody id="messageTableBody">
+      <!-- 表格内容将由JavaScript动态生成 -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 右下角退出按钮 -->
+<div class="logout-btn" onclick="logout()">
+  <i class="fa fa-sign-out" aria-hidden="true"></i>
+</div>
+
+<!-- 数据同步提示 -->
+<div id="syncNotification" class="sync-notification">数据已更新</div>
+
+<!-- 添加消息模态框 -->
+<div id="addMessageModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>发送新消息</h3>
+      <span class="close" onclick="closeAddMessageModal()">&times;</span>
+    </div>
+    <div class="modal-body">
+      <form id="addMessageForm">
+        <div class="form-row">
+          <div class="form-col">
+            <div class="form-group">
+              <label for="messageTitle">消息标题</label>
+              <input type="text" id="messageTitle" placeholder="请输入消息标题" required>
+            </div>
+          </div>
+          <div class="form-col">
+            <div class="form-group">
+              <label for="messageType">消息类型</label>
+              <select id="messageType" required onchange="toggleRecipientOptions()">
+                <option value="announcement">📢 公告通知</option>
+                <option value="reminder">⏰ 提醒事项</option>
+                <option value="individual">👤 个别沟通</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group" id="allRecipientsGroup">
+          <label>接收对象</label>
+          <div class="radio-group">
+            <div class="radio-item">
+              <input type="radio" id="allParents" name="recipientType" value="all" checked>
+              <label for="allParents">👥 所有家长</label>
+            </div>
+            <div class="radio-item">
+              <input type="radio" id="courseParents" name="recipientType" value="course">
+              <label for="courseParents">📚 按课程</label>
+            </div>
+          </div>
+          <div class="recipient-selector">
+            <select id="recipientCourse" disabled>
+              <option value="">请选择课程</option>
+              <!-- 课程选项将由JavaScript动态生成 -->
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" id="individualRecipientGroup" style="display: none;">
+          <label for="recipientStudent">选择学生</label>
+          <select id="recipientStudent" required>
+            <option value="">请选择学生</option>
+            <!-- 学生选项将由JavaScript动态生成 -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="messageContent">消息内容</label>
+          <textarea id="messageContent" placeholder="请输入消息内容..." rows="6" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="messageDate">发送时间</label>
+          <input type="datetime-local" id="messageDate" required>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="action-btn" onclick="closeAddMessageModal()">
+            <i class="fa fa-times"></i> 取消
+          </button>
+          <button type="button" class="action-btn add" onclick="submitAddMessageForm()">
+            <i class="fa fa-paper-plane"></i> 发送消息
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- 查看消息详情模态框 -->
+<div id="viewMessageModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>消息详情</h3>
+      <span class="close" onclick="closeViewMessageModal()">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div id="messageDetails">
+        <!-- 消息详情将由JavaScript动态生成 -->
+      </div>
+      <div class="form-actions">
+        <button type="button" class="action-btn" onclick="closeViewMessageModal()">
+          <i class="fa fa-times"></i> 关闭
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 导出数据模态框 -->
+<div id="exportModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>导出沟通记录</h3>
+      <span class="close" onclick="closeExportModal()">&times;</span>
+    </div>
+    <div class="modal-body">
+      <p style="margin-bottom: 20px; color: #666;">请选择要导出的数据类型和格式：</p>
+      <div class="export-options">
+        <div class="export-option" onclick="exportData('all', 'csv')">
+          <i class="fa fa-file-text-o"></i>
+          <div class="export-title">全部记录 (CSV)</div>
+          <div class="export-desc">导出所有沟通记录为CSV文件</div>
+        </div>
+        <div class="export-option" onclick="exportData('filtered', 'csv')">
+          <i class="fa fa-filter"></i>
+          <div class="export-title">筛选记录 (CSV)</div>
+          <div class="export-desc">导出当前筛选结果为CSV文件</div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="action-btn" onclick="closeExportModal()">
+          <i class="fa fa-times"></i> 取消
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 存储键名
+  const MESSAGES_STORAGE_KEY = 'messagesData';
+  const STUDENTS_STORAGE_KEY = 'studentsData';
+  const CLASSES_STORAGE_KEY = 'classesData';
+  const COURSES_STORAGE_KEY = 'coursesData';
+
+  // 可配置后端地址
+  const API_BASE = (function() {
+    try {
+      return localStorage.getItem('API_BASE') || (window.location.origin || 'http://localhost:8080');
+    } catch (e) {
+      return 'http://localhost:8080';
+    }
+  })();
+
+  // 定义班级列表为ABCDE班
+  const ALLOWED_CLASSES = [
+    { id: 'CLA001', name: 'A班' },
+    { id: 'CLA002', name: 'B班' },
+    { id: 'CLA003', name: 'C班' },
+    { id: 'CLA004', name: 'D班' },
+    { id: 'CLA005', name: 'E班' }
+  ];
+
+  // 当前筛选状态
+  let currentFilter = {
+    search: '',
+    type: '',
+    student: ''
+  };
+
+  // 页面加载时初始化
+  window.onload = function() {
+    checkLoginStatus();
+    initMessages();
+    initFilterOptions();
+    // 添加键盘事件监听，支持回车键搜索
+    document.getElementById('messageSearch').addEventListener('keyup', function(event) {
+      if (event.key === 'Enter') {
+        searchMessages();
+      }
+    });
+
+    // 为课程选择添加事件监听
+    const courseRadio = document.querySelector('input[value="course"]');
+    const allRadio = document.querySelector('input[value="all"]');
+    
+    if (courseRadio) {
+      courseRadio.addEventListener('change', function() {
+        const recipientCourse = document.getElementById('recipientCourse');
+        if (recipientCourse) {
+          recipientCourse.disabled = !this.checked;
+        }
+      });
+    }
+
+    if (allRadio) {
+      allRadio.addEventListener('change', function() {
+        const recipientCourse = document.getElementById('recipientCourse');
+        if (recipientCourse) {
+          recipientCourse.disabled = this.checked;
+        }
+      });
+    }
+  };
+
+  // 检查登录状态
+  function checkLoginStatus() {
+    if (!localStorage.getItem('isAdminLoggedIn')) {
+      alert('请先登录');
+      window.location.href = 'login.html';
+    }
+  }
+
+  // 初始化筛选选项
+  function initFilterOptions() {
+    const students = JSON.parse(localStorage.getItem(STUDENTS_STORAGE_KEY) || '[]');
+    const studentFilter = document.getElementById('studentFilter');
+    const recipientStudent = document.getElementById('recipientStudent');
+
+    // 填充学生筛选器
+    if (studentFilter && recipientStudent) {
+      students.forEach(student => {
+        // 学生筛选器选项
+        const option1 = document.createElement('option');
+        option1.value = student.id;
+        option1.textContent = student.name;
+        studentFilter.appendChild(option1);
+
+        // 个别沟通接收学生选项
+        const option2 = document.createElement('option');
+        option2.value = student.id;
+        option2.textContent = student.name;
+        recipientStudent.appendChild(option2);
+      });
+    }
+
+    // 填充课程选择器
+    const courses = JSON.parse(localStorage.getItem(COURSES_STORAGE_KEY) || '[]');
+    const recipientCourse = document.getElementById('recipientCourse');
+
+    if (recipientCourse) {
+      courses.forEach(course => {
+        const option = document.createElement('option');
+        option.value = course.id;
+        option.textContent = course.name;
+        recipientCourse.appendChild(option);
+      });
+    }
+  }
+
+  // 初始化消息数据
+  function initMessages() {
+    let messages = JSON.parse(localStorage.getItem(MESSAGES_STORAGE_KEY) || '[]');
+
+    // 直接使用现有数据，不添加示例数据
+
+    renderMessageTable(messages);
+  }
+
+  // 切换接收对象选项显示
+  function toggleRecipientOptions() {
+    const messageType = document.getElementById('messageType').value;
+    const allRecipientsGroup = document.getElementById('allRecipientsGroup');
+    const individualRecipientGroup = document.getElementById('individualRecipientGroup');
+
+    if (messageType === 'individual') {
+      allRecipientsGroup.style.display = 'none';
+      individualRecipientGroup.style.display = 'block';
+    } else {
+      allRecipientsGroup.style.display = 'block';
+      individualRecipientGroup.style.display = 'none';
+    }
+  }
+
+  // 渲染消息表格
+  function renderMessageTable(messages) {
+    const tableBody = document.getElementById('messageTableBody');
+    tableBody.innerHTML = '';
+
+    // 应用筛选
+    let filteredMessages = [...messages];
+
+    if (currentFilter.search) {
+      const searchTerm = currentFilter.search.toLowerCase();
+      filteredMessages = filteredMessages.filter(message =>
+              message.title.toLowerCase().includes(searchTerm) ||
+              message.content.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    if (currentFilter.type) {
+      filteredMessages = filteredMessages.filter(message =>
+              message.type === currentFilter.type
+      );
+    }
+
+    if (currentFilter.student) {
+      filteredMessages = filteredMessages.filter(message => {
+        // 个别消息且接收对象是指定学生
+        if (message.type === 'individual' && message.recipientId === currentFilter.student) {
+          return true;
+        }
+        // 课程消息且学生属于该课程
+        if (message.recipientType === 'course') {
+          const students = JSON.parse(localStorage.getItem(STUDENTS_STORAGE_KEY) || '[]');
+          const student = students.find(s => s.id === currentFilter.student);
+          return student && student.courseId === message.recipientId;
+        }
+        // 全部消息
+        if (message.recipientType === 'all') {
+          return true;
+        }
+        return false;
+      });
+    }
+
+    if (filteredMessages.length === 0) {
+      tableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; color: #666;">暂无沟通记录</td>
+                </tr>
+            `;
+      return;
+    }
+
+    // 按发送时间排序，最新的在前
+    filteredMessages.sort((a, b) => new Date(b.sendTime) - new Date(a.sendTime));
+
+    // 生成表格内容
+    filteredMessages.forEach(message => {
+      const row = tableBody.insertRow();
+
+      // 消息类型显示处理
+      let typeClass = '';
+      let typeName = '';
+
+      switch(message.type) {
+        case 'announcement':
+          typeClass = 'type-announcement';
+          typeName = '公告通知';
+          break;
+        case 'reminder':
+          typeClass = 'type-reminder';
+          typeName = '提醒事项';
+          break;
+        case 'individual':
+          typeClass = 'type-individual';
+          typeName = '个别沟通';
+          break;
+      }
+
+      // 格式化时间
+      const sendTime = new Date(message.sendTime);
+      const formattedTime = sendTime.toLocaleString('zh-CN');
+
+      row.innerHTML = `
+                <td>${message.id}</td>
+                <td>${message.title}</td>
+                <td><span class="message-type ${typeClass}">${typeName}</span></td>
+                <td>${message.recipientName}</td>
+                <td>${formattedTime}</td>
+                <td>
+                    <button class="action-btn view" onclick="viewMessage('${message.id}')">
+                        <i class="fa fa-eye" aria-hidden="true"></i> 查看
+                    </button>
+                    <button class="action-btn delete" onclick="deleteMessage('${message.id}', '${message.title}')">
+                        <i class="fa fa-trash" aria-hidden="true"></i> 删除
+                    </button>
+                </td>
+            `;
+    });
+  }
+
+  // 搜索消息
+  function searchMessages() {
+    currentFilter.search = document.getElementById('messageSearch').value;
+    const messages = JSON.parse(localStorage.getItem(MESSAGES_STORAGE_KEY) || '[]');
+    renderMessageTable(messages);
+  }
+
+  // 筛选消息
+  function filterMessages() {
+    currentFilter.type = document.getElementById('messageTypeFilter').value;
+    currentFilter.student = document.getElementById('studentFilter').value;
+    const messages = JSON.parse(localStorage.getItem(MESSAGES_STORAGE_KEY) || '[]');
+    renderMessageTable(messages);
+  }
+
+  // 保存消息数据
+  function saveMessages(messages) {
+    localStorage.setItem(MESSAGES_STORAGE_KEY, JSON.stringify(messages));
+  }
+
+  // 打开添加消息模态框
+  function openAddMessageModal() {
+    document.getElementById('addMessageForm').reset();
+    // 设置默认发送时间为当前时间
+    const now = new Date();
+    // 格式化时间为datetime-local所需格式
+    const formattedNow = now.toISOString().slice(0, 16);
+    document.getElementById('messageDate').value = formattedNow;
+    
+    // 确保元素存在后再设置属性
+    const recipientCourse = document.getElementById('recipientCourse');
+    if (recipientCourse) {
+      recipientCourse.disabled = true;
+    }
+    
+    toggleRecipientOptions(); // 确保显示正确的选项
+    document.getElementById('addMessageModal').style.display = 'block';
+  }
+
+  // 关闭添加消息模态框
+  function closeAddMessageModal() {
+    document.getElementById('addMessageModal').style.display = 'none';
+  }
+
+  // 提交添加消息表单
+  async function submitAddMessageForm() {
+    // 获取表单数据并验证
+    const title = document.getElementById('messageTitle').value.trim();
+    const content = document.getElementById('messageContent').value.trim();
+    const sendTime = document.getElementById('messageDate').value;
+    const messageType = document.getElementById('messageType').value;
+
+    // 表单验证
+    if (!title) {
+      alert('请输入消息标题');
+      return;
+    }
+
+    if (!content) {
+      alert('请输入消息内容');
+      return;
+    }
+
+    if (!sendTime) {
+      alert('请选择发送时间');
+      return;
+    }
+
+    // 处理接收对象信息
+    let recipientType, recipientId, recipientName;
+
+    if (messageType === 'individual') {
+      recipientType = 'student';
+      recipientId = document.getElementById('recipientStudent').value;
+
+      // 获取学生姓名
+      const students = JSON.parse(localStorage.getItem(STUDENTS_STORAGE_KEY) || '[]');
+      const student = students.find(s => s.id === recipientId);
+      if (!student) {
+        alert('请选择有效的学生');
+        return;
+      }
+      recipientName = `${student.name}家长`;
+    } else {
+      // 公共消息类型
+      const recipientTypeRadio = document.querySelector('input[name="recipientType"]:checked').value;
+
+      if (recipientTypeRadio === 'all') {
+        recipientType = 'all';
+        recipientId = '';
+        recipientName = '所有家长';
+      } else {
+        recipientType = 'course';
+        recipientId = document.getElementById('recipientCourse').value;
+
+        if (!recipientId) {
+          alert('请选择课程');
+          return;
+        }
+
+        // 获取课程名称
+        const courses = JSON.parse(localStorage.getItem(COURSES_STORAGE_KEY) || '[]');
+        const course = courses.find(c => c.id === recipientId);
+
+        if (!course) {
+          alert('所选课程信息不存在');
+          return;
+        }
+
+        recipientName = course.name;
+      }
+    }
+
+    const newMessage = {
+      id: 'MSG' + (Date.now() % 10000).toString().padStart(4, '0'),
+      title: title,
+      type: messageType,
+      recipientType: recipientType,
+      recipientId: recipientId,
+      recipientName: recipientName,
+      content: content,
+      sendTime: sendTime
+    };
+
+    // 保存到本地存储
+    let messages = JSON.parse(localStorage.getItem(MESSAGES_STORAGE_KEY) || '[]');
+    messages.unshift(newMessage);
+    saveMessages(messages);
+
+    // 保存到数据库
+    try {
+      const noticeData = {
+        title: title,
+        content: content,
+        type: messageType,
+        recipientType: recipientType,
+        recipientId: recipientId,
+        recipientName: recipientName,
+        sendTime: sendTime,
+        senderId: 'admin',
+        senderName: '管理员',
+        isRead: false
+      };
+
+      const url = API_BASE + '/api/notices';
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(noticeData)
+      });
+
+      if (!response.ok) {
+        console.error('保存通知到数据库失败:', response.status);
+        alert('消息已保存到本地，但数据库保存失败，请检查网络连接');
+      } else {
+        console.log('通知已成功保存到数据库');
+      }
+    } catch (error) {
+      console.error('保存通知失败:', error);
+      alert('消息已保存到本地，但数据库保存失败，请检查网络连接');
+    }
+
+    // 更新表格
+    renderMessageTable(messages);
+    closeAddMessageModal();
+    showSyncNotification();
+  }
+
+  // 查看消息详情
+  function viewMessage(messageId) {
+    const messages = JSON.parse(localStorage.getItem(MESSAGES_STORAGE_KEY) || '[]');
+    const message = messages.find(m => m.id === messageId);
+
+    if (!message) {
+      alert('未找到该消息');
+      return;
+    }
+
+    // 消息类型显示处理
+    let typeClass = '';
+    let typeName = '';
+
+    switch(message.type) {
+      case 'announcement':
+        typeClass = 'type-announcement';
+        typeName = '公告通知';
+        break;
+      case 'reminder':
+        typeClass = 'type-reminder';
+        typeName = '提醒事项';
+        break;
+      case 'individual':
+        typeClass = 'type-individual';
+        typeName = '个别沟通';
+        break;
+    }
+
+    // 格式化时间
+    const sendTime = new Date(message.sendTime);
+    const formattedTime = sendTime.toLocaleString('zh-CN');
+
+    // 填充详情内容
+    const detailsContainer = document.getElementById('messageDetails');
+    detailsContainer.innerHTML = `
+            <div class="message-header">
+                <h4>${message.title}</h4>
+                <div class="message-meta">
+                    <span><i class="fa fa-clock-o"></i> 发送时间: ${formattedTime}</span>
+                    <span><i class="fa fa-tag"></i> 类型: <span class="message-type ${typeClass}">${typeName}</span></span>
+                    <span><i class="fa fa-user"></i> 接收对象: ${message.recipientName}</span>
+                </div>
+            </div>
+            <div class="message-detail">
+                <label>消息内容</label>
+                <div class="message-content">${message.content}</div>
+            </div>
+        `;
+
+    // 显示模态框
+    document.getElementById('viewMessageModal').style.display = 'block';
+  }
+
+  // 关闭查看消息模态框
+  function closeViewMessageModal() {
+    document.getElementById('viewMessageModal').style.display = 'none';
+  }
+
+  // 删除消息
+  function deleteMessage(messageId, messageTitle) {
+    if (!confirm(`确定要删除消息"${messageTitle}"吗？此操作不可恢复。`)) {
+      return;
+    }
+
+    let messages = JSON.parse(localStorage.getItem(MESSAGES_STORAGE_KEY) || '[]');
+    messages = messages.filter(m => m.id !== messageId);
+
+    saveMessages(messages);
+    renderMessageTable(messages);
+    showSyncNotification();
+  }
+
+  // 打开导出模态框
+  function openExportModal() {
+    document.getElementById('exportModal').style.display = 'block';
+  }
+
+  // 关闭导出模态框
+  function closeExportModal() {
+    document.getElementById('exportModal').style.display = 'none';
+  }
+
+  // 导出数据功能 - 修复了中文乱码问题
+  function exportData(type, format) {
+    let messages = JSON.parse(localStorage.getItem(MESSAGES_STORAGE_KEY) || '[]');
+
+    // 如果是导出筛选后的数据
+    if (type === 'filtered') {
+      messages = messages.filter(message => {
+        const matchesSearch = !currentFilter.search ||
+                message.title.toLowerCase().includes(currentFilter.search.toLowerCase()) ||
+                message.content.toLowerCase().includes(currentFilter.search.toLowerCase());
+
+        const matchesType = !currentFilter.type || message.type === currentFilter.type;
+
+        let matchesStudent = true;
+        if (currentFilter.student) {
+          matchesStudent = false;
+          // 个别消息且接收对象是指定学生
+          if (message.type === 'individual' && message.recipientId === currentFilter.student) {
+            matchesStudent = true;
+          }
+          // 课程消息且学生属于该课程
+          if (message.recipientType === 'course') {
+            const students = JSON.parse(localStorage.getItem(STUDENTS_STORAGE_KEY) || '[]');
+            const student = students.find(s => s.id === currentFilter.student);
+            if (student && student.courseId === message.recipientId) {
+              matchesStudent = true;
+            }
+          }
+          // 全部消息
+          if (message.recipientType === 'all') {
+            matchesStudent = true;
+          }
+        }
+
+        return matchesSearch && matchesType && matchesStudent;
+      });
+    }
+
+    if (messages.length === 0) {
+      alert('没有可导出的数据');
+      closeExportModal();
+      return;
+    }
+
+    // 准备CSV内容 - 添加了BOM解决中文乱码
+    if (format === 'csv') {
+      // 添加UTF-8 BOM解决中文乱码问题
+      let csvContent = "\ufeff消息ID,标题,类型,接收对象,发送时间,内容\n";
+
+      messages.forEach(message => {
+        // 消息类型名称
+        let typeName = '';
+        switch(message.type) {
+          case 'announcement': typeName = '公告通知'; break;
+          case 'reminder': typeName = '提醒事项'; break;
+          case 'individual': typeName = '个别沟通'; break;
+        }
+
+        // 处理包含逗号的字段
+        const fields = [
+          message.id,
+          `"${message.title.replace(/"/g, '""')}"`,
+          typeName,
+          `"${message.recipientName.replace(/"/g, '""')}"`,
+          message.sendTime,
+          `"${message.content.replace(/"/g, '""').replace(/\n/g, ' ')}"`
+        ];
+
+        csvContent += fields.join(',') + "\n";
+      });
+
+      // 创建下载链接
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `家校沟通记录_${new Date().toLocaleDateString()}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    closeExportModal();
+    showSyncNotification();
+  }
+
+  // 显示同步提示
+  function showSyncNotification() {
+    const notification = document.getElementById('syncNotification');
+    notification.style.display = 'block';
+    setTimeout(() => {
+      notification.style.display = 'none';
+    }, 2000);
+  }
+
+  // 退出登录
+  function logout() {
+    if (confirm('确定要退出登录吗？')) {
+      localStorage.removeItem('isAdminLoggedIn');
+      window.location.href = 'login.html';
+    }
+  }
+
+  // 为所有关闭按钮添加点击事件（包括模态框外部点击关闭）
+  window.onclick = function(event) {
+    const modals = document.getElementsByClassName('modal');
+    for (let i = 0; i < modals.length; i++) {
+      if (event.target === modals[i]) {
+        modals[i].style.display = 'none';
+      }
+    }
+  }
+</script>
+</body>
+</html>

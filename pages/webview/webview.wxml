@@ -1,0 +1,22 @@
+<!--webview.wxml-->
+<view class="container">
+  <view class="header">
+    <view class="back-btn" bindtap="goBack">
+      <text class="back-icon">←</text>
+    </view>
+    <view class="title">{{title}}</view>
+    <view class="placeholder"></view>
+  </view>
+  
+  <web-view src="{{url}}" bindmessage="onMessage" bindload="onWebViewLoad" binderror="onWebViewError"></web-view>
+  
+  <view class="loading" wx:if="{{loading}}">
+    <view class="loading-text">正在加载...</view>
+  </view>
+  
+  <view class="error" wx:if="{{error}}">
+    <view class="error-icon">⚠️</view>
+    <view class="error-text">页面加载失败</view>
+    <button class="retry-btn" bindtap="retry">重试</button>
+  </view>
+</view>

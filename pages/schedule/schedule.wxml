@@ -1,0 +1,40 @@
+<!--pages/schedule/schedule.wxml 临时兜底测试版-->
+<view class="schedule-wrap">
+  <!-- 顶部日期筛选卡片（滑动选择器保留） -->
+  <view class="card date-filter">
+    <view class="date-item">
+      <text class="date-label">开始日期</text>
+      <picker mode="date" value="{{startDate}}" bindchange="bindStartDateChange">
+        <view class="date-picker-box">{{startDate}}</view>
+      </picker>
+    </view>
+    <view class="date-item">
+      <text class="date-label">结束日期</text>
+      <picker mode="date" value="{{endDate}}" bindchange="bindEndDateChange">
+        <view class="date-picker-box">{{endDate}}</view>
+      </picker>
+    </view>
+  </view>
+
+  <!-- 固定写死模拟课程，数组改为单行，禁止换行拆分对象 -->
+  <view class="schedule-list">
+    <block wx:for="[ {id:1,courseName:'创意美术课',childName:'小明',startDate:'2024-01-15',endDate:'2024-03-15',timeRule:'周一 09:00-10:30'}, {id:2,courseName:'音乐启蒙课',childName:'小红',startDate:'2024-01-16',endDate:'2024-03-16',timeRule:'周二 14:00-15:30'}, {id:3,courseName:'科学探索课',childName:'小刚',startDate:'2024-01-17',endDate:'2024-03-17',timeRule:'周三 10:00-11:30'}, {id:4,courseName:'运动体能课',childName:'小丽',startDate:'2024-01-18',endDate:'2024-03-18',timeRule:'周四 15:00-16:30'} ]" wx:key="id">
+      <view class="card schedule-item">
+        <view class="schedule-header">
+          <image class="course-icon" src="/icon/course-book.png" mode="aspectFit"/>
+          <text class="course-title">{{item.courseName}} – {{item.childName}}</text>
+        </view>
+        <view class="schedule-info text-desc">
+          <text>开始日期：{{item.startDate}}</text>
+          <text>结束日期：{{item.endDate}}</text>
+          <text>课程安排：{{item.timeRule}}</text>
+        </view>
+      </view>
+    </block>
+
+    <!-- 空状态提示 -->
+    <view class="empty-tip" wx:if="false">
+      <text>暂无课程安排，请先登录或稍后刷新</text>
+    </view>
+  </view>
+</view>

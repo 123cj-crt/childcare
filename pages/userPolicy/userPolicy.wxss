@@ -1,0 +1,29 @@
+/* pages/userPolicy/userPolicy.wxss */
+page{
+  background-color: #eeeef7;
+}
+
+.section {
+  margin-bottom: 60rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-top: 30rpx;
+  text-align: center;
+  color: #7b61ff;
+  display: block;
+}
+
+.section-text {
+  display: block;
+  margin-left: 15rpx;
+}
+
+.agreement-footer {
+  padding: 20rpx;
+  text-align: center;
+  background-color: #fff;
+}
+

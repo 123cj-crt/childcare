@@ -1,0 +1,16 @@
+<!--pages/login-1/login-1.wxml-->
+<view class = "login-container">
+  <text class = "title">登录</text>
+  <view class="bind-section" bindtap="goToLogin">
+    <text class="bind-text">绑定和添加儿童信息</text>
+    <view class="plus-circle">
+      <text class="plus-icon">＋</text>
+    </view>
+  </view>
+  <view class="bind-section skip-button" bindtap="skipBinding">
+    <text class="bind-text">已绑定孩子，跳过绑定</text>
+    <view class="plus-circle">
+      <text class="plus-icon">→</text>
+    </view>
+  </view>
+</view>

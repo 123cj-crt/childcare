@@ -1,0 +1,87 @@
+/* pages/bindchild/bindchild.wxss */
+page {
+  background: linear-gradient(135deg, #fce4ec, #e0f7fa);
+  min-height: 100vh;
+}
+
+.container {
+  padding-top: 0;   
+  margin-top: 0;
+  background: linear-gradient(135deg, #fce4ec, #e0f7fa);
+  min-height: 100vh;
+}
+
+.header {
+  text-align: center;
+  margin-top: 90rpx;
+  margin-bottom: 60rpx;
+}
+
+.title {
+  font-size: 50rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.child-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 24rpx;
+  box-shadow: 0 12rpx 24rpx rgba(0, 0, 0, 0.05);
+  padding: 30rpx;
+  width: 75%;
+  margin: 30rpx auto;
+  margin-bottom: 50rpx;
+}
+
+.info-box {
+  /* flex: 1; */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.info-label {
+  font-size: 28rpx;
+  color: #777;
+  width: 120rpx; /* Adjust as needed for alignment */
+  text-align: right;
+  margin-right: 10rpx;
+}
+
+.info-value {
+  font-size: 28rpx;
+  color: #333;
+  flex: 1;
+}
+
+/* Remove old styles */
+/*
+.name {
+  font-size: 36rpx;
+  font-weight: 600;
+  margin-bottom: 12rpx;
+  color: #222;
+}
+
+.info {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 30rpx;
+  margin-top: 10rpx;
+}
+
+.info text {
+  font-size: 28rpx;
+  color: #777;
+}
+*/

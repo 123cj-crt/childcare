@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智慧托育管理平台 - 首页</title>
+  <!-- 引入Font Awesome图标库 -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <style>
+    /* 基础样式 */
+    body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; background-color: #f9f9f9; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    .header { background-color: #4cd964; color: white; padding: 15px 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .header h1 { margin: 0; text-align: center; }
+
+    /* 导航栏样式 */
+    .nav { background-color: #f8f8f8; border-bottom: 1px solid #e7e7e7; position: sticky; top: 0; z-index: 90; }
+    .nav ul { list-style-type: none; margin: 0; padding: 0; display: flex; justify-content: center; flex-wrap: wrap; }
+    .nav li { margin: 0 10px; }
+    .nav a { display: block; padding: 10px 15px; text-decoration: none; color: #333; transition: background-color 0.3s; }
+    .nav a:hover, .nav a.active { background-color: #e7e7e7; }
+
+    /* 功能菜单 */
+    .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
+    .menu-item {
+      padding: 20px;
+      background: #e8f4fd;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: all 0.3s;
+    }
+    .menu-item:hover { background-color: #d4e8f7; transform: translateY(-3px); }
+    .menu-item i { font-size: 28px; margin-bottom: 10px; color: #007aff; }
+    .menu-desc { margin-top: 10px; font-size: 14px; color: #666; }
+
+    /* 推文区域样式 */
+    .tweets-section { margin-top: 30px; }
+    .tweets-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #4cd964;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+    .tweets-header h2 { margin: 0; color: #333; }
+
+    .add-tweet-btn {
+      background-color: #4cd964;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 14px;
+    }
+    .add-tweet-btn:hover { background-color: #3dbb54; }
+
+    .tweets-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 15px;
+    }
+
+    .tweet-card {
+      background: white;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .tweet-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+
+    .tweet-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .tweet-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .tweet-source {
+      font-size: 12px;
+      color: #4cd964;
+      background-color: #e8f4fd;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-weight: 500;
+    }
+
+    .tweet-link {
+      color: #007aff;
+      text-decoration: none;
+      word-break: break-all;
+      font-size: 14px;
+      display: block;
+      margin: 5px 0;
+      padding: 5px;
+      background-color: #f5f9ff;
+      border-radius: 4px;
+    }
+    .tweet-link:hover { text-decoration: underline; }
+
+    .tweet-actions {
+      display: flex;
+      gap: 15px;
+      color: #666;
+      margin-top: 10px;
+    }
+
+    .tweet-actions span { cursor: pointer; }
+    .tweet-actions span:hover { color: #007aff; }
+
+    .delete-tweet {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      color: #999;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .delete-tweet:hover { color: #ff3b30; }
+
+    /* 模态框样式 */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      visibility: hidden;
+      opacity: 0;
+      transition: visibility 0s, opacity 0.3s;
+    }
+
+    .modal-overlay.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .modal {
+      background-color: white;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 500px;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .modal-title { margin: 0; color: #333; }
+    .close-modal { cursor: pointer; font-size: 20px; }
+
+    .modal-body { margin-bottom: 20px; }
+
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .form-group textarea { min-height: 80px; resize: vertical; }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .modal-btn {
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: none;
+      font-size: 14px;
+    }
+
+    .cancel-btn { background-color: #eee; color: #333; }
+    .save-btn { background-color: #4cd964; color: white; }
+
+    /* 右下角退出按钮 */
+    .logout-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #ff3b30;
+      color: white;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      cursor: pointer;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logout-btn:hover {
+      background-color: #e52d27;
+    }
+
+    /* 图片上传样式 */
+    .image-upload-container {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      background-color: #fafafa;
+    }
+
+    .upload-divider {
+      text-align: center;
+      margin: 15px 0;
+      position: relative;
+    }
+
+    .upload-divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background-color: #ddd;
+    }
+
+    .upload-divider span {
+      background-color: #fafafa;
+      padding: 0 15px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .file-upload-area {
+      border: 2px dashed #4cd964;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background-color: white;
+    }
+
+    .file-upload-area:hover {
+      border-color: #3dbb54;
+      background-color: #f8fff8;
+    }
+
+    .upload-placeholder {
+      color: #666;
+    }
+
+    .upload-placeholder p {
+      margin: 8px 0 4px 0;
+      font-weight: 500;
+    }
+
+    .upload-placeholder small {
+      color: #999;
+    }
+
+    .image-preview {
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    .image-preview img {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .preview-actions {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .preview-btn {
+      padding: 6px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background-color: white;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .preview-btn:hover {
+      background-color: #f5f5f5;
+    }
+
+    .preview-btn.primary {
+      background-color: #4cd964;
+      color: white;
+      border-color: #4cd964;
+    }
+
+    .preview-btn.primary:hover {
+      background-color: #3dbb54;
+    }
+
+    .upload-progress {
+      margin-top: 15px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background-color: #f0f0f0;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background-color: #4cd964;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      font-size: 14px;
+      color: #666;
+      text-align: center;
+      display: block;
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+      .menu-grid { grid-template-columns: 1fr; }
+      .tweets-container { grid-template-columns: 1fr; }
+      .nav li { margin: 0 5px; }
+      .nav a { padding: 8px 10px; font-size: 14px; }
+      .preview-actions { flex-direction: column; }
+      .preview-btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+<!-- 头部导航 -->
+<div class="header">
+  <h1>智慧托育管理平台</h1>
+</div>
+<div class="nav">
+  <ul>
+    <li><a href="index.html">首页</a></li>
+    <li><a href="teachers.html">教师团队</a></li>
+    <li><a href="courses.html">课程管理</a></li>
+    <li><a href="reservations.html">预约管理</a></li>
+    <li><a href="attendance.html">考勤管理</a></li>
+    <li><a href="students.html">学生管理</a></li>
+    <li><a href="communication.html" >家园沟通</a></li>
+    <li><a href="stats.html">数据统计</a></li>
+  </ul>
+</div>
+
+<!-- 主内容区 -->
+<div class="container">
+  <div class="menu-grid">
+    <a href="courses.html" class="menu-item">
+      <i class="fa fa-book" aria-hidden="true"></i> 课程/活动管理
+      <div class="menu-desc">管理托育中心的各类课程和活动信息</div>
+    </a>
+    <a href="reservations.html" class="menu-item">
+      <i class="fa fa-list-alt" aria-hidden="true"></i> 预约列表查看
+      <div class="menu-desc">查看和处理家长提交的课程预约申请</div>
+    </a>
+    <a href="attendance.html" class="menu-item">
+      <i class="fa fa-calendar-check-o" aria-hidden="true"></i> 考勤与课堂管理
+      <div class="menu-desc">记录儿童出勤情况和课堂表现</div>
+    </a>
+    <a href="stats.html" class="menu-item">
+      <i class="fa fa-bar-chart" aria-hidden="true"></i> 数据统计详情
+      <div class="menu-desc">查看托育中心运营数据和统计报表</div>
+    </a>
+  </div>
+
+  <!-- 推文区域 -->
+  <div class="tweets-section">
+    <div class="tweets-header">
+      <h2>微信公众号推文</h2>
+      <button class="add-tweet-btn" onclick="openAddTweetModal()">
+        <i class="fa fa-plus"></i> 添加推文
+      </button>
+    </div>
+    <div class="tweets-container" id="tweetsContainer">
+      <!-- 推文内容将通过JavaScript动态生成 -->
+    </div>
+  </div>
+</div>
+
+<!-- 添加推文模态框 -->
+<div class="modal-overlay" id="tweetModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">添加微信公众号推文</h3>
+      <span class="close-modal" onclick="closeAddTweetModal()">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="tweetImage">推文图片</label>
+        <div class="image-upload-container">
+          <input type="url" id="tweetImage" placeholder="输入推文图片URL" style="margin-bottom: 10px;">
+          <div class="upload-divider">
+            <span>或者</span>
+          </div>
+          <div class="file-upload-area" id="fileUploadArea">
+            <input type="file" id="imageFile" accept="image/*" style="display: none;">
+            <div class="upload-placeholder" onclick="document.getElementById('imageFile').click()">
+              <i class="fa fa-cloud-upload" style="font-size: 24px; color: #4cd964; margin-bottom: 8px;"></i>
+              <p>点击上传本地图片</p>
+              <small>支持 JPG、PNG、GIF 格式</small>
+            </div>
+          </div>
+          <div class="image-preview" id="imagePreview" style="display: none;">
+            <img id="previewImg" src="" alt="预览图片">
+            <div class="preview-actions">
+              <button type="button" class="preview-btn" onclick="removePreview()">移除</button>
+              <button type="button" class="preview-btn primary" onclick="uploadImage()">上传图片</button>
+            </div>
+          </div>
+          <div class="upload-progress" id="uploadProgress" style="display: none;">
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <span class="progress-text" id="progressText">上传中...</span>
+          </div>
+          <div class="upload-test" style="margin-top: 10px;">
+            <button type="button" class="preview-btn" onclick="testUploadService()" style="font-size: 12px; padding: 4px 8px;">
+              测试上传服务
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="tweetLink">微信公众号推文链接</label>
+        <input type="url" id="tweetLink" placeholder="输入微信公众号推文链接">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn cancel-btn" onclick="closeAddTweetModal()">取消</button>
+      <button class="modal-btn save-btn" onclick="saveTweet()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 右下角退出按钮 -->
+<div class="logout-btn" onclick="logout()">
+  <i class="fa fa-sign-out" aria-hidden="true"></i>
+</div>
+
+<script>
+  // 页面加载完成后初始化推文
+  document.addEventListener('DOMContentLoaded', function() {
+    loadTweets();
+    checkLoginStatus();
+    initializeImageUpload();
+  });
+
+  // 加载推文
+  function loadTweets() {
+    // 从后端API获取推文数据
+    fetch('/api/tweets')
+      .then(response => response.json())
+      .then(data => {
+        console.log('获取推文数据:', data);
+        if (Array.isArray(data)) {
+          renderTweets(data);
+        } else {
+          console.error('获取推文数据失败:', data);
+          // 使用默认推文
+          renderTweets([
+            {
+              id: 1,
+              image: 'https://picsum.photos/400/200?random=1',
+              link: 'https://mp.weixin.qq.com/s/example1'
+            },
+            {
+              id: 2,
+              image: 'https://picsum.photos/400/200?random=2',
+              link: 'https://mp.weixin.qq.com/s/example2'
+            }
+          ]);
+        }
+      })
+      .catch(error => {
+        console.error('获取推文数据失败:', error);
+        // 使用默认推文
+        renderTweets([
+          {
+            id: 1,
+            image: 'https://picsum.photos/400/200?random=1',
+            link: 'https://mp.weixin.qq.com/s/example1'
+          },
+          {
+            id: 2,
+            image: 'https://picsum.photos/400/200?random=2',
+            link: 'https://mp.weixin.qq.com/s/example2'
+          }
+        ]);
+      });
+  }
+
+  // 渲染推文列表
+  function renderTweets(tweets) {
+    const container = document.getElementById('tweetsContainer');
+    container.innerHTML = '';
+
+    tweets.forEach(tweet => {
+      const tweetCard = document.createElement('div');
+      tweetCard.className = 'tweet-card';
+      tweetCard.onclick = () => {
+        if (tweet.link) {
+          window.open(tweet.link, '_blank');
+        }
+      };
+      tweetCard.innerHTML = `
+        <span class="delete-tweet" onclick="event.stopPropagation(); deleteTweet(${tweet.id})">
+          <i class="fa fa-trash-o"></i>
+        </span>
+        <img src="${tweet.image}" alt="推文图片" class="tweet-image" onerror="this.src='https://via.placeholder.com/400x200?text=图片加载失败'">
+        <div class="tweet-info">
+          <span class="tweet-source">微信公众号推文</span>
+          <i class="fa fa-external-link" style="color: #999; font-size: 14px;"></i>
+        </div>
+      `;
+      container.appendChild(tweetCard);
+    });
+  }
+
+  // 打开添加推文模态框
+  function openAddTweetModal() {
+    const modal = document.getElementById('tweetModal');
+    if (modal) {
+      modal.classList.add('active');
+      
+      // 重置表单
+      const imageElement = document.getElementById('tweetImage');
+      const linkElement = document.getElementById('tweetLink');
+      const fileInput = document.getElementById('imageFile');
+      
+      if (imageElement) imageElement.value = '';
+      if (linkElement) linkElement.value = '';
+      if (fileInput) fileInput.value = '';
+      
+      // 重置上传状态
+      resetUploadState();
+    } else {
+      console.error('模态框元素未找到');
+    }
+  }
+
+  // 关闭添加推文模态框
+  function closeAddTweetModal() {
+    const modal = document.getElementById('tweetModal');
+    if (modal) {
+      modal.classList.remove('active');
+    }
+  }
+
+  // 保存推文
+  function saveTweet() {
+    // 获取表单数据
+    const imageElement = document.getElementById('tweetImage');
+    const linkElement = document.getElementById('tweetLink');
+    
+    // 检查元素是否存在
+    if (!imageElement || !linkElement) {
+      console.error('表单元素未找到');
+      alert('表单加载失败，请刷新页面重试');
+      return;
+    }
+    
+    const image = imageElement.value.trim();
+    const link = linkElement.value.trim();
+
+    // 简单验证
+    if (!image || !link) {
+      alert('请填写推文图片和微信公众号推文链接');
+      return;
+    }
+
+    // 创建推文数据
+    const tweetData = {
+      image,
+      link
+    };
+
+    // 保存到后端API
+    fetch('/api/tweets', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(tweetData)
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('推文保存成功:', data);
+      // 重新加载推文列表
+      loadTweets();
+      // 关闭模态框
+      closeAddTweetModal();
+      alert('推文添加成功！');
+    })
+    .catch(error => {
+      console.error('保存推文失败:', error);
+      alert('保存推文失败，请重试');
+    });
+  }
+
+  // 删除推文
+  function deleteTweet(id) {
+    if (confirm('确定要删除这条推文吗？')) {
+      fetch(`/api/tweets/${id}`, {
+        method: 'DELETE'
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('推文删除成功:', data);
+        // 重新加载推文列表
+        loadTweets();
+        alert('推文删除成功！');
+      })
+      .catch(error => {
+        console.error('删除推文失败:', error);
+        alert('删除推文失败，请重试');
+      });
+    }
+  }
+
+  // 检查登录状态
+  function checkLoginStatus() {
+    const isLoggedIn = localStorage.getItem('isAdminLoggedIn');
+    if (!isLoggedIn) {
+      window.location.href = 'login.html';
+    }
+  }
+
+  // 退出登录功能
+  function logout() {
+    if (confirm('确定要退出登录吗？')) {
+      localStorage.removeItem('isAdminLoggedIn');
+      window.location.href = 'login.html';
+    }
+  }
+
+  // 初始化图片上传功能
+  function initializeImageUpload() {
+    const fileInput = document.getElementById('imageFile');
+    if (fileInput) {
+      fileInput.addEventListener('change', handleFileSelect);
+    }
+  }
+
+  // 处理文件选择
+  function handleFileSelect(event) {
+    const file = event.target.files[0];
+    if (file) {
+      // 验证文件类型
+      if (!file.type.startsWith('image/')) {
+        alert('请选择图片文件！');
+        return;
+      }
+
+      // 验证文件大小 (限制为5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('图片文件大小不能超过5MB！');
+        return;
+      }
+
+      // 显示预览
+      showImagePreview(file);
+    }
+  }
+
+  // 显示图片预览
+  function showImagePreview(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const previewImg = document.getElementById('previewImg');
+      const imagePreview = document.getElementById('imagePreview');
+      const fileUploadArea = document.getElementById('fileUploadArea');
+      
+      if (previewImg && imagePreview && fileUploadArea) {
+        previewImg.src = e.target.result;
+        imagePreview.style.display = 'block';
+        fileUploadArea.style.display = 'none';
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // 移除预览
+  function removePreview() {
+    const imagePreview = document.getElementById('imagePreview');
+    const fileUploadArea = document.getElementById('fileUploadArea');
+    const fileInput = document.getElementById('imageFile');
+    const tweetImage = document.getElementById('tweetImage');
+    
+    if (imagePreview && fileUploadArea && fileInput && tweetImage) {
+      imagePreview.style.display = 'none';
+      fileUploadArea.style.display = 'block';
+      fileInput.value = '';
+      tweetImage.value = '';
+    }
+  }
+
+    // 上传图片
+    function uploadImage() {
+      const fileInput = document.getElementById('imageFile');
+      const file = fileInput.files[0];
+      
+      if (!file) {
+        alert('请先选择图片文件！');
+        return;
+      }
+
+      console.log('开始上传图片:', {
+        name: file.name,
+        size: file.size,
+        type: file.type
+      });
+
+      // 显示上传进度
+      showUploadProgress();
+
+      // 创建FormData
+      const formData = new FormData();
+      formData.append('image', file);
+
+      // 上传到服务器
+      fetch('/api/upload/image', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => {
+        console.log('上传响应状态:', response.status, response.statusText);
+        if (!response.ok) {
+          // 尝试获取错误详情
+          return response.text().then(text => {
+            console.error('服务器错误响应:', text);
+            throw new Error(`HTTP ${response.status}: ${response.statusText} - ${text}`);
+          });
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('上传响应数据:', data);
+        if (data.success && data.url) {
+          // 上传成功，将URL填入输入框
+          const tweetImage = document.getElementById('tweetImage');
+          if (tweetImage) {
+            tweetImage.value = data.url;
+          }
+          
+          // 隐藏进度条，显示成功状态
+          hideUploadProgress();
+          showUploadSuccess();
+          
+          // 3秒后隐藏成功状态
+          setTimeout(() => {
+            hideUploadSuccess();
+          }, 3000);
+        } else {
+          throw new Error(data.message || '上传失败');
+        }
+      })
+      .catch(error => {
+        console.error('图片上传失败:', error);
+        hideUploadProgress();
+        alert('图片上传失败：' + error.message);
+      });
+    }
+
+  // 显示上传进度
+  function showUploadProgress() {
+    const uploadProgress = document.getElementById('uploadProgress');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    
+    if (uploadProgress && progressFill && progressText) {
+      uploadProgress.style.display = 'block';
+      progressFill.style.width = '0%';
+      progressText.textContent = '上传中...';
+      
+      // 模拟进度条动画
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += Math.random() * 15;
+        if (progress > 90) progress = 90;
+        progressFill.style.width = progress + '%';
+        
+        if (progress >= 90) {
+          clearInterval(interval);
+        }
+      }, 200);
+    }
+  }
+
+  // 隐藏上传进度
+  function hideUploadProgress() {
+    const uploadProgress = document.getElementById('uploadProgress');
+    const progressFill = document.getElementById('progressFill');
+    
+    if (uploadProgress && progressFill) {
+      progressFill.style.width = '100%';
+      setTimeout(() => {
+        uploadProgress.style.display = 'none';
+      }, 500);
+    }
+  }
+
+  // 显示上传成功
+  function showUploadSuccess() {
+    const progressText = document.getElementById('progressText');
+    if (progressText) {
+      progressText.textContent = '上传成功！';
+      progressText.style.color = '#4cd964';
+    }
+  }
+
+  // 隐藏上传成功状态
+  function hideUploadSuccess() {
+    const progressText = document.getElementById('progressText');
+    if (progressText) {
+      progressText.style.color = '#666';
+    }
+  }
+
+  // 重置上传状态
+  function resetUploadState() {
+    const imagePreview = document.getElementById('imagePreview');
+    const fileUploadArea = document.getElementById('fileUploadArea');
+    const uploadProgress = document.getElementById('uploadProgress');
+    
+    if (imagePreview) imagePreview.style.display = 'none';
+    if (fileUploadArea) fileUploadArea.style.display = 'block';
+    if (uploadProgress) uploadProgress.style.display = 'none';
+  }
+
+  // 测试上传服务
+  function testUploadService() {
+    console.log('测试上传服务...');
+    
+    fetch('/api/upload/test')
+      .then(response => {
+        console.log('测试响应状态:', response.status);
+        return response.json();
+      })
+      .then(data => {
+        console.log('测试响应数据:', data);
+        if (data.success) {
+          alert(`上传服务正常！\n目录: ${data.uploadDir}\n目录存在: ${data.dirExists}\n目录可写: ${data.dirWritable}\n最大文件大小: ${data.maxFileSize} bytes\n支持类型: ${data.allowedTypes.join(', ')}`);
+        } else {
+          alert('上传服务异常：' + data.message);
+        }
+      })
+      .catch(error => {
+        console.error('测试上传服务失败:', error);
+        alert('测试上传服务失败：' + error.message);
+      });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧托育管理平台 - 家长用户管理</title>
+    <!-- 引入Font Awesome图标库 -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        /* 基础样式 */
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #4cd964; color: white; padding: 15px 0; }
+        .header h1 { margin: 0; text-align: center; }
+
+        /* 导航栏样式 */
+        .nav { background-color: #f8f8f8; border-bottom: 1px solid #e7e7e7; }
+        .nav ul { list-style-type: none; margin: 0; padding: 0; display: flex; justify-content: center; }
+        .nav li { margin: 0 10px; }
+        .nav a { display: block; padding: 10px 15px; text-decoration: none; color: #333; }
+        .nav a:hover { background-color: #e7e7e7; }
+        .nav a.active { background-color: #e7e7e7; }
+
+        /* 页面标题和按钮 */
+        .page-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .action-buttons { display: flex; gap: 10px; }
+        .action-btn { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
+        .action-btn.add { background-color: #4cd964; color: white; }
+        .action-btn.edit { background-color: #007aff; color: white; }
+        .action-btn.delete { background-color: #ff3b30; color: white; }
+        .action-btn.export { background-color: #FF9500; color: white; }
+        .action-btn.small { padding: 4px 8px; font-size: 12px; }
+
+        /* 表格样式 */
+        .table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .table th, .table td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+        .table th { background-color: #f2f2f2; font-weight: bold; }
+        .table tr:hover { background-color: #f5f5f5; }
+
+        /* 学生列表样式 */
+        .children-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 5px 0; }
+        .child-item { background-color: #f0f0f0; padding: 4px 8px; border-radius: 4px; display: inline-flex; align-items: center; gap: 5px; }
+        .child-remove { color: #ff3b30; cursor: pointer; font-size: 12px; }
+        .child-remove:hover { opacity: 0.8; }
+
+        /* 模态框样式 */
+        .modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); }
+        .modal-content { background-color: #fefefe; margin: 10% auto; padding: 20px; border: 1px solid #888; width: 50%; max-width: 500px; border-radius: 8px; }
+        .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close:hover { color: black; }
+
+        /* 表单样式 */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; }
+        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        .form-actions { margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px; }
+        .add-child-container { display: flex; gap: 10px; margin-top: 10px; }
+        .add-child-container input { flex: 1; }
+
+        /* 导出选项样式 */
+        .export-options { display: flex; flex-direction: column; gap: 15px; margin: 20px 0; }
+        .export-option { display: flex; align-items: center; gap: 10px; }
+        .export-option input[type="checkbox"] { width: auto; }
+
+        /* 退出按钮样式 */
+        .logout-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #FF3B30;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+<!-- 头部导航 -->
+<div class="header">
+    <h1>智慧托育管理平台</h1>
+</div>
+<div class="nav">
+    <ul>
+        <li><a href="index.html">首页</a></li>
+        <li><a href="teachers.html">教师团队</a></li>
+        <li><a href="courses.html">课程管理</a></li>
+        <li><a href="reservations.html">预约管理</a></li>
+        <li><a href="attendance.html">考勤管理</a></li>
+        <li><a href="parents.html">家长管理</a></li>
+        <li><a href="children.html">儿童管理</a></li>
+        <li><a href="communication.html" >家园沟通</a></li>
+        <li><a href="stats.html">数据统计</a></li>
+    </ul>
+</div>
+
+<!-- 主内容区 -->
+<div class="container">
+    <div class="page-title">
+        <h2>家长用户管理</h2>
+        <div class="action-buttons">
+            <button class="action-btn export" onclick="openExportModal()">
+                <i class="fa fa-download" aria-hidden="true"></i> 导出数据
+            </button>
+            <button class="action-btn add" onclick="openAddParentModal()">
+                <i class="fa fa-plus" aria-hidden="true"></i> 添加家长
+            </button>
+        </div>
+    </div>
+
+    <!-- 家长表格 -->
+    <div class="table-container">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>家长ID</th>
+                <th>家长姓名</th>
+                <th>关联学生</th>
+                <th>联系电话</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody id="parentTableBody">
+            <!-- 表格内容将由JavaScript动态生成 -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 右下角退出按钮 -->
+<div class="logout-btn" onclick="logout()">
+    <i class="fa fa-sign-out" aria-hidden="true"></i>
+</div>
+
+<!-- 添加家长模态框 -->
+<div id="addParentModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeAddParentModal()">&times;</span>
+        <h3>添加家长信息</h3>
+        <form id="addParentForm">
+            <div class="form-group">
+                <label for="parentName">家长姓名:</label>
+                <input type="text" id="parentName" required>
+            </div>
+            <div class="form-group">
+                <label for="parentPhone">联系电话:</label>
+                <input type="tel" id="parentPhone" required>
+            </div>
+            <div class="form-group">
+                <label>关联学生:</label>
+                <div id="addChildrenList" class="children-list">
+                    <!-- 动态添加的学生将显示在这里 -->
+                </div>
+                <div class="add-child-container">
+                    <input type="text" id="newChildName" placeholder="输入学生姓名">
+                    <button type="button" class="action-btn add small" onclick="addChildToAddForm()">
+                        <i class="fa fa-plus" aria-hidden="true"></i> 添加
+                    </button>
+                </div>
+                <small id="addChildError" style="color: #ff3b30; display: none;">请至少添加一个学生</small>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="action-btn" onclick="closeAddParentModal()">取消</button>
+                <button type="button" class="action-btn add" onclick="submitAddParentForm()">保存</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 编辑家长模态框 -->
+<div id="editParentModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeEditParentModal()">&times;</span>
+        <h3>编辑家长信息</h3>
+        <form id="editParentForm">
+            <input type="hidden" id="editParentId">
+            <div class="form-group">
+                <label for="editParentName">家长姓名:</label>
+                <input type="text" id="editParentName" required>
+            </div>
+            <div class="form-group">
+                <label for="editParentPhone">联系电话:</label>
+                <input type="tel" id="editParentPhone" required>
+            </div>
+            <div class="form-group">
+                <label>关联学生:</label>
+                <div id="editChildrenList" class="children-list">
+                    <!-- 动态添加的学生将显示在这里 -->
+                </div>
+                <div class="add-child-container">
+                    <input type="text" id="editNewChildName" placeholder="输入学生姓名">
+                    <button type="button" class="action-btn add small" onclick="addChildToEditForm()">
+                        <i class="fa fa-plus" aria-hidden="true"></i> 添加
+                    </button>
+                </div>
+                <small id="editChildError" style="color: #ff3b30; display: none;">请至少保留一个学生</small>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="action-btn" onclick="closeEditParentModal()">取消</button>
+                <button type="button" class="action-btn edit" onclick="submitEditParentForm()">保存</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 导出数据模态框 -->
+<div id="exportModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeExportModal()">&times;</span>
+        <h3>导出家长数据</h3>
+        <p>请选择需要导出的字段：</p>
+        <div class="export-options">
+            <div class="export-option">
+                <input type="checkbox" id="exportId" checked>
+                <label for="exportId">家长ID</label>
+            </div>
+            <div class="export-option">
+                <input type="checkbox" id="exportName" checked>
+                <label for="exportName">家长姓名</label>
+            </div>
+            <div class="export-option">
+                <input type="checkbox" id="exportChild" checked>
+                <label for="exportChild">关联学生</label>
+            </div>
+            <div class="export-option">
+                <input type="checkbox" id="exportPhone" checked>
+                <label for="exportPhone">联系电话</label>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="button" class="action-btn" onclick="closeExportModal()">取消</button>
+            <button type="button" class="action-btn export" onclick="exportParents()">
+                <i class="fa fa-download" aria-hidden="true"></i> 导出CSV
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 家长数据存储键名
+    const PARENTS_STORAGE_KEY = 'parentsData';
+    // 当前家长数据
+    let currentParents = [];
+    // 添加表单中的学生列表
+    let addFormChildren = [];
+    // 编辑表单中的学生列表
+    let editFormChildren = [];
+
+    // 页面加载时检查登录状态并初始化数据
+    window.onload = function() {
+        try {
+            if (!localStorage.getItem('isAdminLoggedIn')) {
+                alert('请先登录');
+                window.location.href = 'login.html';
+            }
+            loadParents();
+        } catch (error) {
+            console.error('页面加载出错:', error);
+            alert('页面加载失败，请刷新重试');
+        }
+    };
+
+    // 加载家长数据并渲染表格
+    function loadParents() {
+        const parents = JSON.parse(localStorage.getItem(PARENTS_STORAGE_KEY) || '[]');
+        // 确保数据格式正确，将单个学生转换为数组
+        currentParents = parents.map(parent => {
+            // 如果是旧格式(单个学生)，转换为新格式(学生数组)
+            if (parent.childName && !Array.isArray(parent.childName)) {
+                return {
+                    id: parent.id,
+                    name: parent.name,
+                    phone: parent.phone,
+                    children: [parent.childName]
+                };
+            }
+            // 确保新格式有children数组
+            return {
+                id: parent.id,
+                name: parent.name,
+                phone: parent.phone,
+                children: parent.children || []
+            };
+        });
+        localStorage.setItem(PARENTS_STORAGE_KEY, JSON.stringify(currentParents));
+        renderParentTable(currentParents);
+    }
+
+    // 渲染家长表格
+    function renderParentTable(parents) {
+        const tableBody = document.getElementById('parentTableBody');
+        tableBody.innerHTML = '';
+
+        if (parents.length === 0) {
+            tableBody.innerHTML = `
+        <tr>
+          <td colspan="5" style="text-align: center; color: #666;">暂无家长数据</td>
+        </tr>
+      `;
+            return;
+        }
+
+        parents.forEach(parent => {
+            // 显示学生列表，多个学生用逗号分隔
+            const childrenHtml = parent.children.join('、');
+
+            const row = tableBody.insertRow();
+            row.innerHTML = `
+        <td>${parent.id}</td>
+        <td>${parent.name}</td>
+        <td>${childrenHtml}</td>
+        <td>${parent.phone}</td>
+        <td>
+          <button class="action-btn edit" onclick="openEditParentModal('${parent.id}')">
+            <i class="fa fa-pencil" aria-hidden="true"></i> 编辑
+          </button>
+          <button class="action-btn delete" onclick="deleteParent('${parent.id}', '${parent.name}')">
+            <i class="fa fa-trash" aria-hidden="true"></i> 删除
+          </button>
+        </td>
+      `;
+        });
+    }
+
+    // 打开添加家长模态框
+    function openAddParentModal() {
+        document.getElementById('addParentForm').reset();
+        addFormChildren = [];
+        updateAddFormChildrenList();
+        document.getElementById('addParentModal').style.display = 'block';
+    }
+
+    // 关闭添加家长模态框
+    function closeAddParentModal() {
+        document.getElementById('addParentModal').style.display = 'none';
+    }
+
+    // 向添加表单添加学生
+    function addChildToAddForm() {
+        const childInput = document.getElementById('newChildName');
+        const childName = childInput.value.trim();
+
+        if (childName && !addFormChildren.includes(childName)) {
+            addFormChildren.push(childName);
+            updateAddFormChildrenList();
+            childInput.value = '';
+            document.getElementById('addChildError').style.display = 'none';
+        }
+    }
+
+    // 更新添加表单中的学生列表显示
+    function updateAddFormChildrenList() {
+        const container = document.getElementById('addChildrenList');
+        container.innerHTML = '';
+
+        addFormChildren.forEach((child, index) => {
+            const childElement = document.createElement('div');
+            childElement.className = 'child-item';
+            childElement.innerHTML = `
+        ${child}
+        <span class="child-remove" onclick="removeAddFormChild(${index})">
+          <i class="fa fa-times" aria-hidden="true"></i>
+        </span>
+      `;
+            container.appendChild(childElement);
+        });
+    }
+
+    // 从添加表单移除学生
+    function removeAddFormChild(index) {
+        addFormChildren.splice(index, 1);
+        updateAddFormChildrenList();
+    }
+
+    // 提交添加家长表单
+    function submitAddParentForm() {
+        const name = document.getElementById('parentName').value.trim();
+        const phone = document.getElementById('parentPhone').value.trim();
+
+        // 验证
+        if (!name) {
+            alert('请输入家长姓名');
+            return;
+        }
+
+        if (!phone) {
+            alert('请输入联系电话');
+            return;
+        }
+
+        if (addFormChildren.length === 0) {
+            document.getElementById('addChildError').style.display = 'block';
+            return;
+        }
+
+        // 生成家长ID
+        const parentId = 'PAR' + (Date.now() % 10000).toString().padStart(4, '0');
+
+        // 创建新家长对象
+        const newParent = {
+            id: parentId,
+            name: name,
+            phone: phone,
+            children: [...addFormChildren]
+        };
+
+        // 保存到localStorage
+        let parents = JSON.parse(localStorage.getItem(PARENTS_STORAGE_KEY) || '[]');
+        parents.unshift(newParent);
+        localStorage.setItem(PARENTS_STORAGE_KEY, JSON.stringify(parents));
+
+        // 刷新表格并关闭模态框
+        loadParents();
+        closeAddParentModal();
+        alert('家长信息添加成功！');
+    }
+
+    // 打开编辑家长模态框
+    function openEditParentModal(parentId) {
+        const parents = JSON.parse(localStorage.getItem(PARENTS_STORAGE_KEY) || '[]');
+        const parent = parents.find(p => p.id === parentId);
+
+        if (parent) {
+            document.getElementById('editParentId').value = parent.id;
+            document.getElementById('editParentName').value = parent.name;
+            document.getElementById('editParentPhone').value = parent.phone;
+
+            // 初始化学生列表
+            editFormChildren = [...(parent.children || [])];
+            updateEditFormChildrenList();
+
+            document.getElementById('editParentModal').style.display = 'block';
+        }
+    }
+
+    // 关闭编辑家长模态框
+    function closeEditParentModal() {
+        document.getElementById('editParentModal').style.display = 'none';
+    }
+
+    // 向编辑表单添加学生
+    function addChildToEditForm() {
+        const childInput = document.getElementById('editNewChildName');
+        const childName = childInput.value.trim();
+
+        if (childName && !editFormChildren.includes(childName)) {
+            editFormChildren.push(childName);
+            updateEditFormChildrenList();
+            childInput.value = '';
+            document.getElementById('editChildError').style.display = 'none';
+        }
+    }
+
+    // 更新编辑表单中的学生列表显示
+    function updateEditFormChildrenList() {
+        const container = document.getElementById('editChildrenList');
+        container.innerHTML = '';
+
+        editFormChildren.forEach((child, index) => {
+            const childElement = document.createElement('div');
+            childElement.className = 'child-item';
+            childElement.innerHTML = `
+        ${child}
+        <span class="child-remove" onclick="removeEditFormChild(${index})">
+          <i class="fa fa-times" aria-hidden="true"></i>
+        </span>
+      `;
+            container.appendChild(childElement);
+        });
+    }
+
+    // 从编辑表单移除学生
+    function removeEditFormChild(index) {
+        editFormChildren.splice(index, 1);
+        updateEditFormChildrenList();
+    }
+
+    // 提交编辑家长表单
+    function submitEditParentForm() {
+        const parentId = document.getElementById('editParentId').value;
+        const name = document.getElementById('editParentName').value.trim();
+        const phone = document.getElementById('editParentPhone').value.trim();
+
+        // 验证
+        if (!name) {
+            alert('请输入家长姓名');
+            return;
+        }
+
+        if (!phone) {
+            alert('请输入联系电话');
+            return;
+        }
+
+        if (editFormChildren.length === 0) {
+            document.getElementById('editChildError').style.display = 'block';
+            return;
+        }
+
+        // 更新家长信息
+        let parents = JSON.parse(localStorage.getItem(PARENTS_STORAGE_KEY) || '[]');
+        const index = parents.findIndex(p => p.id === parentId);
+
+        if (index !== -1) {
+            parents[index] = {
+                ...parents[index],
+                name: name,
+                phone: phone,
+                children: [...editFormChildren]
+            };
+
+            localStorage.setItem(PARENTS_STORAGE_KEY, JSON.stringify(parents));
+
+            // 刷新表格并关闭模态框
+            loadParents();
+            closeEditParentModal();
+            alert('家长信息更新成功！');
+        }
+    }
+
+    // 删除家长
+    function deleteParent(parentId, parentName) {
+        if (confirm(`确定要删除家长 ${parentName} 的信息吗？`)) {
+            let parents = JSON.parse(localStorage.getItem(PARENTS_STORAGE_KEY) || '[]');
+            parents = parents.filter(p => p.id !== parentId);
+
+            localStorage.setItem(PARENTS_STORAGE_KEY, JSON.stringify(parents));
+            loadParents();
+            alert('家长信息已删除');
+        }
+    }
+
+    // 打开导出数据模态框
+    function openExportModal() {
+        if (currentParents.length === 0) {
+            alert('没有可导出的家长数据');
+            return;
+        }
+        document.getElementById('exportModal').style.display = 'block';
+    }
+
+    // 关闭导出数据模态框
+    function closeExportModal() {
+        document.getElementById('exportModal').style.display = 'none';
+    }
+
+    // 导出家长数据为CSV
+    function exportParents() {
+        // 获取用户选择的导出字段
+        const exportFields = {
+            id: document.getElementById('exportId').checked,
+            name: document.getElementById('exportName').checked,
+            child: document.getElementById('exportChild').checked,
+            phone: document.getElementById('exportPhone').checked
+        };
+
+        // 检查是否至少选择了一个字段
+        const hasSelectedFields = Object.values(exportFields).some(checked => checked);
+        if (!hasSelectedFields) {
+            alert('请至少选择一个要导出的字段');
+            return;
+        }
+
+        // 准备CSV标题行
+        let csvContent = '';
+        const headers = [];
+
+        if (exportFields.id) headers.push('家长ID');
+        if (exportFields.name) headers.push('家长姓名');
+        if (exportFields.child) headers.push('关联学生');
+        if (exportFields.phone) headers.push('联系电话');
+
+        csvContent += headers.join(',') + '\n';
+
+        // 准备CSV数据行
+        currentParents.forEach(parent => {
+            const row = [];
+            // 多个学生用逗号分隔
+            const childrenStr = parent.children.join('、');
+
+            if (exportFields.id) row.push(escapeCsv(parent.id));
+            if (exportFields.name) row.push(escapeCsv(parent.name));
+            if (exportFields.child) row.push(escapeCsv(childrenStr));
+            if (exportFields.phone) row.push(escapeCsv(parent.phone));
+
+            csvContent += row.join(',') + '\n';
+        });
+
+        // 创建CSV文件并下载
+        const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.setAttribute('href', url);
+
+        // 生成包含当前日期的文件名
+        const today = new Date();
+        const dateStr = `${today.getFullYear()}${(today.getMonth() + 1).toString().padStart(2, '0')}${today.getDate().toString().padStart(2, '0')}`;
+        a.setAttribute('download', `家长数据_${dateStr}.csv`);
+
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        // 关闭导出模态框
+        closeExportModal();
+    }
+
+    // 处理CSV中的特殊字符
+    function escapeCsv(value) {
+        if (value === undefined || value === null) {
+            return '';
+        }
+
+        // 如果包含逗号、引号或换行符，需要用双引号括起来
+        if (typeof value === 'string' && (value.includes(',') || value.includes('"') || value.includes('\n'))) {
+            // 替换双引号为两个双引号
+            return `"${value.replace(/"/g, '""')}"`;
+        }
+        return value.toString();
+    }
+
+    // 退出登录
+    function logout() {
+        localStorage.removeItem('isAdminLoggedIn');
+        window.location.href = 'login.html';
+    }
+
+    // 点击模态框外部关闭
+    window.onclick = function(event) {
+        const modals = document.getElementsByClassName('modal');
+        for (let i = 0; i < modals.length; i++) {
+            if (event.target == modals[i]) {
+                modals[i].style.display = 'none';
+            }
+        }
+    }
+</script>
+</body>
+</html>

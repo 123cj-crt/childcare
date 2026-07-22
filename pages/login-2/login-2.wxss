@@ -1,0 +1,97 @@
+/* pages/login-2/login-2.wxss */
+page{
+  background-color: #eeeef7;
+}
+
+.l-container {
+  display: block;
+  width: 100%;
+}
+
+.title {
+  font-size: 130rpx;
+  font-weight: 400;
+  color: #28a0f0;
+  text-align: center;
+  display: block;
+  margin-top: 100rpx;
+  margin-bottom: 50rpx;
+}
+
+.input-area {
+  margin-top: 25rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.label {
+  font-size: 45rpx;
+  display: block;
+  margin-bottom: 20rpx;
+}
+
+.input-box {
+  width: 430rpx;
+  border: 1rpx solid #ccc;
+  background-color: white;
+  border-radius: 12rpx;
+  padding: 18rpx;
+  font-size: 45rpx;
+}
+
+.input-box-1 {
+  width: 340rpx;
+  border: 1rpx solid #ccc;
+  background-color: white;
+  border-radius: 12rpx;
+  padding: 18rpx;
+  font-size: 45rpx;
+}
+
+.bind-section {
+  display: flex;
+  align-items: center;
+  background-color: #eeeef7;
+  padding: 20rpx;
+  justify-content: center;
+  border-radius: 16rpx;
+  margin-top: 80rpx;
+}
+
+.plus-circle {
+  width: 70rpx;
+  height: 70rpx;
+  border-radius: 50%;
+  background-color: #d6d6d6;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  margin-right: 20rpx;
+}
+
+.plus-icon {
+  font-size: 50rpx;
+  color: #28a0f0;
+  font-weight: bold;
+}
+
+.bind-text {
+  font-size: 48rpx;
+  margin-right: 10rpx;
+}
+
+.success-btn {
+  display: block;
+  background-color: #ffb5618c;
+  width: 300rpx !important;
+  height: 100rpx;
+  color: #28a0f0;
+  font-size: 58rpx;
+  font-weight: 300;    
+  line-height: 75rpx;         
+  border-radius: 60rpx;        
+  margin-top: 40rpx;
+  box-sizing: border-box;
+}
+

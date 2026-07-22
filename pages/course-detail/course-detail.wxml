@@ -1,0 +1,52 @@
+<view class="page">
+  <!-- 标题 -->
+  <view class="title">智慧托育</view>
+  
+  <!-- 日期时间 -->
+  <view class="card">
+    <view class="card-label">日期时间</view>
+    <view class="card-content">
+      <picker mode="date" value="{{date}}" bindchange="bindDateChange">
+        <view class="picker">{{date}}</view>
+      </picker>
+      <picker mode="time" value="{{time}}" bindchange="bindTimeChange">
+        <view class="picker">{{time}}</view>
+      </picker>
+    </view>
+  </view>
+  
+  <!-- 上课地点 -->
+  <view class="card">
+    <view class="card-label">上课地点</view>
+    <view class="card-content">{{location}}</view>
+  </view>
+  
+  <!-- 课程介绍 -->
+  <view class="card">
+    <view class="card-label">课程介绍</view>
+    <view class="card-content">{{introduction}}</view>
+  </view>
+  
+  <!-- 教师信息 -->
+  <view class="card">
+    <view class="card-label">教师信息</view>
+    <view class="card-content">
+      <view>教师姓名：{{teacherName}}</view>
+      <view>联系电话：{{teacherPhone}}</view>
+    </view>
+  </view>
+  
+  <!-- 课程容量 -->
+  <view class="card">
+    <view class="card-label">课程容量</view>
+    <view class="card-content">
+      <view>当前预约：{{currentBooking}}/{{maxCapacity}}人</view>
+      <view class="status">{{status}}</view>
+    </view>
+  </view>
+  
+  <!-- 预约按钮 -->
+  <view class="btn-container">
+    <button class="book-btn">预约课程</button>
+  </view>
+</view>
