@@ -1,4 +1,6 @@
 // pages/bindchild/bindchild.js
+const app = getApp()
+
 Page({
   data: {
     children: []
@@ -13,43 +15,38 @@ Page({
   },
 
   getChildrenList: function () {
-    const openid = wx.getStorageSync('openid');
+    // 注意：存储 key 是 openId（大写D），不是 openid
+    const openId = wx.getStorageSync('openId');
     const token = wx.getStorageSync('token');
 
     if (!token) {
-      console.error('Token not found in storage.');
-      wx.showToast({
-        title: '请先登录',
-        icon: 'none'
-      });
+      wx.showToast({ title: '请先登录', icon: 'none' });
       return;
     }
 
     wx.request({
-          url: 'http://localhost:8080/api/child/list',
-          method: 'GET',
-          header: {
-          'Authorization': 'Bearer ' + token,
-          'X-WX-OPENID': 'oNI9IvqVGH2tVpkxGboMLN_SiAA8'
-        },
+      url: `${app.globalData.API_BASE_URL}/api/child/list`,
+      method: 'GET',
+      header: {
+        'content-type': 'application/json',
+        'X-WX-OPENID': openId
+      },
       success: (res) => {
-        console.log('API /api/child/list success response:', res);
+        // child/list 返回 R<> 格式
         if (res.statusCode === 200 && res.data.code === 200) {
           this.setData({
-            children: res.data.data.map(child => ({
-            id: child.id,
-            name: child.childName,
-            age: child.age + '岁',
-            gender: child.gender === 0 ? '男' : '女',
-            relation: child.relationship,
-            avatar: child.avatar || '/images/default-avatar.png',
-            parentName: child.parentName || '未设置',
-            phoneNumber: child.phoneNumber
-          }))
+            children: (res.data.data || []).map(child => ({
+              id: child.id,
+              name: child.childName,
+              age: child.age + '岁',
+              gender: this.formatGender(child.gender),
+              relation: child.relationship,
+              avatar: '/images/default-avatar.png',
+              parentName: child.parentName || '未设置',
+              phoneNumber: child.phoneNumber
+            }))
           });
-          console.log('Children data updated:', this.data.children);
         } else {
-          console.error('API /api/child/list returned error:', res.data);
           wx.showToast({
             title: res.data.msg || '获取孩子列表失败',
             icon: 'none'
@@ -58,14 +55,15 @@ Page({
       },
       fail: (err) => {
         console.error('请求孩子列表失败', err);
-        wx.showToast({
-          title: '网络错误，获取孩子列表失败',
-          icon: 'none'
-        });
-      },
-      complete: (res) => {
-        console.log('wx.request to /api/child/list complete:', res);
+        wx.showToast({ title: '网络错误，获取孩子列表失败', icon: 'none' });
       }
     });
+  },
+
+  // 兼容后端 gender 字段可能是数字或字符串
+  formatGender(gender) {
+    if (gender === 0 || gender === '0' || gender === '男') return '男';
+    if (gender === 1 || gender === '1' || gender === '女') return '女';
+    return '未知';
   }
-});
+})
