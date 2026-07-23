@@ -8,13 +8,14 @@
   <view class="card-list" wx:if="{{!isLoading}}">
     <view class="knowledge-card" wx:for="{{cards}}" wx:key="id" bindtap="toggleCard" data-id="{{item.id}}">
       <view class="card-head">
-        <view class="card-icon">{{item.icon}}</view>
+        <image class="card-image" src="{{item.imageUrl}}" mode="aspectFill" binderror="usePlaceholder" data-id="{{item.id}}" />
         <view class="card-title">{{item.title}}</view>
         <view class="card-arrow">{{activeCardId === item.id ? '−' : '+'}}</view>
       </view>
       <view class="card-summary">{{item.summary}}</view>
       <view class="card-detail" wx:if="{{activeCardId === item.id}}">{{item.detail}}</view>
     </view>
+    <view class="empty-state" wx:if="{{!cards.length}}">暂时还没有可学习的知识卡片。</view>
   </view>
   <view class="loading" wx:else>知识卡片正在准备中…</view>
 </view>

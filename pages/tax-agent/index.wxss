@@ -18,3 +18,5 @@
 .section-title { margin-bottom: 18rpx; color: #294440; font-size: 30rpx; font-weight: 700; }
 .question-list { display: flex; flex-wrap: wrap; gap: 16rpx; }
 .question-item { padding: 14rpx 20rpx; border-radius: 32rpx; background: #e7f8f4; color: #28736a; font-size: 25rpx; }
+.service-status { margin: 32rpx 28rpx; padding: 24rpx; border-radius: 20rpx; background: #fff3e9; color: #9a6630; font-size: 25rpx; text-align: center; }
+.service-retry { display: inline-block; margin-top: 16rpx; padding: 12rpx 22rpx; border-radius: 24rpx; background: #1e9b89; color: #fff; }

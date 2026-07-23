@@ -15,6 +15,22 @@
 - 生产环境必须填写 HTTPS 域名，并在微信公众平台配置为 request 合法域名；不要在源码中填入未经配置的正式域名。
 - 本地调试可在微信开发者工具的「详情 → 本地设置」临时勾选「不校验合法域名、web-view、TLS 版本以及 HTTPS 证书」。该设置只适用于本地开发，不能替代正式环境配置。
 
+## 财税学习智能体本地联调
+
+财税学习模块与课程后端独立，配置同样位于 `utils/config.js`：
+
+- `agentUseMock: false` 时请求本机 FastAPI `http://127.0.0.1:8000`，并固定携带 `X-Agent-App: childcare_miniprogram`。
+- 首次进入模块会从 `/api/v1/client/bootstrap` 获取开发测试身份并保存到小程序本地存储；本阶段不使用微信正式登录。
+- 将 `agentUseMock` 改回 `true` 可立即切回本地模拟数据，无需启动 FastAPI、Spring Boot 或 MySQL。
+
+启动财税智能体后端前，先确认其 PostgreSQL 已运行；在 `D:\tax-learning-agent\backend` 中执行：
+
+```powershell
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+然后访问 `http://127.0.0.1:8000/health`，预期得到 `{"status":"ok"}`。此地址仅适用于开发者工具本机联调；真机与正式发布必须使用可访问的 HTTPS 地址并配置合法域名。
+
 ## 后端启动前提
 
 后端使用 Java 11、Maven 与 MySQL。先创建 `childdb` 数据库，再按 `child2/.env.example` 在 IDE、终端或部署平台设置环境变量；不要把真实微信凭据或数据库密码提交到 Git。

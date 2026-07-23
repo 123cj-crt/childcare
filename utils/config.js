@@ -17,8 +17,10 @@ const API_BASE_URL = ENVIRONMENTS[CURRENT_ENV].API_BASE_URL;
 // 本阶段默认使用本地模拟数据；接入 FastAPI 时仅填写 agentApiBaseUrl 并关闭 agentUseMock。
 const TAX_AGENT_CONFIG = {
   enableTaxAgent: true,
-  agentUseMock: true,
-  agentApiBaseUrl: '',
+  // 本地 FastAPI 联调：仅适用于微信开发者工具与后端在同一台电脑时。
+  // 真机调试和正式发布必须替换为可访问、已配置的 HTTPS 地址。
+  agentUseMock: false,
+  agentApiBaseUrl: 'http://127.0.0.1:8000',
   agentTenantCode: 'childcare_miniprogram'
 };
 

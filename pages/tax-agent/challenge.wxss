@@ -9,8 +9,6 @@
 .option-list { margin-top: 30rpx; }
 .option { display: flex; align-items: center; margin-top: 16rpx; padding: 20rpx; border: 2rpx solid #e5efed; border-radius: 18rpx; color: #405a55; font-size: 28rpx; }
 .option.selected { border-color: #56b8a8; background: #edfaf7; }
-.option.correct { border-color: #2eb28e; background: #e6f8f0; color: #19795f; }
-.option.wrong { border-color: #e59685; background: #fff0ed; color: #bc5f4d; }
 .option-label { width: 44rpx; height: 44rpx; line-height: 44rpx; text-align: center; margin-right: 16rpx; border-radius: 50%; background: #edf5f3; color: #60958b; font-size: 23rpx; font-weight: 700; }
 .feedback { margin-top: 28rpx; padding: 22rpx; border-radius: 18rpx; font-size: 26rpx; line-height: 1.65; }
 .feedback.good { background: #e7f8f0; color: #27785f; }
@@ -22,3 +20,6 @@
 .result-title { margin-top: 24rpx; color: #27423d; font-size: 42rpx; font-weight: 700; }
 .result-desc { margin-top: 16rpx; color: #718b85; font-size: 27rpx; }
 .loading { padding: 140rpx 0; color: #7d958f; text-align: center; font-size: 28rpx; }
+.request-error { margin-top: 24rpx; padding: 20rpx; border-radius: 18rpx; background: #fff3e9; color: #a66b32; font-size: 25rpx; line-height: 1.6; }
+.retry-button { display: inline-block; margin-top: 12rpx; padding: 8rpx 16rpx; border-radius: 20rpx; background: #1e9b89; color: #fff; }
+.empty-state { margin: 90rpx 40rpx; color: #7d958f; text-align: center; font-size: 28rpx; }

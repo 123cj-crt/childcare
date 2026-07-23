@@ -12,6 +12,8 @@
 .user .message-bubble { margin-left: 0; margin-right: 16rpx; border-radius: 24rpx 8rpx 24rpx 24rpx; background: #1e9b89; color: #fff; }
 .typing { display: flex; align-items: center; gap: 8rpx; padding-left: 74rpx; color: #7f9691; font-size: 24rpx; }
 .typing-dot { width: 10rpx; height: 10rpx; border-radius: 50%; background: #7ebeb3; }
+.request-error { margin: 0 0 24rpx 74rpx; padding: 18rpx 20rpx; border-radius: 18rpx; background: #fff3e9; color: #a66b32; font-size: 24rpx; line-height: 1.5; }
+.retry-button { display: inline-block; margin-top: 12rpx; padding: 8rpx 16rpx; border-radius: 20rpx; background: #1e9b89; color: #fff; }
 .quick-section { padding: 16rpx 28rpx 18rpx; background: #fff; border-top: 1rpx solid #edf3f1; }
 .quick-title { margin-bottom: 12rpx; color: #6b8580; font-size: 22rpx; }
 .quick-list { white-space: nowrap; }

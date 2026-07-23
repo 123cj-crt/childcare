@@ -10,6 +10,10 @@
       <view class="message-bubble">{{item.content}}</view>
     </view>
     <view class="typing" wx:if="{{isLoading}}"><view class="typing-dot"></view><view class="typing-dot"></view><view class="typing-dot"></view><text>小税正在思考</text></view>
+    <view class="request-error" wx:if="{{requestError}}">
+      <view>{{requestError}}</view>
+      <view class="retry-button" bindtap="retryLastMessage">重试</view>
+    </view>
   </scroll-view>
 
   <view class="quick-section" wx:if="{{recommendedQuestions.length}}">

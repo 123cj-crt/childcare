@@ -14,7 +14,12 @@ Page({
     recommendedQuestions: [],
     inputMessage: '',
     isLoading: false,
-    scrollTo: 'welcome'
+    scrollTo: 'welcome',
+    sessionId: '',
+    lastFailedMessage: '',
+    requestError: '',
+    sources: [],
+    usage: null
   },
 
   onLoad(options) {
@@ -39,7 +44,7 @@ Page({
     this.sendMessage(this.data.inputMessage);
   },
 
-  sendMessage(rawMessage) {
+  sendMessage(rawMessage, isRetry = false) {
     const message = (rawMessage || '').trim();
     if (!message || this.data.isLoading) {
       return;
@@ -47,38 +52,45 @@ Page({
 
     const userMessage = { id: `user-${Date.now()}`, role: 'user', content: message };
     this.setData({
-      messages: this.data.messages.concat(userMessage),
+      messages: isRetry ? this.data.messages : this.data.messages.concat(userMessage),
       inputMessage: '',
       isLoading: true,
-      scrollTo: userMessage.id
+      scrollTo: isRetry ? this.data.scrollTo : userMessage.id,
+      requestError: ''
     });
 
-    agentApi.sendChatMessage(message)
+    agentApi.sendChat({ message, sessionId: this.data.sessionId })
       .then((data) => {
         const agentMessage = {
           id: `agent-${Date.now()}`,
           role: 'agent',
-          content: data.answer || '小税正在整理这个问题的答案。'
+          content: data.answer
         };
         this.setData({
           messages: this.data.messages.concat(agentMessage),
           isLoading: false,
-          scrollTo: agentMessage.id
+          scrollTo: agentMessage.id,
+          sessionId: data.session_id,
+          lastFailedMessage: '',
+          requestError: '',
+          sources: data.sources || [],
+          usage: data.usage || null
         });
       })
       .catch((error) => {
         console.warn('[财税学习] 对话请求失败', error);
-        const agentMessage = {
-          id: `agent-${Date.now()}`,
-          role: 'agent',
-          content: '小税暂时没有收到回答，请稍后再试。'
-        };
         this.setData({
-          messages: this.data.messages.concat(agentMessage),
           isLoading: false,
-          scrollTo: agentMessage.id
+          lastFailedMessage: message,
+          requestError: error.message || '小税暂时没有收到回答，请稍后重试。'
         });
       });
+  },
+
+  retryLastMessage() {
+    if (this.data.lastFailedMessage && !this.data.isLoading) {
+      this.sendMessage(this.data.lastFailedMessage, true);
+    }
   },
 
   clearConversation() {
@@ -86,7 +98,12 @@ Page({
       messages: [createWelcomeMessage()],
       inputMessage: '',
       isLoading: false,
-      scrollTo: 'welcome'
+      scrollTo: 'welcome',
+      sessionId: '',
+      lastFailedMessage: '',
+      requestError: '',
+      sources: [],
+      usage: null
     });
   }
 });
