@@ -15,6 +15,15 @@
     </block>
   </swiper>
 
+  <view class="tax-agent-entry" wx:if="{{showTaxAgent}}" bindtap="goToTaxAgent">
+    <view class="tax-agent-entry-icon">税</view>
+    <view class="tax-agent-entry-copy">
+      <view class="tax-agent-entry-title">财税学习小课堂</view>
+      <view class="tax-agent-entry-desc">和小税一起认识生活里的税收</view>
+    </view>
+    <view class="tax-agent-entry-arrow">›</view>
+  </view>
+
   <!-- 最新课程区域 -->
   <view class="course-wrap">
     <view class="section-title">最新课程</view>

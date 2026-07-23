@@ -1,0 +1,22 @@
+.page { display: flex; flex-direction: column; height: 100vh; background: #f7fbfa; }
+.chat-header { display: flex; justify-content: space-between; align-items: center; padding: 26rpx 28rpx; background: #fff; }
+.chat-title { display: block; color: #23433e; font-size: 34rpx; font-weight: 700; }
+.chat-subtitle { display: block; margin-top: 5rpx; color: #88a09b; font-size: 22rpx; }
+.clear-button { padding: 10rpx 18rpx; border-radius: 26rpx; background: #edf7f5; color: #47857b; font-size: 24rpx; }
+.message-list { flex: 1; padding: 28rpx; box-sizing: border-box; }
+.message-row { display: flex; align-items: flex-start; margin-bottom: 24rpx; }
+.message-row.user { flex-direction: row-reverse; }
+.avatar { flex: 0 0 58rpx; width: 58rpx; height: 58rpx; line-height: 58rpx; text-align: center; border-radius: 50%; background: #dff6f0; color: #167f6e; font-size: 26rpx; font-weight: 700; }
+.user .avatar { background: #e6eefc; color: #557fcb; }
+.message-bubble { max-width: 510rpx; margin-left: 16rpx; padding: 20rpx 24rpx; border-radius: 8rpx 24rpx 24rpx; background: #fff; color: #304742; font-size: 28rpx; line-height: 1.65; }
+.user .message-bubble { margin-left: 0; margin-right: 16rpx; border-radius: 24rpx 8rpx 24rpx 24rpx; background: #1e9b89; color: #fff; }
+.typing { display: flex; align-items: center; gap: 8rpx; padding-left: 74rpx; color: #7f9691; font-size: 24rpx; }
+.typing-dot { width: 10rpx; height: 10rpx; border-radius: 50%; background: #7ebeb3; }
+.quick-section { padding: 16rpx 28rpx 18rpx; background: #fff; border-top: 1rpx solid #edf3f1; }
+.quick-title { margin-bottom: 12rpx; color: #6b8580; font-size: 22rpx; }
+.quick-list { white-space: nowrap; }
+.quick-item { display: inline-block; margin-right: 14rpx; padding: 12rpx 18rpx; border-radius: 28rpx; background: #e8f8f4; color: #2c766c; font-size: 24rpx; }
+.input-bar { display: flex; align-items: center; padding: 18rpx 28rpx calc(18rpx + env(safe-area-inset-bottom)); background: #fff; border-top: 1rpx solid #e9f0ee; }
+.message-input { flex: 1; height: 72rpx; padding: 0 22rpx; border-radius: 36rpx; background: #f2f7f6; color: #2b403c; font-size: 27rpx; }
+.send-button { margin-left: 16rpx; padding: 17rpx 22rpx; border-radius: 32rpx; background: #d9e7e4; color: #fff; font-size: 25rpx; }
+.send-button.active { background: #1e9b89; }

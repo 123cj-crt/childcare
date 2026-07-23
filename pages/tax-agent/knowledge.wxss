@@ -1,0 +1,14 @@
+.page { min-height: 100vh; background: #f7fbfa; padding-bottom: 48rpx; }
+.intro { padding: 54rpx 42rpx 42rpx; background: #edf7f5; color: #24514a; }
+.intro-kicker { color: #238f7f; font-size: 24rpx; font-weight: 700; }
+.intro-title { margin-top: 14rpx; font-size: 44rpx; line-height: 1.35; font-weight: 700; }
+.intro-desc { margin-top: 16rpx; color: #63827c; font-size: 26rpx; }
+.card-list { margin: 26rpx 28rpx 0; }
+.knowledge-card { margin-bottom: 18rpx; padding: 28rpx; border-radius: 24rpx; background: #fff; }
+.card-head { display: flex; align-items: center; }
+.card-icon { width: 64rpx; height: 64rpx; line-height: 64rpx; text-align: center; border-radius: 18rpx; background: #e2f5f0; color: #167f6d; font-size: 30rpx; font-weight: 700; }
+.card-title { flex: 1; margin-left: 18rpx; color: #28433e; font-size: 31rpx; font-weight: 700; }
+.card-arrow { color: #52a798; font-size: 38rpx; }
+.card-summary { margin-top: 20rpx; color: #63817b; font-size: 27rpx; line-height: 1.65; }
+.card-detail { margin-top: 20rpx; padding-top: 20rpx; border-top: 1rpx dashed #dbe9e6; color: #365f57; font-size: 27rpx; line-height: 1.7; }
+.loading { padding: 100rpx 0; color: #77908b; text-align: center; font-size: 28rpx; }

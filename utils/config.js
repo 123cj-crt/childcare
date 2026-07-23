@@ -13,8 +13,18 @@ const ENVIRONMENTS = {
 const CURRENT_ENV = 'development';
 const API_BASE_URL = ENVIRONMENTS[CURRENT_ENV].API_BASE_URL;
 
+// 财税学习智能体与原有 Spring Boot 接口完全独立。
+// 本阶段默认使用本地模拟数据；接入 FastAPI 时仅填写 agentApiBaseUrl 并关闭 agentUseMock。
+const TAX_AGENT_CONFIG = {
+  enableTaxAgent: true,
+  agentUseMock: true,
+  agentApiBaseUrl: '',
+  agentTenantCode: 'childcare_miniprogram'
+};
+
 module.exports = {
   API_BASE_URL,
   CURRENT_ENV,
-  ENVIRONMENTS
+  ENVIRONMENTS,
+  ...TAX_AGENT_CONFIG
 };

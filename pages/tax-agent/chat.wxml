@@ -1,0 +1,26 @@
+<view class="page">
+  <view class="chat-header">
+    <view><text class="chat-title">问问小税</text><text class="chat-subtitle">生活里的财税小问题</text></view>
+    <view class="clear-button" bindtap="clearConversation">清空</view>
+  </view>
+
+  <scroll-view class="message-list" scroll-y="true" scroll-into-view="{{scrollTo}}">
+    <view wx:for="{{messages}}" wx:key="id" id="{{item.id}}" class="message-row {{item.role}}">
+      <view class="avatar">{{item.role === 'agent' ? '税' : '我'}}</view>
+      <view class="message-bubble">{{item.content}}</view>
+    </view>
+    <view class="typing" wx:if="{{isLoading}}"><view class="typing-dot"></view><view class="typing-dot"></view><view class="typing-dot"></view><text>小税正在思考</text></view>
+  </scroll-view>
+
+  <view class="quick-section" wx:if="{{recommendedQuestions.length}}">
+    <view class="quick-title">试着问问</view>
+    <scroll-view class="quick-list" scroll-x="true">
+      <view class="quick-item" wx:for="{{recommendedQuestions}}" wx:key="*this" bindtap="askRecommendedQuestion" data-question="{{item}}">{{item}}</view>
+    </scroll-view>
+  </view>
+
+  <view class="input-bar">
+    <input class="message-input" value="{{inputMessage}}" placeholder="输入想问的问题" bindinput="onInput" confirm-type="send" bindconfirm="sendFromInput" />
+    <view class="send-button {{inputMessage && !isLoading ? 'active' : ''}}" bindtap="sendFromInput">发送</view>
+  </view>
+</view>

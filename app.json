@@ -1,6 +1,10 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/tax-agent/index",
+    "pages/tax-agent/chat",
+    "pages/tax-agent/knowledge",
+    "pages/tax-agent/challenge",
     "pages/login/login",
     "pages/login-1/login-1",
     "pages/login-2/login-2",

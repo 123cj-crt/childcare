@@ -1,0 +1,42 @@
+<view class="page">
+  <view class="hero">
+    <view class="hero-badge">财税小课堂</view>
+    <view class="hero-title">从身边的小事<br />认识税收</view>
+    <view class="hero-desc">问一问、读一读、闯一闯，轻松学习生活里的小知识。</view>
+    <view class="hero-mark">税</view>
+  </view>
+
+  <view class="feature-list">
+    <view class="feature-item" bindtap="goToFeature" data-path="/pages/tax-agent/chat">
+      <view class="feature-icon">问</view>
+      <view class="feature-copy">
+        <view class="feature-title">问问小税</view>
+        <view class="feature-desc">把好奇的问题说出来</view>
+      </view>
+      <view class="feature-arrow">›</view>
+    </view>
+    <view class="feature-item" bindtap="goToFeature" data-path="/pages/tax-agent/knowledge">
+      <view class="feature-icon light">知</view>
+      <view class="feature-copy">
+        <view class="feature-title">知识卡片</view>
+        <view class="feature-desc">一分钟认识一个新概念</view>
+      </view>
+      <view class="feature-arrow">›</view>
+    </view>
+    <view class="feature-item" bindtap="goToFeature" data-path="/pages/tax-agent/challenge">
+      <view class="feature-icon warm">闯</view>
+      <view class="feature-copy">
+        <view class="feature-title">趣味闯关</view>
+        <view class="feature-desc">用小问题检验新发现</view>
+      </view>
+      <view class="feature-arrow">›</view>
+    </view>
+  </view>
+
+  <view class="section" wx:if="{{recommendedQuestions.length}}">
+    <view class="section-title">不知道问什么？</view>
+    <view class="question-list">
+      <view class="question-item" wx:for="{{recommendedQuestions}}" wx:key="*this" bindtap="askRecommendedQuestion" data-question="{{item}}">{{item}}</view>
+    </view>
+  </view>
+</view>

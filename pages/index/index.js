@@ -1,4 +1,5 @@
 const { API_BASE_URL, request } = require('../../utils/request');
+const { enableTaxAgent } = require('../../utils/config');
 
 function getSampleBanners() {
   return [
@@ -12,6 +13,7 @@ Page({
   data: {
     banners: [],
     courses: [],
+    showTaxAgent: enableTaxAgent,
     hasShownFallbackNotice: false
   },
 
@@ -28,6 +30,12 @@ Page({
   goToCourseDetail(e) {
     wx.navigateTo({
       url: `/pages/course-detail/course-detail?id=${e.currentTarget.dataset.id}`
+    });
+  },
+
+  goToTaxAgent() {
+    wx.navigateTo({
+      url: '/pages/tax-agent/index'
     });
   },
 

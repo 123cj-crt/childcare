@@ -1,0 +1,34 @@
+<view class="page">
+  <view class="topbar">
+    <view><view class="topbar-title">趣味闯关</view><view class="topbar-desc">答对一题，收获一个新发现</view></view>
+    <view class="score">得分 {{score}}</view>
+  </view>
+
+  <view class="quiz" wx:if="{{!isLoading && !complete && currentQuestion}}">
+    <view class="progress">第 {{currentIndex + 1}} / {{questions.length}} 题</view>
+    <view class="question">{{currentQuestion.question}}</view>
+    <view class="option-list">
+      <view wx:for="{{currentQuestion.options}}" wx:key="index" class="option {{selectedOptionIndex === index ? 'selected' : ''}} {{answered && index === currentQuestion.correctOption ? 'correct' : ''}} {{answered && index === selectedOptionIndex && !isCorrect ? 'wrong' : ''}}" bindtap="selectOption" data-index="{{index}}">
+        <view class="option-label">{{['A', 'B', 'C'][index]}}</view>
+        <view>{{item}}</view>
+      </view>
+    </view>
+
+    <view class="feedback {{isCorrect ? 'good' : 'try' }}" wx:if="{{answered}}">
+      <view class="feedback-title">{{isCorrect ? '答对啦！' : '再想一想'}}</view>
+      <view>{{currentQuestion.explanation}}</view>
+    </view>
+
+    <view class="primary-button" wx:if="{{!answered}}" bindtap="checkAnswer">确认答案</view>
+    <view class="primary-button" wx:else bindtap="nextQuestion">{{currentIndex + 1 === questions.length ? '查看结果' : '下一题'}}</view>
+  </view>
+
+  <view class="result" wx:if="{{!isLoading && complete}}">
+    <view class="result-badge">完成</view>
+    <view class="result-title">你答对了 {{score}} 题</view>
+    <view class="result-desc">每一次认真思考，都是新的收获。</view>
+    <view class="primary-button" bindtap="restartQuiz">重新答题</view>
+  </view>
+
+  <view class="loading" wx:if="{{isLoading}}">题目正在准备中…</view>
+</view>

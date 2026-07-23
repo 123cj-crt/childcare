@@ -43,6 +43,44 @@
 .course-wrap {
   margin-top: 20rpx;
 }
+
+.tax-agent-entry {
+  display: flex;
+  align-items: center;
+  margin: 28rpx 28rpx 0;
+  padding: 26rpx;
+  border-radius: 24rpx;
+  background: #e7f8f4;
+  color: #175e58;
+}
+.tax-agent-entry-icon {
+  width: 74rpx;
+  height: 74rpx;
+  line-height: 74rpx;
+  text-align: center;
+  border-radius: 50%;
+  background: #20a68f;
+  color: #fff;
+  font-size: 36rpx;
+  font-weight: 700;
+}
+.tax-agent-entry-copy {
+  flex: 1;
+  margin-left: 20rpx;
+}
+.tax-agent-entry-title {
+  font-size: 32rpx;
+  font-weight: 700;
+}
+.tax-agent-entry-desc {
+  margin-top: 6rpx;
+  color: #4d827b;
+  font-size: 24rpx;
+}
+.tax-agent-entry-arrow {
+  font-size: 44rpx;
+  line-height: 1;
+}
 .course-list {
   margin-top: 20rpx;
 }
