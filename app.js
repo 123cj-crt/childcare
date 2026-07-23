@@ -10,7 +10,6 @@ App({
   globalData: {
     // 全局数据
     userInfo: null,
-    API_BASE_URL: 'http://192.168.1.100:8080', // 定义API基础URL
     notifications: [] // 用于存储通知的数组
   },
 

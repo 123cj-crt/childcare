@@ -2,7 +2,7 @@ package com.child2.controller;
 
 import com.child2.entity.Notice;
 import com.child2.service.NoticeService;
-import com.child2.util.R;
+import com.child2.common.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +28,7 @@ public class NoticeController {
     @GetMapping
     public R<List<Notice>> getAllNotices() {
         List<Notice> notices = noticeService.getAllNotices();
-        return R.ok(notices);
+        return R.success(notices);
     }
     
     /**
@@ -53,7 +53,7 @@ public class NoticeController {
     public R<Notice> createNotice(@RequestBody Notice notice) {
         try {
             Notice createdNotice = noticeService.createNotice(notice);
-            return R.ok(createdNotice);
+            return R.success(createdNotice);
         } catch (Exception e) {
             return R.error("创建通知失败: " + e.getMessage());
         }
@@ -66,7 +66,7 @@ public class NoticeController {
     public R<List<Notice>> createBatchNotices(@RequestBody List<Notice> notices) {
         try {
             List<Notice> createdNotices = noticeService.createBatchNotices(notices);
-            return R.ok(createdNotices);
+            return R.success(createdNotices);
         } catch (Exception e) {
             return R.error("批量创建通知失败: " + e.getMessage());
         }
@@ -80,7 +80,7 @@ public class NoticeController {
         try {
             Long numericId = Long.parseLong(id);
             Notice updatedNotice = noticeService.updateNotice(numericId, noticeDetails);
-            return R.ok(updatedNotice);
+            return R.success(updatedNotice);
         } catch (NumberFormatException e) {
             return R.error("无效的ID格式");
         } catch (Exception e) {
@@ -96,7 +96,7 @@ public class NoticeController {
         try {
             Long numericId = Long.parseLong(id);
             noticeService.deleteNotice(numericId);
-            return R.ok("通知删除成功");
+            return R.success("通知删除成功");
         } catch (NumberFormatException e) {
             return R.error("无效的ID格式");
         } catch (Exception e) {
@@ -110,7 +110,7 @@ public class NoticeController {
     @GetMapping("/announcements")
     public R<List<Notice>> getAnnouncementNotices() {
         List<Notice> notices = noticeService.getAnnouncementNotices();
-        return R.ok(notices);
+        return R.success(notices);
     }
     
     /**
@@ -119,7 +119,7 @@ public class NoticeController {
     @GetMapping("/reminders")
     public R<List<Notice>> getReminderNotices() {
         List<Notice> notices = noticeService.getReminderNotices();
-        return R.ok(notices);
+        return R.success(notices);
     }
     
     /**
@@ -128,7 +128,7 @@ public class NoticeController {
     @GetMapping("/class/{classId}")
     public R<List<Notice>> getNoticesByClassId(@PathVariable String classId) {
         List<Notice> notices = noticeService.getNoticesByClassId(classId);
-        return R.ok(notices);
+        return R.success(notices);
     }
     
     /**
@@ -137,7 +137,7 @@ public class NoticeController {
     @GetMapping("/student/{studentId}")
     public R<List<Notice>> getNoticesByStudentId(@PathVariable String studentId) {
         List<Notice> notices = noticeService.getNoticesByStudentId(studentId);
-        return R.ok(notices);
+        return R.success(notices);
     }
     
     /**
@@ -146,7 +146,7 @@ public class NoticeController {
     @GetMapping("/parent/{parentOpenId}")
     public R<List<Notice>> getNoticesByParentOpenId(@PathVariable String parentOpenId) {
         List<Notice> notices = noticeService.getNoticesByParentOpenIdAndType(parentOpenId, "individual");
-        return R.ok(notices);
+        return R.success(notices);
     }
     
     /**
@@ -155,7 +155,7 @@ public class NoticeController {
     @GetMapping("/unread/{parentOpenId}")
     public R<List<Notice>> getUnreadNotices(@PathVariable String parentOpenId) {
         List<Notice> notices = noticeService.getUnreadNoticesByParentOpenId(parentOpenId);
-        return R.ok(notices);
+        return R.success(notices);
     }
     
     /**
@@ -166,7 +166,7 @@ public class NoticeController {
         try {
             Long numericId = Long.parseLong(id);
             Notice notice = noticeService.markAsRead(numericId);
-            return R.ok(notice);
+            return R.success(notice);
         } catch (NumberFormatException e) {
             return R.error("无效的ID格式");
         } catch (Exception e) {
@@ -182,6 +182,6 @@ public class NoticeController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
         List<Notice> notices = noticeService.getNoticesByTimeRange(startTime, endTime);
-        return R.ok(notices);
+        return R.success(notices);
     }
 }

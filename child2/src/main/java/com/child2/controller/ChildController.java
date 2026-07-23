@@ -3,7 +3,7 @@ package com.child2.controller;
 import com.child2.dto.ChildBindingRequest;
 import com.child2.entity.Child;
 import com.child2.service.ChildService;
-import com.child2.util.R;
+import com.child2.common.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +43,7 @@ public class ChildController {
         child.setParentOpenId(parentOpenId);
 
         Child savedChild = childService.saveChild(child);
-        return R.ok(savedChild);
+        return R.success(savedChild);
     }
 
     /**
@@ -54,7 +54,7 @@ public class ChildController {
     @GetMapping("/list")
     public R<List<Child>> getChildrenList(@RequestHeader("X-WX-OPENID") String parentOpenId) {
         List<Child> children = childService.getChildrenByParentOpenId(parentOpenId);
-        return R.ok(children);
+        return R.success(children);
     }
 
     /**
@@ -63,7 +63,7 @@ public class ChildController {
     @GetMapping("/all")
     public R<List<Child>> getAllChildren() {
         List<Child> children = childService.getAllChildren();
-        return R.ok(children);
+        return R.success(children);
     }
 
     /**

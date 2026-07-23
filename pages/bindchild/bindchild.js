@@ -1,71 +1,53 @@
-// pages/bindchild/bindchild.js
+const { request } = require('../../utils/request');
+
 Page({
   data: {
     children: []
   },
 
-  onLoad: function () {
+  onLoad() {
     this.getChildrenList();
   },
 
-  onShow: function () {
+  onShow() {
     this.getChildrenList();
   },
 
-  getChildrenList: function () {
-    const openid = wx.getStorageSync('openid');
+  getChildrenList() {
     const token = wx.getStorageSync('token');
-
     if (!token) {
-      console.error('Token not found in storage.');
-      wx.showToast({
-        title: '请先登录',
-        icon: 'none'
-      });
+      wx.showToast({ title: '请先登录', icon: 'none' });
       return;
     }
 
-    wx.request({
-          url: 'http://localhost:8080/api/child/list',
-          method: 'GET',
-          header: {
-          'Authorization': 'Bearer ' + token,
-          'X-WX-OPENID': 'oNI9IvqVGH2tVpkxGboMLN_SiAA8'
-        },
-      success: (res) => {
-        console.log('API /api/child/list success response:', res);
-        if (res.statusCode === 200 && res.data.code === 200) {
-          this.setData({
-            children: res.data.data.map(child => ({
+    request({
+      path: '/api/child/list',
+      header: {
+        Authorization: `Bearer ${token}`,
+        'X-WX-OPENID': 'oNI9IvqVGH2tVpkxGboMLN_SiAA8'
+      }
+    })
+      .then((response) => {
+        if (!response.data || response.data.code !== 200) {
+          throw { type: 'business', path: '/api/child/list', data: response.data };
+        }
+
+        this.setData({
+          children: (response.data.data || []).map((child) => ({
             id: child.id,
             name: child.childName,
-            age: child.age + '岁',
+            age: `${child.age}岁`,
             gender: child.gender === 0 ? '男' : '女',
             relation: child.relationship,
-            avatar: child.avatar || '/images/default-avatar.png',
+            avatar: child.avatar || '/icon/my.png',
             parentName: child.parentName || '未设置',
             phoneNumber: child.phoneNumber
           }))
-          });
-          console.log('Children data updated:', this.data.children);
-        } else {
-          console.error('API /api/child/list returned error:', res.data);
-          wx.showToast({
-            title: res.data.msg || '获取孩子列表失败',
-            icon: 'none'
-          });
-        }
-      },
-      fail: (err) => {
-        console.error('请求孩子列表失败', err);
-        wx.showToast({
-          title: '网络错误，获取孩子列表失败',
-          icon: 'none'
         });
-      },
-      complete: (res) => {
-        console.log('wx.request to /api/child/list complete:', res);
-      }
-    });
+      })
+      .catch((error) => {
+        console.error('[孩子列表] 请求失败。', error);
+        wx.showToast({ title: '获取孩子列表失败', icon: 'none' });
+      });
   }
 });
