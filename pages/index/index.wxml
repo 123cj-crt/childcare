@@ -14,18 +14,24 @@
       </swiper-item>
     </block>
   </swiper>
-
   <!-- 最新课程区域 -->
   <view class="course-wrap">
     <view class="section-title">最新课程</view>
     <view class="course-list">
       <block wx:for="{{courses}}" wx:key="id">
-        <!-- 全局卡片样式 card -->
         <view class="card course-item" bindtap="goToCourseDetail" data-id="{{item.id}}">
           <view class="course-info">
             <view class="course-name">{{item.name}}</view>
-            <view class="course-date text-desc">{{item.startDate}} {{item.schedule}}</view>
-            <view class="course-description text-desc">{{item.description}}</view>
+            <view class="course-meta">
+              <view class="course-date-tag">{{item.date}}</view>
+              <view class="course-week-tag">{{item.weekday}}</view>
+              <view class="course-time-tag">{{item.time}}</view>
+            </view>
+            <view class="course-desc">{{item.description}}</view>
+            <view class="course-footer">
+              <view class="course-location">📍 {{item.location}}</view>
+              <view class="course-capacity">已报 {{item.currentStudents}}/{{item.capacity}}人</view>
+            </view>
           </view>
         </view>
       </block>

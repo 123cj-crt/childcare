@@ -77,13 +77,14 @@ Page({
     });
   },
 
+  // 我的预约课程 —— 跳转到预约列表页
   myCourses() {
     if (!this.data.isLoggedIn) {
       this.showLoginPrompt();
       return;
     }
-    wx.switchTab({
-      url: '/pages/schedule/schedule'
+    wx.navigateTo({
+      url: '/pages/my-reservations/my-reservations'
     });
   },
 
@@ -99,13 +100,6 @@ Page({
       content: '确定要退出登录吗？',
       success: (res) => {
         if (res.confirm) {
-          // TODO: 如果后端有登出接口，在这里调用
-          // wx.request({
-          //   url: `${app.globalData.API_BASE_URL}/api/wechat/logout`,
-          //   method: 'POST',
-          //   header: { 'X-WX-OPENID': wx.getStorageSync('openId') }
-          // })
-
           // 只清除登录相关的存储，保留其他数据
           wx.removeStorageSync('token');
           wx.removeStorageSync('openId');

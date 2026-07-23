@@ -11,7 +11,8 @@
     "pages/profile/profile",
     "pages/userPolicy/userPolicy",
     "pages/bindchild/bindchild",
-    "pages/webview/webview"
+    "pages/webview/webview",
+    "pages/my-reservations/my-reservations"
   ],
   "window": {
     "backgroundTextStyle": "light",
