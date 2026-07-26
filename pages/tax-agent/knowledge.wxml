@@ -15,8 +15,7 @@
       <view class="card-summary">{{item.summary}}</view>
       <view class="card-detail" wx:if="{{activeCardId === item.id}}">{{item.detail}}</view>
       <view class="card-source" wx:if="{{activeCardId === item.id && item.hasSource}}">
-        <text class="card-source-org">资料来源：{{item.sourceOrg}}</text>
-        <text class="card-source-title" wx:if="{{item.sourceTitle}}">{{item.sourceTitle}}</text>
+        <text class="card-source-org">内容依据：{{item.sourceOrg}}</text>
       </view>
     </view>
     <view class="empty-state" wx:if="{{!cards.length}}">暂时还没有可学习的知识卡片。</view>
