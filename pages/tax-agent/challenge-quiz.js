@@ -1,5 +1,11 @@
 const agentApi = require('../../services/agent-api');
-const TOPICS = { tax: { title: '税收与公共服务', count: 4 }, invoice: { title: '发票小知识', count: 3 }, budget: { title: '零花钱与预算', count: 5 } };
+const TOPICS = {
+  'personal-income-tax': { title: '个人所得税', count: 10 },
+  'resource-tax': { title: '资源税', count: 10 },
+  'life-tax-fees': { title: '生活中的税费', count: 10 },
+  'public-service': { title: '税收与公共服务', count: 10 },
+  invoice: { title: '发票大揭秘', count: 10 }
+};
 
 Page({
   data: { topic: null, topicCode: '', sessionId: '', currentIndex: 0, currentQuestion: null, nextQuestion: null, selectedOptionKey: '', answered: false, isCorrect: false, explanation: '', score: 0, complete: false, isLoading: true, isSubmitting: false, errorMessage: '' },
