@@ -25,6 +25,15 @@ function createAgentError({ type, message, path, statusCode, data, errMsg }) {
   return error;
 }
 
+function friendlyRequestMessage(statusCode, detail) {
+  if (statusCode === 400 || statusCode === 422) return '这次的小请求不完整，请再试一次。';
+  if (statusCode === 404) return '暂时没有找到需要的内容。';
+  if (statusCode >= 500) return '小税正在休息一下，请稍后再试。';
+  return detail && typeof detail === 'string' && detail.length <= 30
+    ? detail
+    : '小税暂时没有收到消息，请稍后再试。';
+}
+
 function ensureConfigured() {
   if (!agentApiBaseUrl) {
     throw createAgentError({
@@ -65,9 +74,10 @@ function requestAgent({ path, method = 'GET', data, query }) {
 
         reject(createAgentError({
           type: 'http',
-          message: response.data && response.data.detail
-            ? response.data.detail
-            : `智能体服务请求失败（${response.statusCode}）`,
+          message: friendlyRequestMessage(
+            response.statusCode,
+            response.data && response.data.detail
+          ),
           path,
           statusCode: response.statusCode,
           data: response.data
@@ -76,7 +86,9 @@ function requestAgent({ path, method = 'GET', data, query }) {
       fail(error) {
         reject(createAgentError({
           type: error.errMsg && error.errMsg.indexOf('timeout') !== -1 ? 'timeout' : 'network',
-          message: error.errMsg || '无法连接智能体服务，请检查本地 FastAPI 是否已启动。',
+          message: error.errMsg && error.errMsg.indexOf('timeout') !== -1
+            ? '小税想得有点久，请稍后再试。'
+            : '小税暂时连不上，请检查网络后再试。',
           path,
           errMsg: error.errMsg
         }));
@@ -203,7 +215,7 @@ function sendChat({ message, sessionId }) {
     data
   })).then((response) => {
     const chat = requireObject(response, '/api/v1/client/chat');
-    if (!chat.answer || !chat.session_id) {
+    if (typeof chat.answer !== 'string' || !chat.answer.trim() || !chat.session_id) {
       throw createAgentError({
         type: 'format',
         message: '智能体服务未返回完整的对话结果。',
