@@ -103,6 +103,21 @@ function createWelcomeMessage() {
   );
 }
 
+function getChatMemory() {
+  const app = getApp();
+  return app && app.globalData ? app.globalData.taxAgentChat : null;
+}
+
+function restoreMessages(memory) {
+  if (!memory || !Array.isArray(memory.messages) || !memory.messages.length) {
+    return [createWelcomeMessage()];
+  }
+
+  return memory.messages
+    .filter((message) => message && (message.role === 'user' || message.role === 'agent'))
+    .map((message) => createMessage(message.id, message.role, message.content));
+}
+
 Page({
   data: {
     messages: [createWelcomeMessage()],
@@ -116,6 +131,8 @@ Page({
   },
 
   onLoad(options) {
+    this.restoreConversation();
+
     agentApi.getAgentHome().then((data) => {
       this.setData({ recommendedQuestions: data.recommendedQuestions || [] });
     }).catch((error) => console.warn('[财税学习] 推荐问题加载失败', error));
@@ -123,6 +140,35 @@ Page({
     if (options.question) {
       this.sendMessage(decodeURIComponent(options.question));
     }
+  },
+
+  restoreConversation() {
+    const memory = getChatMemory();
+    if (!memory) {
+      return;
+    }
+
+    this.setData({
+      messages: restoreMessages(memory),
+      sessionId: memory.sessionId || '',
+      scrollTo: 'chat-bottom'
+    });
+  },
+
+  saveConversation(messages = this.data.messages, sessionId = this.data.sessionId) {
+    const app = getApp();
+    if (!app || !app.globalData) {
+      return;
+    }
+
+    app.globalData.taxAgentChat = {
+      sessionId: sessionId || '',
+      messages: messages.map((message) => ({
+        id: message.id,
+        role: message.role,
+        content: message.content
+      }))
+    };
   },
 
   onInput(event) {
@@ -144,13 +190,15 @@ Page({
     }
 
     const userMessage = createMessage(`user-${Date.now()}`, 'user', message);
+    const nextMessages = isRetry ? this.data.messages : this.data.messages.concat(userMessage);
     this.setData({
-      messages: isRetry ? this.data.messages : this.data.messages.concat(userMessage),
+      messages: nextMessages,
       inputMessage: '',
       isLoading: true,
       scrollTo: 'chat-bottom',
       requestError: ''
     });
+    this.saveConversation(nextMessages);
 
     agentApi.sendChat({ message, sessionId: this.data.sessionId })
       .then((data) => {
@@ -159,14 +207,16 @@ Page({
           'agent',
           data.answer
         );
+        const completedMessages = this.data.messages.concat(agentMessage);
         this.setData({
-          messages: this.data.messages.concat(agentMessage),
+          messages: completedMessages,
           isLoading: false,
           scrollTo: 'chat-bottom',
           sessionId: data.session_id,
           lastFailedMessage: '',
           requestError: ''
         });
+        this.saveConversation(completedMessages, data.session_id);
       })
       .catch((error) => {
         console.warn('[财税学习] 对话请求失败', error);
@@ -194,5 +244,9 @@ Page({
       lastFailedMessage: '',
       requestError: ''
     });
+    const app = getApp();
+    if (app && app.globalData) {
+      app.globalData.taxAgentChat = null;
+    }
   }
 });
