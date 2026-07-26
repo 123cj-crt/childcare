@@ -1,5 +1,9 @@
 const agentApi = require('../../services/agent-api');
 
+function normalizeText(value) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
 Page({
   data: {
     cards: [],
@@ -10,12 +14,20 @@ Page({
   onLoad() {
     agentApi.getKnowledgeCards()
       .then((cards) => this.setData({
-        cards: (cards || []).map((card) => ({
-          ...card,
-          icon: (card.category || '知').slice(0, 1),
-          imageUrl: card.image_url || '/icon/book.png',
-          detail: card.detail || `分类：${card.category || '财税小知识'}`
-        })),
+        cards: (cards || []).map((card) => {
+          const sourceOrg = normalizeText(card.source_org);
+          const sourceTitle = normalizeText(card.source_title);
+
+          return {
+            ...card,
+            icon: (card.category || '知识').slice(0, 1),
+            imageUrl: card.image_url || '/icon/book.png',
+            detail: card.detail || `分类：${card.category || '财税小知识'}`,
+            sourceOrg,
+            sourceTitle,
+            hasSource: Boolean(sourceOrg)
+          };
+        }),
         isLoading: false
       }))
       .catch((error) => {

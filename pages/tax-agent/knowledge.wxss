@@ -11,5 +11,8 @@
 .card-arrow { color: #52a798; font-size: 38rpx; }
 .card-summary { margin-top: 20rpx; color: #63817b; font-size: 27rpx; line-height: 1.65; }
 .card-detail { margin-top: 20rpx; padding-top: 20rpx; border-top: 1rpx dashed #dbe9e6; color: #365f57; font-size: 27rpx; line-height: 1.7; }
+.card-source { margin-top: 18rpx; padding-top: 18rpx; border-top: 1rpx dashed #dbe9e6; color: #60817a; font-size: 23rpx; line-height: 1.6; }
+.card-source-org { display: block; color: #3c7167; font-weight: 700; }
+.card-source-title { display: block; margin-top: 4rpx; color: #77958e; }
 .loading { padding: 100rpx 0; color: #77908b; text-align: center; font-size: 28rpx; }
 .empty-state { padding: 92rpx 20rpx; color: #77908b; text-align: center; font-size: 27rpx; }
