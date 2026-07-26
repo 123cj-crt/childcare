@@ -5,6 +5,7 @@
     "pages/tax-agent/chat",
     "pages/tax-agent/knowledge",
     "pages/tax-agent/challenge",
+    "pages/tax-agent/challenge-quiz",
     "pages/login/login",
     "pages/login-1/login-1",
     "pages/login-2/login-2",
