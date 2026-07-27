@@ -64,7 +64,38 @@
   <!-- 预约按钮 -->
   <view class="btn-container">
     <button class="book-btn {{isReserved ? 'btn-reserved' : ''}}" bindtap="onReserveTap">
-      {{isReserved ? '取消预约' : '预约课程'}}
+      {{isReserved ? '管理预约（已预约' + reservedCount + '人）' : '预约课程'}}
     </button>
+  </view>
+  <!-- 儿童选择器弹窗 -->
+  <view class="child-picker-mask" wx:if="{{showChildPicker}}" bindtap="onCancelChildPicker">
+    <view class="child-picker" catchtap="stopBubble">
+      <view class="picker-title">选择预约的儿童</view>
+      <view class="picker-sub">点击儿童切换预约状态</view>
+      <scroll-view class="picker-list" scroll-y>
+        <view
+          class="picker-item {{item.reserved ? 'picker-item-active' : ''}}"
+          wx:for="{{pickerChildren}}"
+          wx:key="id"
+          catchtap="onToggleChildReserve"
+          data-id="{{item.id}}"
+        >
+          <view class="picker-item-avatar {{item.reserved ? 'avatar-active' : ''}}">
+            <text>{{item.name}}</text>
+          </view>
+          <view class="picker-item-info">
+            <view class="picker-item-name">{{item.name}}</view>
+            <view class="picker-item-meta">{{item.age}} · {{item.gender}}</view>
+          </view>
+          <view class="picker-check {{item.reserved ? 'check-active' : ''}}">
+            <text wx:if="{{item.reserved}}">✓</text>
+          </view>
+        </view>
+      </scroll-view>
+      <view class="picker-actions">
+        <button class="picker-btn picker-btn-cancel" catchtap="onCancelChildPicker">取消</button>
+        <button class="picker-btn picker-btn-confirm" catchtap="onConfirmChildPicker">确认</button>
+      </view>
+    </view>
   </view>
 </view>

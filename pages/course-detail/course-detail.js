@@ -154,16 +154,38 @@ Page({
     course: null,
     teacher: null,
     isReserved: false,
+    reservedCount: 0,
     currentReservations: 0,
     isFull: false,
-    capacityPercent: 0
+    capacityPercent: 0,
+    children: [],
+    showChildPicker: false,
+    pickerChildren: []
   },
 
   onLoad: function (options) {
     const courseId = options.id || '1'
     this.setData({ courseId: courseId })
     this.loadCourse(courseId)
+    this.loadChildren()
     this.checkReservationStatus(courseId)
+  },
+
+  onShow: function () {
+    this.loadChildren()
+  },
+
+  // 加载已绑定的儿童列表
+  loadChildren() {
+    let myChildren = wx.getStorageSync('myChildren') || []
+    // 兼容旧数据：如果缓存中的儿童没有 id，用 index 生成兜底 id
+    myChildren = myChildren.map((child, index) => ({
+      ...child,
+      id: child.id !== undefined && child.id !== null && child.id !== ''
+        ? child.id
+        : ('child_' + index)
+    }))
+    this.setData({ children: myChildren })
   },
 
   loadCourse(id) {
@@ -258,14 +280,17 @@ Page({
     })
   },
 
-  // 检查本地存储中是否已预约
+  // 检查本地存储中是否已预约（按当前课程+儿童）
   checkReservationStatus(courseId) {
     let myReservations = wx.getStorageSync('myReservations')
     if (!Array.isArray(myReservations)) {
       myReservations = []
     }
-    const isReserved = myReservations.some(r => String(r.courseId) === String(courseId))
-    this.setData({ isReserved: isReserved })
+    const reservedForThisCourse = myReservations.filter(r => String(r.courseId) === String(courseId))
+    this.setData({
+      isReserved: reservedForThisCourse.length > 0,
+      reservedCount: reservedForThisCourse.length
+    })
   },
 
   // 预约 / 取消预约
@@ -288,47 +313,123 @@ Page({
       return
     }
 
-    if (this.data.isReserved) {
-      // 已预约 → 取消预约
+    // 检查是否绑定儿童
+    const children = this.data.children
+    if (!children || children.length === 0) {
       wx.showModal({
-        title: '取消预约',
-        content: '确定要取消此课程的预约吗？',
-        confirmColor: '#e64340',
+        title: '提示',
+        content: '请先在"我的"页面绑定儿童后再预约课程',
+        showCancel: true,
+        cancelText: '取消',
+        confirmText: '去绑定',
         success: (res) => {
           if (res.confirm) {
-            let myReservations = wx.getStorageSync('myReservations') || []
-            myReservations = myReservations.filter(r => String(r.courseId) !== String(this.data.courseId))
-            wx.setStorageSync('myReservations', myReservations)
-            this.setData({ isReserved: false })
-            wx.showToast({ title: '已取消预约', icon: 'none' })
+            wx.switchTab({ url: '/pages/profile/profile' })
           }
         }
       })
-    } else {
-      // 未预约 → 预约
-      if (this.data.isFull) {
-        wx.showToast({ title: '课程人数已满，无法预约', icon: 'none' })
-        return
-      }
+      return
+    }
 
-      const course = this.data.course
-      const myReservations = wx.getStorageSync('myReservations') || []
-      myReservations.push({
-        courseId: course.id,
-        courseName: course.name,
-        date: course.date,
-        weekday: course.weekday,
-        time: course.time,
-        location: course.location,
-        description: course.description,
-        teacher: course.teacher,
-        teacherPhone: course.teacherPhone,
-        capacity: course.capacity,
-        reservedAt: new Date().toLocaleString()
-      })
-      wx.setStorageSync('myReservations', myReservations)
-      this.setData({ isReserved: true })
-      wx.showToast({ title: '已预约', icon: 'success', duration: 2000 })
+    // 构建选择器数据：每个儿童标记是否已预约本课程
+    const myReservations = wx.getStorageSync('myReservations') || []
+    const courseId = String(this.data.courseId)
+    const pickerChildren = children.map(child => {
+      const reserved = myReservations.some(r =>
+        String(r.courseId) === courseId && String(r.childId) === String(child.id)
+      )
+      return {
+        id: child.id,
+        name: child.name,
+        age: child.age,
+        gender: child.gender,
+        relation: child.relation,
+        reserved: reserved
+      }
+    })
+
+    this.setData({
+      showChildPicker: true,
+      pickerChildren: pickerChildren
+    })
+  },
+
+  // 切换儿童的预约状态
+  onToggleChildReserve(e) {
+    const childId = e.currentTarget.dataset.id
+    const pickerChildren = this.data.pickerChildren.map(child => {
+      if (String(child.id) === String(childId)) {
+        return { ...child, reserved: !child.reserved }
+      }
+      return child
+    })
+    this.setData({ pickerChildren: pickerChildren })
+  },
+
+  // 关闭儿童选择器
+  onCancelChildPicker() {
+    this.setData({ showChildPicker: false, pickerChildren: [] })
+  },
+
+  // 阻止事件冒泡（弹窗容器用）
+  stopBubble() {
+    // 什么都不做，只阻止 tap 事件冒泡到 mask
+  },
+
+  // 确认选择
+  onConfirmChildPicker() {
+    const { courseId, pickerChildren, course } = this.data
+
+    if (this.data.isFull) {
+      wx.showToast({ title: '课程人数已满，无法预约', icon: 'none' })
+      return
+    }
+
+    // 读取已存在的预约
+    let myReservations = wx.getStorageSync('myReservations') || []
+
+    // 移除当前课程的所有预约
+    myReservations = myReservations.filter(r => String(r.courseId) !== String(courseId))
+
+    // 添加新勾选的儿童预约
+    pickerChildren.forEach(child => {
+      if (child.reserved) {
+        myReservations.push({
+          courseId: course.id,
+          courseName: course.name,
+          childId: child.id,
+          childName: child.name,
+          childAge: child.age,
+          childGender: child.gender,
+          childRelation: child.relation,
+          date: course.date,
+          weekday: course.weekday,
+          time: course.time,
+          location: course.location,
+          description: course.description,
+          teacher: course.teacher,
+          teacherPhone: course.teacherPhone,
+          capacity: course.capacity,
+          reservedAt: new Date().toLocaleString()
+        })
+      }
+    })
+
+    wx.setStorageSync('myReservations', myReservations)
+
+    // 更新按钮状态
+    const reservedCount = pickerChildren.filter(c => c.reserved).length
+    this.setData({
+      isReserved: reservedCount > 0,
+      reservedCount: reservedCount,
+      showChildPicker: false,
+      pickerChildren: []
+    })
+
+    if (reservedCount > 0) {
+      wx.showToast({ title: `预约成功`, icon: 'success', duration: 2000 })
+    } else {
+      wx.showToast({ title: '已取消全部预约', icon: 'none' })
     }
   },
 

@@ -28,7 +28,8 @@ Page({
 
   // 取消预约
   onCancelReservation(e) {
-    const courseId = e.currentTarget.dataset.id
+    const courseId = e.currentTarget.dataset.courseId
+    const childId = e.currentTarget.dataset.childId
     const courseName = e.currentTarget.dataset.name
 
     wx.showModal({
@@ -38,7 +39,9 @@ Page({
       success: (res) => {
         if (res.confirm) {
           let myReservations = wx.getStorageSync('myReservations') || []
-          myReservations = myReservations.filter(r => String(r.courseId) !== String(courseId))
+          myReservations = myReservations.filter(r => !(
+            String(r.courseId) === String(courseId) && String(r.childId) === String(childId)
+          ))
           wx.setStorageSync('myReservations', myReservations)
           this.loadReservations()
           wx.showToast({ title: '已取消预约', icon: 'none' })

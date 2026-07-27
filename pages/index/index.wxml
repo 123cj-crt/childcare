@@ -27,7 +27,6 @@
               <view class="course-week-tag">{{item.weekday}}</view>
               <view class="course-time-tag">{{item.time}}</view>
             </view>
-            <view class="course-desc">{{item.description}}</view>
             <view class="course-footer">
               <view class="course-location">📍 {{item.location}}</view>
               <view class="course-capacity">已报 {{item.currentStudents}}/{{item.capacity}}人</view>

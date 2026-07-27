@@ -1,97 +1,138 @@
 // pages/bindchild/bindchild.js
 const app = getApp()
 
-// ========== 调试模式：没有服务器时用假数据 ==========
-const DEBUG_MOCK_DATA = true
-const MOCK_CHILDREN = [
-  {
-    id: 1,
-    name: '小明',
-    age: '3岁',
-    gender: '男',
-    relation: '爸爸',
-    avatar: '/images/default-avatar.png',
-    parentName: '张三',
-    phoneNumber: '138****8888'
-  },
-  {
-    id: 2,
-    name: '小红',
-    age: '2岁',
-    gender: '女',
-    relation: '妈妈',
-    avatar: '/images/default-avatar.png',
-    parentName: '李四',
-    phoneNumber: '139****9999'
-  }
-]
-// ======================================================
-
 Page({
   data: {
-    children: []
+    children: [],
+    showForm: false,
+    formData: {
+      name: '',
+      age: '',
+      gender: '男',
+      relation: '',
+      parentName: '',
+      phoneNumber: ''
+    },
+    genderOptions: ['男', '女']
   },
 
   onLoad: function () {
-    this.getChildrenList();
+    this.loadChildren();
   },
 
   onShow: function () {
-    this.getChildrenList();
+    this.loadChildren();
   },
 
-  getChildrenList: function () {
-    if (DEBUG_MOCK_DATA) {
-      this.setData({ children: MOCK_CHILDREN });
-      return;
-    }
+  // 从本地存储加载儿童列表
+  loadChildren: function () {
+    const myChildren = wx.getStorageSync('myChildren') || [];
+    this.setData({ children: myChildren });
+  },
 
-    const openId = wx.getStorageSync('openId');
-    const token = wx.getStorageSync('token');
-
-    if (!token) {
-      wx.showToast({ title: '请先登录', icon: 'none' });
-      return;
-    }
-
-    wx.request({
-      url: `${app.globalData.API_BASE_URL}/api/child/list`,
-      method: 'GET',
-      header: {
-        'content-type': 'application/json',
-        'X-WX-OPENID': openId
-      },
-      success: (res) => {
-        if (res.statusCode === 200 && res.data.code === 200) {
-          this.setData({
-            children: (res.data.data || []).map(child => ({
-              id: child.id,
-              name: child.childName,
-              age: child.age + '岁',
-              gender: this.formatGender(child.gender),
-              relation: child.relationship,
-              avatar: '/images/default-avatar.png',
-              parentName: child.parentName || '未设置',
-              phoneNumber: child.phoneNumber
-            }))
-          });
-        } else {
-          wx.showToast({
-            title: res.data.msg || '获取孩子列表失败',
-            icon: 'none'
-          });
-        }
-      },
-      fail: (err) => {
-        console.error('请求孩子列表失败', err);
-        wx.showToast({ title: '网络错误，获取孩子列表失败', icon: 'none' });
+  // 显示添加表单
+  onShowForm() {
+    this.setData({
+      showForm: true,
+      formData: {
+        name: '',
+        age: '',
+        gender: '男',
+        relation: '',
+        parentName: '',
+        phoneNumber: ''
       }
     });
   },
 
-  formatGender(gender) {
-    if (gender === 0 || gender === '0' || gender === '男') return '男';
-    if (gender === 1 || gender === '1' || gender === '女') return '女';
-    return '未知';
+  // 隐藏表单
+  onHideForm() {
+    this.setData({ showForm: false });
+  },
+
+  // 阻止事件冒泡
+  stopBubble() {
+    // 什么都不做，只阻止 tap 事件冒泡
+  },
+
+  // 输入框变化
+  onInputChange(e) {
+    const field = e.currentTarget.dataset.field;
+    this.setData({
+      [`formData.${field}`]: e.detail.value
+    });
+  },
+
+  // 性别选择
+  onGenderChange(e) {
+    const index = parseInt(e.detail.value);
+    this.setData({
+      'formData.gender': this.data.genderOptions[index]
+    });
+  },
+
+  // 保存儿童
+  onSaveChild() {
+    const { name, age, gender, relation, parentName, phoneNumber } = this.data.formData;
+
+    if (!name.trim()) {
+      wx.showToast({ title: '请输入儿童姓名', icon: 'none' });
+      return;
+    }
+    if (!age.trim()) {
+      wx.showToast({ title: '请输入年龄', icon: 'none' });
+      return;
+    }
+    if (!relation.trim()) {
+      wx.showToast({ title: '请输入与儿童关系', icon: 'none' });
+      return;
+    }
+
+    let myChildren = wx.getStorageSync('myChildren') || [];
+
+    const newChild = {
+      id: 'child_' + Date.now(),
+      name: name.trim(),
+      age: age.trim(),
+      gender: gender,
+      relation: relation.trim(),
+      parentName: parentName.trim() || '未设置',
+      phoneNumber: phoneNumber.trim() || '',
+      avatar: '/images/default-avatar.png'
+    };
+
+    myChildren.push(newChild);
+    wx.setStorageSync('myChildren', myChildren);
+
+    this.setData({
+      children: myChildren,
+      showForm: false
+    });
+
+    wx.showToast({ title: '添加成功', icon: 'success' });
+  },
+
+  // 删除儿童
+  onDeleteChild(e) {
+    const childId = e.currentTarget.dataset.id;
+    wx.showModal({
+      title: '确认删除',
+      content: '确定要删除这个儿童信息吗？',
+      success: (res) => {
+        if (res.confirm) {
+          let myChildren = wx.getStorageSync('myChildren') || [];
+          myChildren = myChildren.filter(c => String(c.id) !== String(childId));
+          wx.setStorageSync('myChildren', myChildren);
+
+          // 同时清理该儿童的所有预约
+          let myReservations = wx.getStorageSync('myReservations') || [];
+          myReservations = myReservations.filter(r => String(r.childId) !== String(childId));
+          wx.setStorageSync('myReservations', myReservations);
+
+          this.setData({ children: myChildren });
+          wx.showToast({ title: '已删除', icon: 'success' });
+        }
+      }
+    });
   }
-})
+});
