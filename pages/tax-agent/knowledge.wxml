@@ -1,24 +1,32 @@
 <view class="page">
-  <view class="intro">
-    <view class="intro-kicker">一分钟小知识</view>
-    <view class="intro-title">把生活里的问题<br />变成新发现</view>
-    <view class="intro-desc">点开每张卡片，看看小税怎么解释。</view>
+  <view class="knowledge-hero">
+    <image class="knowledge-hero-image" src="/images/tax-agent/knowledge-book.jpg" mode="aspectFill" />
+    <view class="knowledge-hero-shade"></view>
+    <view class="knowledge-hero-copy">
+      <view class="intro-kicker">财税小知识</view>
+      <view class="intro-title">小税宝一分钟小知识</view>
+      <view class="intro-desc">把生活里的问题变成新发现</view>
+    </view>
   </view>
 
   <view class="card-list" wx:if="{{!isLoading}}">
-    <view class="knowledge-card" wx:for="{{cards}}" wx:key="id" bindtap="toggleCard" data-id="{{item.id}}">
+    <view class="knowledge-card {{activeCardId === item.id ? 'is-open' : ''}}" wx:for="{{cards}}" wx:key="id" bindtap="toggleCard" data-id="{{item.id}}">
       <view class="card-head">
         <image class="card-image" src="{{item.imageUrl}}" mode="aspectFill" binderror="usePlaceholder" data-id="{{item.id}}" />
         <view class="card-title">{{item.title}}</view>
-        <view class="card-arrow">{{activeCardId === item.id ? '−' : '+'}}</view>
+        <view class="card-arrow">{{activeCardId === item.id ? '⌃' : '⌄'}}</view>
       </view>
       <view class="card-summary">{{item.summary}}</view>
       <view class="card-detail" wx:if="{{activeCardId === item.id}}">{{item.detail}}</view>
-      <view class="card-source" wx:if="{{activeCardId === item.id && item.hasSource}}">
-        <text class="card-source-org">内容依据：{{item.sourceOrg}}</text>
-      </view>
+      <view class="card-source" wx:if="{{activeCardId === item.id && item.hasSource}}"><text class="source-check">✓</text><text class="card-source-org">内容依据：{{item.sourceOrg}}</text></view>
+    </view>
+    <view class="mascot-reminder">
+      <image class="reminder-image" src="/images/tax-agent/mascot-study.jpg" mode="aspectFill" />
+      <view class="reminder-copy"><view class="reminder-title">小税宝提醒</view><view class="reminder-text">学完这些小知识，试着用今天学到的新词，去问问爸爸妈妈吧！</view></view>
     </view>
     <view class="empty-state" wx:if="{{!cards.length}}">暂时还没有可学习的知识卡片。</view>
   </view>
-  <view class="loading" wx:else>知识卡片正在准备中。</view>
+  <view class="loading" wx:else>知识卡片正在准备中…</view>
 </view>
+
+<tax-tabbar current="knowledge" />

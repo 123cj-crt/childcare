@@ -2,17 +2,12 @@ const agentApi = require('../../services/agent-api');
 
 Page({
   data: {
-    recommendedQuestions: [],
     isLoading: true,
     isReady: false,
     errorMessage: ''
   },
 
   onLoad() {
-    agentApi.getAgentHome().then((data) => {
-      this.setData({ recommendedQuestions: data.recommendedQuestions || [] });
-    });
-
     agentApi.initializeAgent()
       .then(() => {
         this.setData({ isLoading: false, isReady: true, errorMessage: '' });
@@ -35,17 +30,6 @@ Page({
     }
     const { path } = event.currentTarget.dataset;
     wx.navigateTo({ url: path });
-  },
-
-  askRecommendedQuestion(event) {
-    if (!this.data.isReady) {
-      wx.showToast({ title: this.data.errorMessage || '服务正在准备中', icon: 'none' });
-      return;
-    }
-    const { question } = event.currentTarget.dataset;
-    wx.navigateTo({
-      url: `/pages/tax-agent/chat?question=${encodeURIComponent(question)}`
-    });
   },
 
   retryInitialize() {

@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "知识卡片"
+  "navigationBarTitleText": "知识卡片",
+  "usingComponents": {
+    "tax-tabbar": "/components/tax-tabbar/index"
+  }
 }

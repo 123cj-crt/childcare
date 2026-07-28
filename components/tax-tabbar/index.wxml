@@ -1,0 +1,6 @@
+<view class="tax-tabbar">
+  <view wx:for="{{items}}" wx:key="key" class="tax-tabbar-item {{current === item.key ? 'is-active' : ''}}" bindtap="switchPage" data-key="{{item.key}}" data-path="{{item.path}}">
+    <view class="tax-tabbar-icon"><image class="tax-tabbar-icon-image" src="{{item.icon}}" mode="aspectFit" /></view>
+    <text class="tax-tabbar-label">{{item.label}}</text>
+  </view>
+</view>

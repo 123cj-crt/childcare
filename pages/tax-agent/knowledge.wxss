@@ -1,18 +1,4 @@
-.page { min-height: 100vh; background: #f7fbfa; padding-bottom: 48rpx; }
-.intro { padding: 54rpx 42rpx 42rpx; background: #edf7f5; color: #24514a; }
-.intro-kicker { color: #238f7f; font-size: 24rpx; font-weight: 700; }
-.intro-title { margin-top: 14rpx; font-size: 44rpx; line-height: 1.35; font-weight: 700; }
-.intro-desc { margin-top: 16rpx; color: #63827c; font-size: 26rpx; }
-.card-list { margin: 26rpx 28rpx 0; }
-.knowledge-card { margin-bottom: 18rpx; padding: 28rpx; border-radius: 24rpx; background: #fff; }
-.card-head { display: flex; align-items: center; }
-.card-image { width: 64rpx; height: 64rpx; border-radius: 18rpx; background: #e2f5f0; }
-.card-title { flex: 1; margin-left: 18rpx; color: #28433e; font-size: 31rpx; font-weight: 700; }
-.card-arrow { color: #52a798; font-size: 38rpx; }
-.card-summary { margin-top: 20rpx; color: #63817b; font-size: 27rpx; line-height: 1.65; }
-.card-detail { margin-top: 20rpx; padding-top: 20rpx; border-top: 1rpx dashed #dbe9e6; color: #365f57; font-size: 27rpx; line-height: 1.7; }
-.card-source { margin-top: 18rpx; padding-top: 18rpx; border-top: 1rpx dashed #dbe9e6; color: #60817a; font-size: 23rpx; line-height: 1.6; }
-.card-source-org { display: block; color: #3c7167; font-weight: 700; }
-.card-source-title { display: block; margin-top: 4rpx; color: #77958e; }
-.loading { padding: 100rpx 0; color: #77908b; text-align: center; font-size: 28rpx; }
-.empty-state { padding: 92rpx 20rpx; color: #77908b; text-align: center; font-size: 27rpx; }
+.page { min-height: 100vh; box-sizing: border-box; padding-bottom: calc(146rpx + env(safe-area-inset-bottom)); background: #f5fbf8; }
+.knowledge-hero { position: relative; height: 276rpx; overflow: hidden; border-radius: 0 0 36rpx 36rpx; }.knowledge-hero-image, .knowledge-hero-shade { position: absolute; inset: 0; width: 100%; height: 100%; }.knowledge-hero-shade { background: linear-gradient(90deg, rgba(244, 255, 250, .98), rgba(244, 255, 250, .72) 48%, rgba(244, 255, 250, .05)); }.knowledge-hero-copy { position: relative; z-index: 1; width: 510rpx; padding: 58rpx 36rpx; }.intro-kicker { color: #218f7b; font-size: 22rpx; font-weight: 700; }.intro-title { margin-top: 12rpx; color: #0f5b4b; font-size: 40rpx; line-height: 1.28; font-weight: 700; }.intro-desc { margin-top: 12rpx; color: #66877f; font-size: 25rpx; }
+.card-list { margin: 24rpx 24rpx 0; }.knowledge-card { margin-bottom: 18rpx; padding: 26rpx; border: 1rpx solid #e4efeb; border-radius: 26rpx; background: #fff; box-shadow: 0 9rpx 22rpx rgba(37, 115, 96, .055); }.knowledge-card.is-open { border-color: #bfe5da; }.card-head { display: flex; align-items: center; }.card-image { width: 66rpx; height: 66rpx; border-radius: 20rpx; background: #e2f5f0; }.card-title { flex: 1; margin-left: 18rpx; color: #28433e; font-size: 31rpx; font-weight: 700; }.card-arrow { color: #2b8e7b; font-size: 36rpx; }.card-summary { margin-top: 16rpx; color: #66837c; font-size: 25rpx; line-height: 1.58; }.card-detail { margin-top: 20rpx; padding-top: 20rpx; border-top: 1rpx dashed #d3e7e1; color: #355e55; font-size: 27rpx; line-height: 1.82; white-space: pre-wrap; }.card-source { display: flex; align-items: center; margin-top: 18rpx; padding-top: 18rpx; border-top: 1rpx dashed #d3e7e1; color: #3b7469; font-size: 23rpx; }.source-check { display: inline-flex; align-items: center; justify-content: center; width: 28rpx; height: 28rpx; margin-right: 10rpx; border-radius: 50%; background: #dff4ed; color: #208a76; font-size: 19rpx; font-weight: 700; }.card-source-org { color: #3c7167; font-weight: 700; }
+.mascot-reminder { display: flex; align-items: center; min-height: 132rpx; margin-top: 26rpx; padding: 16rpx 20rpx; overflow: hidden; border: 1rpx solid #ffe1a4; border-radius: 24rpx; background: #fffaf0; }.reminder-image { flex: 0 0 110rpx; width: 110rpx; height: 110rpx; border-radius: 20rpx; }.reminder-copy { margin-left: 18rpx; }.reminder-title { color: #b87918; font-size: 28rpx; font-weight: 700; }.reminder-text { margin-top: 8rpx; color: #856b45; font-size: 22rpx; line-height: 1.55; }.loading { padding: 100rpx 0; color: #77908b; text-align: center; font-size: 28rpx; }.empty-state { padding: 92rpx 20rpx; color: #77908b; text-align: center; font-size: 27rpx; }

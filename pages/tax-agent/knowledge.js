@@ -21,7 +21,7 @@ Page({
           return {
             ...card,
             icon: (card.category || '知识').slice(0, 1),
-            imageUrl: card.image_url || '/icon/book.png',
+            imageUrl: card.image_url || '/images/tax-agent/knowledge-book-icon.png',
             detail: card.detail || `分类：${card.category || '财税小知识'}`,
             sourceOrg,
             sourceTitle,
@@ -45,7 +45,7 @@ Page({
   usePlaceholder(event) {
     const { id } = event.currentTarget.dataset;
     const cards = this.data.cards.map((card) => (
-      card.id === id ? { ...card, imageUrl: '/icon/book.png' } : card
+      card.id === id ? { ...card, imageUrl: '/images/tax-agent/knowledge-book-icon.png' } : card
     ));
     this.setData({ cards });
   }

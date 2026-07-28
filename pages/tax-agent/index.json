@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "财税学习"
+  "navigationBarTitleText": "财税学习",
+  "usingComponents": {
+    "tax-tabbar": "/components/tax-tabbar/index"
+  }
 }

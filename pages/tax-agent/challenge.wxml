@@ -1,1 +1,14 @@
-<view class="page"><view class="topbar"><view><view class="topbar-title">趣味闯关</view><view class="topbar-desc">选一个主题，完成属于你的挑战</view></view></view><view class="topic-page"><view class="topic-intro"><view class="topic-intro-title">今天想学什么？</view><view>每个主题都有 10 题，完成全部小题后会获得一句鼓励。</view></view><view class="topic-card" wx:for="{{topics}}" wx:key="code" bindtap="chooseTopic" data-topic="{{item.code}}"><view class="topic-icon">{{item.icon}}</view><view class="topic-copy"><view class="topic-title">{{item.title}}</view><view class="topic-desc">{{item.desc}} · 共 {{item.count}} 题</view></view><view class="topic-arrow">›</view></view></view></view>
+<view class="page">
+  <view class="challenge-hero">
+    <image class="challenge-hero-image" src="/images/tax-agent/challenge-map.jpg" mode="aspectFill" />
+    <view class="challenge-hero-shade"></view>
+    <view class="challenge-hero-copy"><view class="challenge-hero-title">开启税务探险！</view><view class="challenge-hero-desc">选择一个主题，和小税宝一起学习有趣的财税小知识。</view></view>
+  </view>
+  <view class="topic-page">
+    <view class="topic-intro"><view class="topic-intro-title">今天想学什么？</view><view>每个主题都有小挑战，完成后收获一句来自小税宝的鼓励。</view></view>
+    <view class="topic-card" wx:for="{{topics}}" wx:key="code" bindtap="chooseTopic" data-topic="{{item.code}}">
+      <image class="topic-icon" src="{{item.iconImage}}" mode="aspectFit" /><view class="topic-copy"><view class="topic-title">{{item.title}}</view><view class="topic-desc">{{item.desc}}</view></view><view class="topic-count">{{item.count}}题</view><view class="topic-arrow">›</view>
+    </view>
+  </view>
+</view>
+<tax-tabbar current="challenge" />

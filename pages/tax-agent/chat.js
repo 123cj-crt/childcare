@@ -99,7 +99,7 @@ function createWelcomeMessage() {
   return createMessage(
     'welcome',
     'agent',
-    '你好！我是小税。你可以问我税收、发票、公共设施或零花钱的小问题。'
+    '你好呀！我是小税宝。你可以问我税收、发票、学校和公园这些小问题。'
   );
 }
 
@@ -122,6 +122,7 @@ Page({
   data: {
     messages: [createWelcomeMessage()],
     recommendedQuestions: [],
+    showRecommendedQuestions: true,
     inputMessage: '',
     isLoading: false,
     scrollTo: 'chat-bottom',
@@ -148,9 +149,11 @@ Page({
       return;
     }
 
+    const messages = restoreMessages(memory);
     this.setData({
-      messages: restoreMessages(memory),
+      messages,
       sessionId: memory.sessionId || '',
+      showRecommendedQuestions: messages.length === 1 && messages[0].id === 'welcome',
       scrollTo: 'chat-bottom'
     });
   },
@@ -176,6 +179,7 @@ Page({
   },
 
   askRecommendedQuestion(event) {
+    this.setData({ showRecommendedQuestions: false });
     this.sendMessage(event.currentTarget.dataset.question);
   },
 
@@ -195,6 +199,7 @@ Page({
       messages: nextMessages,
       inputMessage: '',
       isLoading: true,
+      showRecommendedQuestions: false,
       scrollTo: 'chat-bottom',
       requestError: ''
     });
@@ -242,7 +247,8 @@ Page({
       scrollTo: 'chat-bottom',
       sessionId: '',
       lastFailedMessage: '',
-      requestError: ''
+      requestError: '',
+      showRecommendedQuestions: true
     });
     const app = getApp();
     if (app && app.globalData) {

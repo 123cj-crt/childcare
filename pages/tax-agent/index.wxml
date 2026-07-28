@@ -1,42 +1,66 @@
 <view class="page">
-  <view class="hero">
-    <view class="hero-badge">财税小课堂</view>
-    <view class="hero-title">从身边的小事<br />认识税收</view>
-    <view class="hero-desc">问一问、读一读、闯一闯，轻松学习生活里的小知识。</view>
-    <view class="hero-mark">税</view>
-  </view>
-
-  <view class="feature-list">
-    <view class="feature-item" bindtap="goToFeature" data-path="/pages/tax-agent/chat">
-      <view class="feature-icon">问</view>
-      <view class="feature-copy">
-        <view class="feature-title">问问小税</view>
-        <view class="feature-desc">把好奇的问题说出来</view>
-      </view>
-      <view class="feature-arrow">›</view>
-    </view>
-    <view class="feature-item" bindtap="goToFeature" data-path="/pages/tax-agent/knowledge">
-      <view class="feature-icon light">知</view>
-      <view class="feature-copy">
-        <view class="feature-title">知识卡片</view>
-        <view class="feature-desc">一分钟认识一个新概念</view>
-      </view>
-      <view class="feature-arrow">›</view>
-    </view>
-    <view class="feature-item" bindtap="goToFeature" data-path="/pages/tax-agent/challenge">
-      <view class="feature-icon warm">闯</view>
-      <view class="feature-copy">
-        <view class="feature-title">趣味闯关</view>
-        <view class="feature-desc">用小问题检验新发现</view>
-      </view>
-      <view class="feature-arrow">›</view>
+  <view class="home-hero">
+    <image class="hero-image" src="/images/tax-agent/home-map.jpg" mode="aspectFill" />
+    <view class="hero-shade"></view>
+    <view class="hero-copy">
+      <view class="hero-badge">财税小课堂</view>
+      <view class="hero-title">从身边的小事认识税收</view>
+      <view class="hero-desc">问一问、读一读、闯一闯，轻松发现生活里的财税小知识。</view>
     </view>
   </view>
 
-  <view class="section" wx:if="{{recommendedQuestions.length}}">
-    <view class="section-title">不知道问什么？</view>
-    <view class="question-list">
-      <view class="question-item" wx:for="{{recommendedQuestions}}" wx:key="*this" bindtap="askRecommendedQuestion" data-question="{{item}}">{{item}}</view>
+  <view class="feature-grid">
+    <view class="feature-card feature-card-chat" bindtap="goToFeature" data-path="/pages/tax-agent/chat">
+      <image class="feature-icon" src="/images/tax-agent/home-entry/chat.png" mode="aspectFit" />
+      <view class="feature-title">问问小税宝</view>
+      <view class="feature-desc">把好奇的问题说出来</view>
+    </view>
+    <view class="feature-card feature-card-knowledge" bindtap="goToFeature" data-path="/pages/tax-agent/knowledge">
+      <image class="feature-icon" src="/images/tax-agent/home-entry/knowledge.png" mode="aspectFit" />
+      <view class="feature-title">知识卡片</view>
+      <view class="feature-desc">一分钟认识新概念</view>
+    </view>
+    <view class="feature-card feature-card-challenge" bindtap="goToFeature" data-path="/pages/tax-agent/challenge">
+      <image class="feature-icon" src="/images/tax-agent/home-entry/challenge.png" mode="aspectFit" />
+      <view class="feature-title">趣味闯关</view>
+      <view class="feature-desc">用小问题检验新发现</view>
+    </view>
+  </view>
+
+  <view class="learning-section">
+    <view class="section-heading">
+      <view class="section-title"><text class="section-mark">✓</text>今日小任务</view>
+      <view class="section-link" bindtap="goToFeature" data-path="/pages/tax-agent/knowledge">去学习 ›</view>
+    </view>
+    <view class="task-card" bindtap="goToFeature" data-path="/pages/tax-agent/knowledge">
+      <image class="task-image" src="/images/tax-agent/knowledge-book.jpg" mode="aspectFill" />
+      <view class="task-copy">
+        <view class="task-kicker">小税宝带你发现</view>
+        <view class="task-title">为什么公园里的滑梯可以免费玩？</view>
+        <view class="task-desc">一起找找公共服务和税收的小知识吧！</view>
+        <view class="task-button">去学习 →</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="learning-section topic-section">
+    <view class="section-heading">
+      <view class="section-title"><text class="section-mark warm">★</text>本周学习主题</view>
+      <view class="section-link" bindtap="goToFeature" data-path="/pages/tax-agent/challenge">更多主题 ›</view>
+    </view>
+    <view class="weekly-list">
+      <view class="weekly-card weekly-green" bindtap="goToFeature" data-path="/pages/tax-agent/challenge">
+        <view class="weekly-label">主题一</view>
+        <view class="weekly-title">税收与公共服务</view>
+        <view class="weekly-desc">学校、公园和道路从哪里来？</view>
+        <view class="weekly-arrow">→</view>
+      </view>
+      <view class="weekly-card weekly-blue" bindtap="goToFeature" data-path="/pages/tax-agent/challenge">
+        <view class="weekly-label">主题二</view>
+        <view class="weekly-title">发票大揭秘</view>
+        <view class="weekly-desc">看看发票有什么作用</view>
+        <view class="weekly-arrow">→</view>
+      </view>
     </view>
   </view>
 
@@ -45,3 +69,5 @@
     <view class="service-retry" bindtap="retryInitialize">重新连接</view>
   </view>
 </view>
+
+<tax-tabbar current="home" />
