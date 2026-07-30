@@ -9,9 +9,9 @@ const DEBUG_MOCK_DATA = true
 
 // mock 数据
 const MOCK_BANNERS = [
-  { id: 1, image: '/images/1.jpg', title: '智慧托育中心', link: '' },
-  { id: 2, image: '/images/2.jpg', title: '育儿专家分享', link: '' },
-  { id: 3, image: '/images/3.jpg', title: '最新活动资讯', link: '' }
+  { id: 1, image: '/images/1.jpg', title: '智慧托育中心', link: 'https://m.jyrmt.com/mob/2025/0831/83206.html?isDM=1&t=3730' },
+  { id: 2, image: '/images/2.jpg', title: '育儿专家分享', link: 'https://mp.weixin.qq.com/s/hsGNAtJXbq6wHB2jQI4yBQ' },
+  { id: 3, image: '/images/3.jpg', title: '最新活动资讯', link: 'https://mp.weixin.qq.com/s/uL6q4FX0CuAjtSXkCGz2cg' }
 ]
 
 // 2026年8月10-14日课程安排
@@ -174,7 +174,6 @@ Page({
 
   loadData() {
     if (DEBUG_MOCK_DATA) {
-      // 调试模式：直接用 mock 数据
       this.setData({
         banners: MOCK_BANNERS,
         courses: MOCK_COURSES
@@ -182,7 +181,6 @@ Page({
       return
     }
 
-    // 正式版：从服务器加载
     this.fetchBanners()
     this.fetchCourses()
   },
