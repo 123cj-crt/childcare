@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "checkJs": false,
+    "allowJs": true,
+    "noEmit": true,
+    "target": "es2017",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "jsx": "preserve",
+    "strict": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["**/*.js"],
+  "exclude": ["node_modules"]
+}

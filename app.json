@@ -7,6 +7,7 @@
     "pages/course-detail/course-detail",
     "pages/notice/notice",
     "pages/notice-list/notice-list",
+    "pages/notice-detail/notice-detail",
     "pages/schedule/schedule",
     "pages/profile/profile",
     "pages/userPolicy/userPolicy",
