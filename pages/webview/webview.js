@@ -48,7 +48,12 @@ Page({
   },
 
   goBack() {
-    wx.navigateBack();
+    const pages = typeof getCurrentPages === 'function' ? getCurrentPages() : [];
+    if (pages.length > 1) {
+      wx.navigateBack();
+      return;
+    }
+    wx.switchTab({ url: '/pages/index/index' });
   },
 
   retry() {

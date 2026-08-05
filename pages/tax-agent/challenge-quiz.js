@@ -7,9 +7,18 @@ const TOPICS = {
   invoice: { title: '发票大揭秘', count: 10 }
 };
 
+function returnToChallengeTopics() {
+  const pages = typeof getCurrentPages === 'function' ? getCurrentPages() : [];
+  if (pages.length > 1) {
+    wx.navigateBack();
+    return;
+  }
+  wx.redirectTo({ url: '/pages/tax-agent/challenge' });
+}
+
 Page({
   data: { topic: null, topicCode: '', sessionId: '', currentIndex: 0, currentQuestion: null, nextQuestion: null, selectedOptionKey: '', answered: false, isCorrect: false, explanation: '', score: 0, complete: false, isLoading: true, isSubmitting: false, errorMessage: '' },
-  onLoad(options) { const topic = TOPICS[options.topic]; if (topic) { this.setData({ topic, topicCode: options.topic }); this.startQuiz(); } else wx.navigateBack(); },
+  onLoad(options) { const topic = TOPICS[options.topic]; if (topic) { this.setData({ topic, topicCode: options.topic }); this.startQuiz(); } else returnToChallengeTopics(); },
   startQuiz() {
     const { topic } = this.data; if (!topic) return;
     this.setData({ sessionId: '', currentIndex: 0, currentQuestion: null, nextQuestion: null, selectedOptionKey: '', answered: false, isCorrect: false, explanation: '', score: 0, complete: false, isLoading: true, isSubmitting: false, errorMessage: '' });
@@ -24,5 +33,5 @@ Page({
   },
   nextQuestion() { if (!this.data.nextQuestion) return this.setData({ complete: true }); this.setData({ currentIndex: this.data.currentIndex + 1, currentQuestion: this.data.nextQuestion, nextQuestion: null, selectedOptionKey: '', answered: false, isCorrect: false, explanation: '', errorMessage: '' }); },
   retrySubmit() { if (!this.data.isSubmitting) this.checkAnswer(); },
-  chooseAnotherTopic() { wx.navigateBack(); }
+  chooseAnotherTopic() { returnToChallengeTopics(); }
 });
