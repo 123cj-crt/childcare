@@ -1,6 +1,6 @@
 /* 页面整体容器 */
 .container {
-  padding-bottom: 40rpx;
+  padding-bottom: 260rpx;
 }
 
 /* 轮播全局尺寸 */
@@ -44,42 +44,35 @@
   margin-top: 20rpx;
 }
 
-.tax-agent-entry {
+.tax-agent-fab {
+  position: fixed;
+  right: 18rpx;
+  bottom: calc(118rpx + env(safe-area-inset-bottom));
+  z-index: 30;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  margin: 28rpx 28rpx 0;
-  padding: 26rpx;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+.tax-agent-fab-bubble {
+  margin-top: -10rpx;
+  padding: 14rpx 22rpx;
+  border: 2rpx solid #d8f1e9;
   border-radius: 24rpx;
-  background: #e7f8f4;
-  color: #175e58;
-}
-.tax-agent-entry-icon {
-  width: 74rpx;
-  height: 74rpx;
-  line-height: 74rpx;
-  text-align: center;
-  border-radius: 50%;
-  background: #20a68f;
-  color: #fff;
-  font-size: 36rpx;
-  font-weight: 700;
-}
-.tax-agent-entry-copy {
-  flex: 1;
-  margin-left: 20rpx;
-}
-.tax-agent-entry-title {
-  font-size: 32rpx;
-  font-weight: 700;
-}
-.tax-agent-entry-desc {
-  margin-top: 6rpx;
-  color: #4d827b;
+  background: #ffffff;
+  box-shadow: 0 8rpx 18rpx rgba(31, 125, 105, .14);
+  color: #168b75;
   font-size: 24rpx;
+  font-weight: 700;
+  white-space: nowrap;
 }
-.tax-agent-entry-arrow {
-  font-size: 44rpx;
-  line-height: 1;
+.tax-agent-fab-image {
+  width: 128rpx;
+  height: 172rpx;
+}
+.tax-agent-fab-pressed {
+  opacity: .9;
+  transform: scale(.96);
 }
 .course-list {
   margin-top: 20rpx;
