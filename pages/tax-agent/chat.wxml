@@ -31,10 +31,10 @@
   </scroll-view>
 
   <view class="quick-section" wx:if="{{showRecommendedQuestions && recommendedQuestions.length}}">
-    <view class="quick-title">你可以这样问</view>
-    <view class="quick-list">
+    <view class="quick-title">可以这样问</view>
+    <scroll-view class="quick-list" scroll-x="true" enable-flex="true" show-scrollbar="false">
       <view class="quick-item" wx:for="{{recommendedQuestions}}" wx:key="*this" bindtap="askRecommendedQuestion" data-question="{{item}}">{{item}}</view>
-    </view>
+    </scroll-view>
   </view>
 
   <view class="input-bar">
