@@ -1,0 +1,70 @@
+<!--pages/schedule/schedule.wxml-->
+<view class="page">
+  <!-- 顶部 Hero 区 -->
+  <view class="page-hero">
+    <view class="hero-row">
+      <view class="hero-icon-circle">📅</view>
+      <view class="hero-info">
+        <view class="hero-title">我的课表</view>
+        <view class="hero-subtitle">按儿童查看已预约课程</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 主体内容 -->
+  <view class="page-body">
+    <!-- 有数据：按儿童分组 -->
+    <view class="groups" wx:if="{{hasChildren && hasReservations}}">
+      <view class="group-card" wx:for="{{scheduleGroups}}" wx:key="childId">
+        <!-- 儿童信息头 -->
+        <view class="child-header">
+          <view class="child-avatar">
+            <text>{{item.avatarText}}</text>
+          </view>
+          <view class="child-info">
+            <view class="child-name">{{item.childName}}</view>
+            <view class="child-meta">{{item.childAge}} · {{item.childGender}}</view>
+          </view>
+          <view class="course-count">{{item.courses.length}} 门课</view>
+        </view>
+        <!-- 课程列表 -->
+        <view class="course-list">
+          <view
+            class="course-item"
+            wx:for="{{item.courses}}"
+            wx:for-item="course"
+            wx:key="courseId"
+            bindtap="onCourseTap"
+            data-id="{{course.courseId}}"
+          >
+            <view class="course-left">
+              <view class="course-date">{{course.date}}</view>
+              <view class="course-week">{{course.weekday}}</view>
+            </view>
+            <view class="course-divider"></view>
+            <view class="course-right">
+              <view class="course-name">{{course.courseName}}</view>
+              <view class="course-row">
+                <text class="course-time">{{course.time}}</text>
+                <text class="course-teacher">{{course.teacher}}</text>
+              </view>
+              <view class="course-location">{{course.location}}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <!-- 没有绑定儿童 -->
+    <view class="empty-state" wx:elif="{{!hasChildren}}">
+      <view class="empty-icon">👶</view>
+      <view class="empty-text">暂无绑定儿童</view>
+      <view class="empty-hint">请先在"我的"页面添加儿童信息</view>
+    </view>
+    <!-- 有儿童但没有预约 -->
+    <view class="empty-state" wx:else>
+      <view class="empty-icon">📅</view>
+      <view class="empty-text">暂无预约课程</view>
+      <view class="empty-hint">去首页选择课程进行预约吧</view>
+    </view>
+  </view>
+</view>

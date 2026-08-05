@@ -1,0 +1,71 @@
+<!--pages/notice/notice.wxml-->
+<view class="notice-wrap">
+  <!-- 顶部 Hero 区 -->
+  <view class="page-hero">
+    <view class="hero-row">
+      <view class="hero-icon-circle">🔔</view>
+      <view class="hero-info">
+        <view class="hero-title">通知中心</view>
+        <view class="hero-subtitle">查看最新公告与课程提醒</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 通知分类卡片 -->
+  <view class="page-body">
+    <view class="notice-list">
+      <view class="notice-item" bindtap="goNoticeList" data-type="公告通知" data-icon="🔔" data-color="#e8f1ff">
+        <view class="notice-left">
+          <view class="icon-box notice-blue">
+            <text class="icon-text">🔔</text>
+          </view>
+          <view class="notice-text">
+            <view class="notice-title">公告通知</view>
+            <view class="notice-desc">园区公告、活动通知、重要提醒</view>
+          </view>
+        </view>
+        <view class="notice-right">
+          <view class="badge">{{noticeCount.notice1}}</view>
+          <text class="arrow">›</text>
+        </view>
+      </view>
+
+      <view class="notice-item" bindtap="goNoticeList" data-type="孩子沟通" data-icon="💬" data-color="#ecfdf5">
+        <view class="notice-left">
+          <view class="icon-box notice-green">
+            <text class="icon-text">💬</text>
+          </view>
+          <view class="notice-text">
+            <view class="notice-title">孩子沟通</view>
+            <view class="notice-desc">老师留言、成长记录、家校互动</view>
+          </view>
+        </view>
+        <view class="notice-right">
+          <view class="badge">{{noticeCount.notice2}}</view>
+          <text class="arrow">›</text>
+        </view>
+      </view>
+
+      <view class="notice-item" bindtap="goNoticeList" data-type="系统通知" data-icon="⚙️" data-color="#f0e7ff">
+        <view class="notice-left">
+          <view class="icon-box notice-purple">
+            <text class="icon-text">⚙️</text>
+          </view>
+          <view class="notice-text">
+            <view class="notice-title">系统通知</view>
+            <view class="notice-desc">课程变更、签到提醒、账户通知</view>
+          </view>
+        </view>
+        <view class="notice-right">
+          <view class="badge">{{noticeCount.notice3}}</view>
+          <text class="arrow">›</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部提示 -->
+    <view class="notice-tip">
+      <text class="tip-text">通知会按时间顺序展示，点击分类查看详情</text>
+    </view>
+  </view>
+</view>

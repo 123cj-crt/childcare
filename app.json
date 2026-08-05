@@ -1,0 +1,56 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/login/login",
+    "pages/login-1/login-1",
+    "pages/login-2/login-2",
+    "pages/course-detail/course-detail",
+    "pages/notice/notice",
+    "pages/notice-list/notice-list",
+    "pages/notice-detail/notice-detail",
+    "pages/schedule/schedule",
+    "pages/profile/profile",
+    "pages/userPolicy/userPolicy",
+    "pages/bindchild/bindchild",
+    "pages/webview/webview",
+    "pages/my-reservations/my-reservations",
+    "pages/history-courses/history-courses"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTitleText": "智慧托育",
+    "navigationBarTextStyle": "black"
+  },
+  "renderer": "webview",
+  "tabBar": {
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "icon/home.png",
+        "selectedIconPath": "icon/home-select.png"
+      },
+      {
+        "pagePath": "pages/schedule/schedule",
+        "text": "课表",
+        "iconPath": "icon/schedule.png",
+        "selectedIconPath": "icon/schedule-select.png"
+      },
+      {
+        "pagePath": "pages/notice/notice",
+        "text": "通知",
+        "iconPath": "icon/notice.png",
+        "selectedIconPath": "icon/notice-select.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "icon/my.png",
+        "selectedIconPath": "icon/my-select.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

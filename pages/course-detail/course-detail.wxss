@@ -1,0 +1,358 @@
+/* ===== 页面背景 ===== */
+page {
+  background: linear-gradient(145deg, #f0f6ff 0%, #e6edf9 100%);
+  padding: 30rpx 0;
+  box-sizing: border-box;
+  min-height: 100vh;
+}
+/* ===== 页面容器 ===== */
+.page {
+  width: 100%;
+  max-width: 750rpx;
+  margin: 0 auto;
+  padding: 0 20rpx;
+  box-sizing: border-box;
+}
+/* ===== 课程标题区 ===== */
+.course-header {
+  text-align: center;
+  margin-bottom: 36rpx;
+  padding: 20rpx 0;
+}
+.course-title {
+  font-size: 42rpx;
+  font-weight: 700;
+  color: #2c3e7a;
+  line-height: 1.5;
+  margin-bottom: 20rpx;
+  text-shadow: 0 4rpx 12rpx rgba(44, 62, 122, 0.10);
+}
+.course-tags {
+  display: flex;
+  justify-content: center;
+  gap: 16rpx;
+  flex-wrap: wrap;
+}
+.tag {
+  font-size: 26rpx;
+  padding: 8rpx 24rpx;
+  border-radius: 30rpx;
+  font-weight: 500;
+}
+.tag-date {
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  color: #1e40af;
+}
+.tag-week {
+  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+  color: #5b21b6;
+}
+.tag-time {
+  background: linear-gradient(135deg, #fce7f3, #fbcfe8);
+  color: #9d174d;
+}
+/* ===== 卡片样式 ===== */
+.card {
+  background: #ffffff;
+  border-radius: 28rpx;
+  padding: 32rpx 24rpx 38rpx;
+  margin-bottom: 24rpx;
+  width: 100%;
+  box-sizing: border-box;
+  box-shadow: 0 8rpx 32rpx rgba(44, 62, 122, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+/* 卡片顶部彩色装饰线 */
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8rpx;
+  background: linear-gradient(90deg, #4f7cff, #7c6af0);
+  border-radius: 28rpx 28rpx 0 0;
+}
+/* ===== 卡片标签 ===== */
+.card-label {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 16rpx;
+  display: flex;
+  align-items: center;
+}
+.card-label::before {
+  content: "";
+  width: 8rpx;
+  height: 30rpx;
+  background: linear-gradient(180deg, #4f7cff, #7c6af0);
+  border-radius: 4rpx;
+  margin-right: 14rpx;
+}
+/* ===== 卡片内容 ===== */
+.card-content {
+  font-size: 32rpx;
+  color: #2d3748;
+  line-height: 1.8;
+}
+.card-content.intro-text {
+  font-size: 30rpx;
+  color: #4a5568;
+  line-height: 1.9;
+}
+.card-sub {
+  font-size: 26rpx;
+  color: #9ca3af;
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 2rpx solid #f1f5f9;
+}
+/* ===== 教师信息 ===== */
+.teacher-row {
+  display: flex;
+  align-items: center;
+}
+.teacher-avatar {
+  width: 90rpx;
+  height: 90rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f7cff, #7c6af0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+.avatar-text {
+  color: #ffffff;
+  font-size: 32rpx;
+  font-weight: 600;
+}
+.teacher-detail {
+  flex: 1;
+}
+.teacher-name {
+  font-size: 32rpx;
+  color: #2d3748;
+  margin-bottom: 10rpx;
+}
+.teacher-phone {
+  font-size: 30rpx;
+  color: #3b82f6;
+  font-weight: 500;
+}
+/* ===== 课程容量 ===== */
+.capacity-row {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+.capacity-text {
+  font-size: 32rpx;
+  color: #2d3748;
+  font-weight: 500;
+}
+.capacity-bar-wrap {
+  width: 100%;
+  height: 30rpx;
+  background: #eef2f7;
+  border-radius: 30rpx;
+  overflow: hidden;
+  box-shadow: inset 0 2rpx 6rpx rgba(0,0,0,0.04);
+}
+.capacity-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #4ade80, #22d3ee);
+  border-radius: 30rpx;
+  transition: width 0.6s ease;
+}
+.capacity-status {
+  text-align: center;
+  font-size: 30rpx;
+  padding: 12rpx 0;
+  border-radius: 40rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+}
+.status-available {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  color: #065f46;
+  border: 2rpx solid #6ee7b7;
+}
+.status-full {
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  color: #991b1b;
+  border: 2rpx solid #fca5a5;
+}
+/* ===== 预约按钮 ===== */
+.btn-container {
+  margin-top: 50rpx;
+  padding: 0 20rpx 60rpx;
+  text-align: center;
+}
+.book-btn {
+  width: 100%;
+  max-width: 440rpx;
+  height: 100rpx;
+  line-height: 100rpx;
+  background: linear-gradient(135deg, #4f7cff, #6c5ce7);
+  color: #ffffff;
+  border-radius: 60rpx;
+  font-size: 38rpx;
+  font-weight: 600;
+  box-shadow: 0 12rpx 28rpx rgba(79, 124, 255, 0.30);
+  border: none;
+  transition: all 0.25s;
+}
+.book-btn:active {
+  transform: scale(0.96);
+  box-shadow: 0 6rpx 16rpx rgba(79, 124, 255, 0.20);
+}
+/* 已预约状态按钮 */
+.book-btn.btn-reserved {
+  background: linear-gradient(135deg, #f87171, #ef4444);
+  box-shadow: 0 12rpx 28rpx rgba(239, 68, 68, 0.30);
+}
+.book-btn.btn-reserved:active {
+  box-shadow: 0 6rpx 16rpx rgba(239, 68, 68, 0.20);
+}
+/* ===== 儿童选择器弹窗 ===== */
+.child-picker-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx;
+}
+.child-picker {
+  width: 100%;
+  max-width: 640rpx;
+  background: #ffffff;
+  border-radius: 24rpx;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+}
+.picker-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #1f2a44;
+  text-align: center;
+  padding: 36rpx 32rpx 8rpx;
+}
+.picker-sub {
+  font-size: 26rpx;
+  color: #9ca3af;
+  text-align: center;
+  padding: 0 32rpx 24rpx;
+  border-bottom: 2rpx solid #f1f5f9;
+}
+.picker-list {
+  flex: 1;
+  max-height: 600rpx;
+  padding: 16rpx 0;
+}
+.picker-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 32rpx;
+  border-bottom: 2rpx solid #f8faff;
+  transition: background 0.2s;
+}
+.picker-item:active {
+  background: #f0f6ff;
+}
+.picker-item-active {
+  background: linear-gradient(90deg, #e0edff, #f0f6ff);
+}
+.picker-item-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 28rpx;
+  font-weight: 600;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.avatar-active {
+  background: linear-gradient(135deg, #4f7cff, #7c6af0);
+}
+.picker-item-info {
+  flex: 1;
+  min-width: 0;
+}
+.picker-item-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1f2a44;
+  margin-bottom: 8rpx;
+}
+.picker-item-meta {
+  font-size: 24rpx;
+  color: #9ca3af;
+}
+.picker-check {
+  width: 50rpx;
+  height: 50rpx;
+  border-radius: 50%;
+  border: 4rpx solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  color: #ffffff;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+.check-active {
+  background: linear-gradient(135deg, #4f7cff, #7c6af0);
+  border-color: #4f7cff;
+}
+.picker-actions {
+  display: flex;
+  border-top: 2rpx solid #f1f5f9;
+}
+.picker-btn {
+  flex: 1;
+  height: 100rpx;
+  line-height: 100rpx;
+  font-size: 34rpx;
+  font-weight: 600;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+}
+.picker-btn::after {
+  border: none;
+}
+.picker-btn-cancel {
+  color: #6b7280;
+  border-right: 2rpx solid #f1f5f9;
+}
+.picker-btn-cancel:active {
+  background: #f8faff;
+}
+.picker-btn-confirm {
+  color: #4f7cff;
+}
+.picker-btn-confirm:active {
+  background: #e0edff;
+}

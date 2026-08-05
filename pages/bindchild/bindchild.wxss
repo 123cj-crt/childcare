@@ -1,0 +1,261 @@
+/* ===== 页面背景 ===== */
+page {
+  background: linear-gradient(145deg, #f0f6ff 0%, #e6edf9 100%);
+  min-height: 100vh;
+}
+/* ===== 页面容器 ===== */
+.page {
+  padding: 30rpx 24rpx 60rpx;
+  box-sizing: border-box;
+}
+/* ===== 页面标题 ===== */
+.page-header {
+  text-align: center;
+  margin-bottom: 40rpx;
+  padding: 20rpx 0;
+}
+.page-title {
+  font-size: 44rpx;
+  font-weight: 700;
+  color: #2c3e7a;
+  margin-bottom: 12rpx;
+}
+.page-sub {
+  font-size: 26rpx;
+  color: #9ca3af;
+}
+/* ===== 儿童卡片 ===== */
+.children-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+.child-card {
+  background: #ffffff;
+  border-radius: 28rpx;
+  padding: 32rpx 28rpx;
+  box-shadow: 0 8rpx 32rpx rgba(44, 62, 122, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+.child-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8rpx;
+  background: linear-gradient(90deg, #4f7cff, #7c6af0);
+  border-radius: 28rpx 28rpx 0 0;
+}
+.child-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 2rpx solid #f1f5f9;
+}
+.child-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f7cff, #7c6af0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+.child-avatar text {
+  color: #ffffff;
+  font-size: 32rpx;
+  font-weight: 600;
+}
+.child-name {
+  flex: 1;
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #1f2a44;
+}
+.child-delete {
+  font-size: 26rpx;
+  color: #ef4444;
+  padding: 8rpx 20rpx;
+  border: 2rpx solid #fecaca;
+  border-radius: 30rpx;
+  background: #fef2f2;
+}
+.child-delete:active {
+  background: #fee2e2;
+}
+/* ===== 儿童信息行 ===== */
+.child-info {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+.info-row {
+  display: flex;
+  align-items: center;
+}
+.info-label {
+  font-size: 28rpx;
+  color: #6b7280;
+  width: 140rpx;
+  flex-shrink: 0;
+}
+.info-value {
+  font-size: 30rpx;
+  color: #2d3748;
+  font-weight: 500;
+}
+/* ===== 空状态 ===== */
+.empty-state {
+  text-align: center;
+  padding: 100rpx 40rpx;
+}
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 24rpx;
+}
+.empty-text {
+  font-size: 34rpx;
+  color: #6b7280;
+  font-weight: 600;
+  margin-bottom: 12rpx;
+}
+.empty-hint {
+  font-size: 26rpx;
+  color: #9ca3af;
+}
+/* ===== 添加按钮 ===== */
+.add-btn-wrap {
+  margin-top: 40rpx;
+  padding: 0 20rpx;
+  text-align: center;
+}
+.add-btn {
+  width: 100%;
+  max-width: 440rpx;
+  height: 100rpx;
+  line-height: 100rpx;
+  background: linear-gradient(135deg, #4f7cff, #6c5ce7);
+  color: #ffffff;
+  border-radius: 60rpx;
+  font-size: 36rpx;
+  font-weight: 600;
+  box-shadow: 0 12rpx 28rpx rgba(79, 124, 255, 0.30);
+  border: none;
+}
+.add-btn::after {
+  border: none;
+}
+.add-btn:active {
+  transform: scale(0.96);
+}
+/* ===== 表单弹窗 ===== */
+.form-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx;
+}
+.form-panel {
+  width: 100%;
+  max-width: 640rpx;
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 36rpx 32rpx 32rpx;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+.form-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #1f2a44;
+  text-align: center;
+  margin-bottom: 32rpx;
+}
+/* ===== 表单组 ===== */
+.form-group {
+  margin-bottom: 24rpx;
+}
+.form-label {
+  font-size: 28rpx;
+  color: #4a5568;
+  margin-bottom: 12rpx;
+  font-weight: 500;
+}
+.required {
+  color: #ef4444;
+}
+.form-input {
+  width: 100%;
+  height: 84rpx;
+  line-height: 84rpx;
+  padding: 0 24rpx;
+  border: 2rpx solid #e2e8f0;
+  border-radius: 16rpx;
+  font-size: 30rpx;
+  color: #2d3748;
+  background: #f8faff;
+  box-sizing: border-box;
+}
+.form-input:focus {
+  border-color: #4f7cff;
+  background: #ffffff;
+}
+.form-picker {
+  width: 100%;
+  height: 84rpx;
+  line-height: 84rpx;
+  padding: 0 24rpx;
+  border: 2rpx solid #e2e8f0;
+  border-radius: 16rpx;
+  font-size: 30rpx;
+  color: #2d3748;
+  background: #f8faff;
+  box-sizing: border-box;
+}
+/* ===== 表单按钮 ===== */
+.form-actions {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 36rpx;
+  padding-top: 24rpx;
+  border-top: 2rpx solid #f1f5f9;
+}
+.form-btn {
+  flex: 1;
+  height: 88rpx;
+  line-height: 88rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  border-radius: 44rpx;
+  border: none;
+}
+.form-btn::after {
+  border: none;
+}
+.form-btn-cancel {
+  background: #f1f5f9;
+  color: #6b7280;
+}
+.form-btn-cancel:active {
+  background: #e2e8f0;
+}
+.form-btn-save {
+  background: linear-gradient(135deg, #4f7cff, #6c5ce7);
+  color: #ffffff;
+  box-shadow: 0 8rpx 20rpx rgba(79, 124, 255, 0.25);
+}
+.form-btn-save:active {
+  transform: scale(0.96);
+}

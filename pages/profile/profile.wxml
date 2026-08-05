@@ -1,0 +1,88 @@
+<!--profile.wxml-->
+<view class="profile-page">
+  <!-- 顶部 Hero 区（与其他页面统一风格） -->
+  <view class="page-hero">
+    <view class="hero-row">
+      <view class="hero-icon-circle">🌱</view>
+      <view class="hero-info">
+        <view class="hero-title">智慧托育</view>
+        <view class="hero-subtitle">陪伴每一个孩子的快乐成长</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 主体内容（与 Hero 重叠） -->
+  <view class="page-body">
+    <!-- 用户信息卡片 -->
+    <view class="user-card">
+      <image src="{{avatarUrl}}" class="avatar-icon" />
+      <view class="user-name-row">
+        <text class="username">{{nickName}}</text>
+        <view wx:if="{{isLoggedIn}}" class="edit-entry" bind:tap="startEdit">
+          <text class="edit-entry-text">编辑资料</text>
+        </view>
+      </view>
+      <view wx:if="{{!isLoggedIn}}" class="login-section">
+        <button class="login-btn" bind:tap="goToLogin">登录 / 注册</button>
+      </view>
+    </view>
+
+    <!-- 菜单列表（卡片化） -->
+    <view class="menu-list">
+      <view class="menu-item" bind:tap="viewChildren">
+        <image src="/icon/1.png" class="menu-icon" />
+        <text class="names">查看绑定的儿童</text>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-item" bind:tap="myCourses">
+        <image src="/icon/2.png" class="menu-icon" />
+        <text class="names">我的预约课程</text>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-item" bind:tap="viewHistory">
+        <image src="/icon/book.png" class="menu-icon" />
+        <text class="names">查看历史课程</text>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-item" bind:tap="contactUs">
+        <image src="/icon/3.png" class="menu-icon" />
+        <text class="names">联系我们</text>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-item" wx:if="{{isLoggedIn}}" bind:tap="logout">
+        <image src="/icon/4.png" class="menu-icon" />
+        <text class="names">退出登录</text>
+        <text class="menu-arrow">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 编辑资料弹窗（保留原结构） -->
+  <view wx:if="{{isEditing}}" class="edit-modal" catchtap="cancelEdit">
+    <view class="edit-content" catchtap="stopBubble">
+      <view class="edit-title">编辑个人资料</view>
+      <button class="avatar-btn"
+              open-type="chooseAvatar"
+              bind:chooseavatar="onChooseAvatar">
+        <image src="{{editAvatarUrl}}" class="edit-avatar" />
+        <text class="avatar-hint">点击更换头像</text>
+      </button>
+      <view class="form-item">
+        <text class="form-label">昵称</text>
+        <input id="nickname-input"
+               type="nickname"
+               value="{{editNickName}}"
+               bindinput="onNicknameInput"
+               bindblur="onNicknameBlur"
+               bindconfirm="onNicknameBlur"
+               confirm-type="done"
+               placeholder="点击输入昵称"
+               class="form-input" />
+      </view>
+      <view class="edit-actions">
+        <button class="btn-cancel" bind:tap="cancelEdit">取消</button>
+        <button class="btn-save" bind:tap="saveProfile">保存</button>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,249 @@
+/* ========== 页面容器 ========== */
+.page {
+  padding: 0;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* ========== 通用 Hero 区 ========== */
+.page-hero {
+  position: relative;
+  height: 200rpx;
+  background: linear-gradient(135deg, #836fff 0%, #63a8ff 60%, #7ec8f5 100%);
+  overflow: hidden;
+  padding: 0 40rpx;
+  display: flex;
+  align-items: center;
+}
+.page-hero::before {
+  content: "";
+  position: absolute;
+  width: 240rpx;
+  height: 240rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  top: -80rpx;
+  right: -80rpx;
+}
+.page-hero::after {
+  content: "";
+  position: absolute;
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  bottom: -60rpx;
+  left: -40rpx;
+}
+.hero-row {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+.hero-icon-circle {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 50rpx;
+  flex-shrink: 0;
+}
+.hero-info {
+  flex: 1;
+  min-width: 0;
+}
+.hero-title {
+  font-size: 42rpx;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 6rpx;
+}
+.hero-subtitle {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ========== 主体 ========== */
+.page-body {
+  margin-top: -40rpx;
+  padding: 0 30rpx 60rpx;
+  position: relative;
+  z-index: 3;
+}
+
+/* ========== 分组卡片 ========== */
+.groups {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+.group-card {
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 32rpx 28rpx;
+  box-shadow: 0 6rpx 24rpx rgba(99, 168, 255, 0.10);
+  position: relative;
+  overflow: hidden;
+}
+.group-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6rpx;
+  background: linear-gradient(90deg, #836fff, #63a8ff);
+  border-radius: 24rpx 24rpx 0 0;
+}
+
+/* ========== 儿童头部 ========== */
+.child-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 28rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 1rpx solid #f0f2f5;
+}
+.child-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #836fff, #63a8ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+.child-avatar text {
+  color: #ffffff;
+  font-size: 32rpx;
+  font-weight: 600;
+}
+.child-info {
+  flex: 1;
+  min-width: 0;
+}
+.child-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6rpx;
+}
+.child-meta {
+  font-size: 24rpx;
+  color: #8c8c8c;
+}
+.course-count {
+  font-size: 24rpx;
+  color: #836fff;
+  font-weight: 600;
+  background: rgba(131, 111, 255, 0.1);
+  padding: 6rpx 18rpx;
+  border-radius: 30rpx;
+}
+
+/* ========== 课程列表 ========== */
+.course-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+.course-item {
+  display: flex;
+  align-items: stretch;
+  background: #f5f7fc;
+  border-radius: 16rpx;
+  padding: 24rpx 20rpx;
+  transition: background 0.2s;
+}
+.course-item:active {
+  background: rgba(99, 168, 255, 0.08);
+}
+.course-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 100rpx;
+  flex-shrink: 0;
+}
+.course-date {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #836fff;
+}
+.course-week {
+  font-size: 22rpx;
+  color: #8c8c8c;
+  margin-top: 4rpx;
+}
+.course-divider {
+  width: 2rpx;
+  background: #e2e8f0;
+  margin: 0 20rpx;
+  flex-shrink: 0;
+}
+.course-right {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6rpx;
+}
+.course-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.4;
+}
+.course-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  flex-wrap: wrap;
+}
+.course-time {
+  font-size: 22rpx;
+  color: #836fff;
+  background: rgba(131, 111, 255, 0.1);
+  padding: 4rpx 12rpx;
+  border-radius: 12rpx;
+}
+.course-teacher {
+  font-size: 24rpx;
+  color: #8c8c8c;
+}
+.course-location {
+  font-size: 22rpx;
+  color: #8c8c8c;
+}
+
+/* ========== 空状态 ========== */
+.empty-state {
+  text-align: center;
+  padding: 120rpx 40rpx;
+  background: #fff;
+  border-radius: 24rpx;
+  box-shadow: 0 4rpx 20rpx rgba(99, 168, 255, 0.10);
+}
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 24rpx;
+}
+.empty-text {
+  font-size: 32rpx;
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 12rpx;
+}
+.empty-hint {
+  font-size: 24rpx;
+  color: #8c8c8c;
+}

@@ -1,0 +1,68 @@
+/* 页面基础底色、字体 */
+page {
+  background-color: #f5f7fc;
+  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 30rpx;
+  color: #333;
+  padding: 0;
+  margin: 0;
+}
+
+/* 通用卡片样式（首页课程、弹窗全部复用） */
+.card {
+  background: #fff;
+  border-radius: 20rpx;
+  margin: 24rpx 30rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(99, 168, 255, 0.12);
+}
+
+/* 大标题通用 */
+.title-big {
+  font-size: 72rpx;
+  font-weight: 500;
+  color: #63a8ff;
+  text-align: center;
+  margin: 120rpx 0;
+}
+/* 板块小标题 */
+.section-title {
+  font-size: 40rpx;
+  font-weight: 600;
+  text-align: center;
+  margin: 40rpx 0 20rpx;
+  position: relative;
+  color: #333;
+}
+.section-title::after {
+  content: "";
+  width: 60rpx;
+  height: 6rpx;
+  background: linear-gradient(90deg, #836fff, #63a8ff);
+  position: absolute;
+  bottom: -14rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 3rpx;
+}
+
+/* 紫色渐变登录按钮通用 */
+.btn-primary {
+  width: 86%;
+  height: 100rpx;
+  line-height: 100rpx;
+  text-align: center;
+  border-radius: 50rpx;
+  background: linear-gradient(135deg, #836fff, #63a8ff);
+  color: #fff;
+  font-size: 36rpx;
+  font-weight: 500;
+  margin: 40rpx auto;
+}
+
+/* 辅助灰色文字 */
+.text-desc {
+  color: #8c8c8c;
+  font-size: 26rpx;
+  line-height: 1.6;
+}

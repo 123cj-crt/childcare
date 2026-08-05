@@ -1,0 +1,84 @@
+<!--pages/history-courses/history-courses.wxml-->
+<view class="page">
+  <!-- 顶部 Hero 区（与其他页面统一风格） -->
+  <view class="page-hero">
+    <view class="hero-row">
+      <view class="hero-icon-circle">📚</view>
+      <view class="hero-info">
+        <view class="hero-title">历史课程</view>
+        <view class="hero-subtitle">已完成的学习记录</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 主体内容 -->
+  <view class="page-body">
+    <!-- 演示提示 -->
+    <view class="demo-tip" wx:if="{{isDemo}}">
+      <text class="demo-tip-icon">💡</text>
+      <text class="demo-tip-text">演示模式：当前没有已完成的课程，暂用所有预约展示效果</text>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{isEmpty}}">
+      <view class="empty-icon">📭</view>
+      <view class="empty-text">暂无历史课程</view>
+      <view class="empty-sub">完成课程后这里会自动出现记录</view>
+    </view>
+
+    <!-- 历史课程列表 -->
+    <view class="history-list" wx:else>
+      <view class="list-header">已完成课程（{{historyList.length}}）</view>
+
+      <view class="history-card" wx:for="{{historyList}}" wx:key="courseId-{{item.childId}}">
+        <view class="card-top-bar"></view>
+
+        <!-- 已完成徽章 -->
+        <view class="completed-badge">
+          <text class="completed-icon">✓</text>
+          <text class="completed-text">已完成</text>
+        </view>
+
+        <!-- 课程标题 -->
+        <view class="course-name">{{item.courseName}}</view>
+
+        <!-- 预约儿童徽章 -->
+        <view class="child-badge" wx:if="{{item.childName}}">
+          <text class="badge-avatar">{{item.childName}}</text>
+          <text class="badge-info">为 {{item.childName}} 预约{{item.childAge ? ' · ' + item.childAge : ''}}{{item.childRelation ? ' · ' + item.childRelation : ''}}</text>
+        </view>
+
+        <!-- 标签 -->
+        <view class="tags-row">
+          <text class="tag tag-date">{{item.date}}</text>
+          <text class="tag tag-week">{{item.weekday}}</text>
+          <text class="tag tag-time">{{item.time}}</text>
+        </view>
+
+        <!-- 上课地点 -->
+        <view class="info-row">
+          <text class="info-label">上课地点</text>
+          <text class="info-value">{{item.location}}</text>
+        </view>
+
+        <!-- 教师信息 -->
+        <view class="info-row">
+          <text class="info-label">授课教师</text>
+          <text class="info-value">{{item.teacher}}</text>
+        </view>
+
+        <!-- 联系电话 -->
+        <view class="info-row">
+          <text class="info-label">联系电话</text>
+          <text class="info-value phone-link" bindtap="makePhoneCall" data-phone="{{item.teacherPhone}}">{{item.teacherPhone}}（点击拨打）</text>
+        </view>
+
+        <!-- 预约时间 -->
+        <view class="info-row">
+          <text class="info-label">预约时间</text>
+          <text class="info-value reserved-time">{{item.reservedAt}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

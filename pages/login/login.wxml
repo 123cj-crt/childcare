@@ -1,0 +1,65 @@
+<!--pages/login/login.wxml-->
+<view class="login-page">
+  <!-- 顶部渐变 Hero 区 -->
+  <view class="login-hero">
+    <!-- 装饰圆 -->
+    <view class="hero-circle hero-circle-1"></view>
+    <view class="hero-circle hero-circle-2"></view>
+    <view class="hero-circle hero-circle-3"></view>
+
+    <view class="hero-content">
+      <view class="hero-logo">🌱</view>
+      <view class="hero-title">智慧托育</view>
+      <view class="hero-subtitle">陪伴每一个孩子的快乐成长</view>
+    </view>
+
+    <!-- 底部波浪分隔 -->
+    <view class="hero-wave">
+      <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+        <path d="M0,60 C360,120 1080,0 1440,60 L1440,120 L0,120 Z" fill="#f5f7fc"/>
+      </svg>
+    </view>
+  </view>
+
+  <!-- 登录卡片 -->
+  <view class="login-card">
+    <view class="card-title">欢迎登录</view>
+    <view class="card-tip">使用微信账号一键登录</view>
+
+    <!-- 微信登录按钮 -->
+    <view class="btn-primary" bind:tap="quickLogin">
+      <view class="wechat-icon-wrap">
+        <view class="wechat-glyph">微</view>
+      </view>
+      <text class="btn-text">微信登录</text>
+    </view>
+
+    <view class="card-divider">
+      <view class="divider-line"></view>
+      <text class="divider-text">安全 · 便捷 · 可信</text>
+      <view class="divider-line"></view>
+    </view>
+  </view>
+
+  <!-- 用户信息区（隐藏备用，目前未使用） -->
+  <view class="userinfo-section" wx:if="{{showUserInfoButtons}}">
+    <button class="avatar-btn" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+      <image class="avatar-img" src="{{avatarUrl}}" mode="aspectFill"></image>
+    </button>
+    <input type="nickname" class="nickname-input" placeholder="请输入昵称" model:value="{{nickName}}" />
+  </view>
+
+  <!-- 协议勾选 -->
+  <view class="agree-box">
+    <checkbox-group bindchange="onAgreementChange">
+      <label class="agree-label">
+        <checkbox value="true" color="#836fff" class="agree-checkbox"/>
+        <text class="agree-text">我已阅读并同意
+          <text class="link" bindtap="goToUserProtocol">《用户协议》</text>
+          <text class="link" bindtap="goToUserProtocol">《隐私政策》</text>
+          <text class="link" bindtap="goToUserProtocol">《儿童隐私政策》</text>
+        </text>
+      </label>
+    </checkbox-group>
+  </view>
+</view>

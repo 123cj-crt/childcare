@@ -1,0 +1,183 @@
+/* 页面整体容器 */
+.notice-wrap {
+  min-height: 100vh;
+  padding: 0 0 60rpx;
+  box-sizing: border-box;
+}
+
+/* ========== 通用 Hero 区 ========== */
+.page-hero {
+  position: relative;
+  height: 200rpx;
+  background: linear-gradient(135deg, #836fff 0%, #63a8ff 60%, #7ec8f5 100%);
+  overflow: hidden;
+  padding: 0 40rpx;
+  display: flex;
+  align-items: center;
+}
+.page-hero::before {
+  content: "";
+  position: absolute;
+  width: 240rpx;
+  height: 240rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  top: -80rpx;
+  right: -80rpx;
+}
+.page-hero::after {
+  content: "";
+  position: absolute;
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  bottom: -60rpx;
+  left: -40rpx;
+}
+.hero-row {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+.hero-icon-circle {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 50rpx;
+  flex-shrink: 0;
+}
+.hero-info {
+  flex: 1;
+  min-width: 0;
+}
+.hero-title {
+  font-size: 42rpx;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 6rpx;
+}
+.hero-subtitle {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ========== 主体（与 Hero 重叠） ========== */
+.page-body {
+  margin-top: -40rpx;
+  padding: 0 30rpx;
+  position: relative;
+  z-index: 3;
+}
+
+/* ========== 通知列表 ========== */
+.notice-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+/* ========== 通知卡片 ========== */
+.notice-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 28rpx;
+  box-shadow: 0 4rpx 20rpx rgba(99, 168, 255, 0.10);
+  transition: all 0.2s ease;
+}
+.notice-item:active {
+  transform: scale(0.98);
+  background: #f5f7fc;
+}
+
+.notice-left {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  flex: 1;
+  min-width: 0;
+}
+
+.icon-box {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.notice-blue {
+  background: linear-gradient(135deg, #dbeafe, #e0edff);
+}
+.notice-green {
+  background: linear-gradient(135deg, #d1fae5, #e6fff5);
+}
+.notice-purple {
+  background: linear-gradient(135deg, #ede9fe, #f0e7ff);
+}
+
+.icon-text {
+  font-size: 38rpx;
+}
+
+.notice-text {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+  min-width: 0;
+}
+.notice-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+}
+.notice-desc {
+  font-size: 24rpx;
+  color: #8c8c8c;
+  line-height: 1.5;
+}
+
+/* ========== 右侧角标 + 箭头 ========== */
+.notice-right {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  flex-shrink: 0;
+}
+.badge {
+  min-width: 36rpx;
+  height: 36rpx;
+  line-height: 36rpx;
+  text-align: center;
+  font-size: 22rpx;
+  color: #fff;
+  background: linear-gradient(135deg, #ff6b6b, #ff4d4f);
+  border-radius: 18rpx;
+  padding: 0 10rpx;
+}
+.arrow {
+  font-size: 40rpx;
+  color: #ccc;
+  line-height: 1;
+}
+
+/* ========== 底部提示 ========== */
+.notice-tip {
+  margin-top: 40rpx;
+  text-align: center;
+}
+.tip-text {
+  font-size: 24rpx;
+  color: #aaa;
+  line-height: 1.6;
+}

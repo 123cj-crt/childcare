@@ -1,0 +1,243 @@
+/* ========== 登录页 ========== */
+.login-page {
+  min-height: 100vh;
+  background-color: #f5f7fc;
+  padding: 0;
+  margin: 0;
+}
+
+/* 顶部 Hero 区 */
+.login-hero {
+  position: relative;
+  width: 100%;
+  height: 480rpx;
+  background: linear-gradient(135deg, #836fff 0%, #63a8ff 60%, #7ec8f5 100%);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+}
+.hero-circle-1 {
+  width: 300rpx;
+  height: 300rpx;
+  top: -100rpx;
+  right: -80rpx;
+}
+.hero-circle-2 {
+  width: 180rpx;
+  height: 180rpx;
+  bottom: 60rpx;
+  left: -50rpx;
+  background: rgba(255, 255, 255, 0.08);
+}
+.hero-circle-3 {
+  width: 120rpx;
+  height: 120rpx;
+  top: 80rpx;
+  left: 40rpx;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 40rpx;
+}
+
+.hero-logo {
+  font-size: 120rpx;
+  line-height: 1;
+  margin-bottom: 16rpx;
+  filter: drop-shadow(0 6rpx 12rpx rgba(0, 0, 0, 0.12));
+}
+
+.hero-title {
+  font-size: 56rpx;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 4rpx;
+  margin-bottom: 12rpx;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.hero-subtitle {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.92);
+  letter-spacing: 2rpx;
+}
+
+/* 底部波浪 */
+.hero-wave {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2rpx;
+  width: 100%;
+  height: 60rpx;
+  line-height: 0;
+}
+.hero-wave svg {
+  width: 100%;
+  height: 60rpx;
+  display: block;
+}
+
+/* 登录卡片 */
+.login-card {
+  position: relative;
+  margin: -40rpx 40rpx 0;
+  background: #fff;
+  border-radius: 28rpx;
+  padding: 50rpx 40rpx 60rpx;
+  box-shadow: 0 12rpx 40rpx rgba(99, 168, 255, 0.15);
+  z-index: 3;
+}
+
+.card-title {
+  font-size: 44rpx;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  margin-bottom: 12rpx;
+}
+
+.card-tip {
+  font-size: 26rpx;
+  color: #999;
+  text-align: center;
+  margin-bottom: 50rpx;
+}
+
+/* 微信登录按钮 */
+.btn-primary {
+  width: 100%;
+  height: 100rpx;
+  line-height: 100rpx;
+  border-radius: 50rpx;
+  background: linear-gradient(135deg, #836fff, #63a8ff);
+  color: #fff;
+  font-size: 34rpx;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 20rpx rgba(131, 111, 255, 0.35);
+}
+
+.wechat-icon-wrap {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16rpx;
+}
+
+.wechat-glyph {
+  font-size: 28rpx;
+  color: #fff;
+  font-weight: 600;
+}
+
+.btn-text {
+  color: #fff;
+  font-size: 34rpx;
+  font-weight: 500;
+  letter-spacing: 2rpx;
+}
+
+/* 卡片底部装饰条 */
+.card-divider {
+  margin-top: 50rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.divider-line {
+  flex: 1;
+  height: 1rpx;
+  background: #eee;
+}
+.divider-text {
+  font-size: 22rpx;
+  color: #bbb;
+  margin: 0 20rpx;
+  letter-spacing: 4rpx;
+}
+
+/* 用户信息区（备用） */
+.userinfo-section {
+  margin: 40rpx 40rpx 0;
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 30rpx;
+  align-items: center;
+  box-shadow: 0 4rpx 20rpx rgba(99, 168, 255, 0.12);
+}
+
+.avatar-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  line-height: 0;
+}
+.avatar-btn::after {
+  border: none;
+}
+.avatar-img {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+}
+
+.nickname-input {
+  width: 100%;
+  height: 80rpx;
+  border: 1rpx solid #e5e5e5;
+  border-radius: 16rpx;
+  padding: 0 20rpx;
+  box-sizing: border-box;
+}
+
+/* 协议勾选 */
+.agree-box {
+  margin: 40rpx 40rpx 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+.agree-label {
+  display: inline-flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  font-size: 24rpx;
+  color: #8c8c8c;
+  line-height: 1.6;
+}
+.agree-checkbox {
+  margin-right: 10rpx;
+  transform: scale(0.85);
+  margin-top: 2rpx;
+}
+.agree-text {
+  flex: 1;
+  min-width: 0;
+}
+.link {
+  color: #63a8ff;
+  margin: 0 4rpx;
+}

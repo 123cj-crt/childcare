@@ -1,0 +1,41 @@
+<!--pages/notice-list/notice-list.wxml-->
+<view class="notice-list-page">
+  <!-- 顶部标题区 -->
+  <view class="list-header">
+    <view class="header-icon" style="background: {{color}}20;">
+      <text style="font-size: 48rpx;">{{icon}}</text>
+    </view>
+    <view class="header-text">
+      <view class="header-title">{{type}}</view>
+      <view class="header-sub">共 {{notices.length}} 条</view>
+    </view>
+  </view>
+  <!-- 公告列表 -->
+  <view class="list-body" wx:if="{{notices.length > 0}}">
+    <block wx:for="{{notices}}" wx:key="id">
+      <view class="notice-card {{item.isRead ? 'read' : ''}}" bindtap="goNoticeDetail" data-id="{{item.id}}">
+        <view class="card-left">
+          <view class="card-icon" style="background: {{item.color || color}}18;">
+            <text style="font-size: 40rpx;">{{item.icon || icon}}</text>
+          </view>
+        </view>
+        <view class="card-right">
+          <view class="card-title-wrap">
+            <view class="card-title">{{item.title}}</view>
+            <view class="unread-dot" wx:if="{{!item.isRead}}"></view>
+          </view>
+          <view class="card-summary">{{item.summary}}</view>
+          <view class="card-footer">
+            <text class="card-time">{{item.time}}</text>
+            <text class="card-arrow">›</text>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{notices.length === 0}}">
+    <view class="empty-icon">📭</view>
+    <view class="empty-text">{{emptyText}}</view>
+  </view>
+</view>
