@@ -1,0 +1,45 @@
+<!--pages/notice-detail/notice-detail.wxml-->
+<view class="detail-page" wx:if="{{notice}}">
+  <!-- 顶部头图区 -->
+  <view class="detail-hero" style="background: linear-gradient(135deg, {{notice.color}} 0%, {{notice.color}}dd 100%);">
+    <view class="hero-content">
+      <view class="hero-icon">{{notice.icon}}</view>
+      <view class="hero-title">{{notice.title}}</view>
+      <view class="hero-meta">
+        <text class="hero-time">{{notice.time}}</text>
+        <text class="hero-tag">{{notice.id === 'guide_001' ? '使用指南' : '课程安排'}}</text>
+      </view>
+    </view>
+    <!-- 底部波浪装饰 -->
+    <view class="hero-wave">
+      <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+        <path d="M0,60 C360,120 1080,0 1440,60 L1440,120 L0,120 Z" fill="#f7f8fa"/>
+      </svg>
+    </view>
+  </view>
+  <!-- 正文内容区 -->
+  <view class="detail-body">
+    <block wx:for="{{notice.sections}}" wx:key="step">
+      <view class="section-card">
+        <view class="section-header">
+          <view class="section-step" style="background: {{notice.color}}15; color: {{notice.color}};">
+            {{item.step}}
+          </view>
+          <view class="section-title">{{item.title}}</view>
+        </view>
+        <view class="section-desc">{{item.desc}}</view>
+        <view class="section-tips" wx:if="{{item.tips && item.tips.length > 0}}">
+          <view class="tip-item" wx:for="{{item.tips}}" wx:for-item="tip" wx:key="*this">
+            <view class="tip-dot" style="background: {{notice.color}};"></view>
+            <view class="tip-text">{{tip}}</view>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+  <!-- 底部提示 -->
+  <view class="detail-footer">
+    <view class="footer-line"></view>
+    <view class="footer-text">智慧托育中心 · 让关爱触手可及</view>
+  </view>
+</view>

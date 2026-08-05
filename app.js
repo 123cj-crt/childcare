@@ -6,10 +6,18 @@ App({
     })
     // 小程序启动时执行的逻辑
     console.log('小程序启动了')
+
+    // 检查登录状态，如果没登录则跳转登录页
+    const token = wx.getStorageSync('token')
+    if (!token) {
+      // 可以根据实际需求决定是否自动跳转
+      console.log('未登录')
+    }
   },
   globalData: {
     // 全局数据
     userInfo: null,
+    API_BASE_URL: 'http://119.29.254.108:8080', // 已改为真实服务器地址
     notifications: [], // 用于存储通知的数组
     // 仅在本次小程序运行期间保存财税聊天，避免将儿童对话写入本地持久化存储。
     taxAgentChat: null

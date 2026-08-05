@@ -1,52 +1,101 @@
-<view class="page">
-  <!-- 标题 -->
-  <view class="title">智慧托育</view>
-  
+<!--pages/course-detail/course-detail.wxml-->
+<view class="page" wx:if="{{course}}">
+  <!-- 课程标题 -->
+  <view class="course-header">
+    <view class="course-title">{{course.name}}</view>
+    <view class="course-tags">
+      <text class="tag tag-date">{{course.date}}</text>
+      <text class="tag tag-week">{{course.weekday}}</text>
+      <text class="tag tag-time">{{course.time}}</text>
+    </view>
+  </view>
   <!-- 日期时间 -->
   <view class="card">
     <view class="card-label">日期时间</view>
     <view class="card-content">
-      <picker mode="date" value="{{date}}" bindchange="bindDateChange">
-        <view class="picker">{{date}}</view>
-      </picker>
-      <picker mode="time" value="{{time}}" bindchange="bindTimeChange">
-        <view class="picker">{{time}}</view>
-      </picker>
+      <text>{{course.date}} {{course.weekday}} {{course.time}}</text>
     </view>
   </view>
-  
   <!-- 上课地点 -->
   <view class="card">
     <view class="card-label">上课地点</view>
-    <view class="card-content">{{location}}</view>
+    <view class="card-content">
+      <text>{{course.location}}</text>
+    </view>
   </view>
-  
   <!-- 课程介绍 -->
   <view class="card">
     <view class="card-label">课程介绍</view>
-    <view class="card-content">{{introduction}}</view>
+    <view class="card-content intro-text">
+      <text>{{course.description}}</text>
+    </view>
+    <view class="card-sub">适合对象：{{course.targetAge}}</view>
   </view>
-  
   <!-- 教师信息 -->
   <view class="card">
     <view class="card-label">教师信息</view>
     <view class="card-content">
-      <view>教师姓名：{{teacherName}}</view>
-      <view>联系电话：{{teacherPhone}}</view>
+      <view class="teacher-row">
+        <view class="teacher-avatar">
+          <text class="avatar-text">{{teacher.name}}</text>
+        </view>
+        <view class="teacher-detail">
+          <view class="teacher-name">教师姓名：{{teacher.name}}</view>
+          <view class="teacher-phone" bindtap="makePhoneCall">联系电话：{{teacher.phone}}（点击拨打）</view>
+        </view>
+      </view>
     </view>
   </view>
-  
   <!-- 课程容量 -->
   <view class="card">
     <view class="card-label">课程容量</view>
     <view class="card-content">
-      <view>当前预约：{{currentBooking}}/{{maxCapacity}}人</view>
-      <view class="status">{{status}}</view>
+      <view class="capacity-row">
+        <view class="capacity-text">当前预约：{{currentReservations}}/{{course.capacity}}人</view>
+        <view class="capacity-bar-wrap">
+          <view class="capacity-bar" style="width: {{capacityPercent}}"></view>
+        </view>
+        <view class="capacity-status {{isFull ? 'status-full' : 'status-available'}}">
+          {{isFull ? '已满' : '可预约'}}
+        </view>
+      </view>
     </view>
   </view>
-  
   <!-- 预约按钮 -->
   <view class="btn-container">
-    <button class="book-btn">预约课程</button>
+    <button class="book-btn {{isReserved ? 'btn-reserved' : ''}}" bindtap="onReserveTap">
+      {{isReserved ? '管理预约（已预约' + reservedCount + '人）' : '预约课程'}}
+    </button>
+  </view>
+  <!-- 儿童选择器弹窗 -->
+  <view class="child-picker-mask" wx:if="{{showChildPicker}}" bindtap="onCancelChildPicker">
+    <view class="child-picker" catchtap="stopBubble">
+      <view class="picker-title">选择预约的儿童</view>
+      <view class="picker-sub">点击儿童切换预约状态</view>
+      <scroll-view class="picker-list" scroll-y>
+        <view
+          class="picker-item {{item.reserved ? 'picker-item-active' : ''}}"
+          wx:for="{{pickerChildren}}"
+          wx:key="id"
+          catchtap="onToggleChildReserve"
+          data-id="{{item.id}}"
+        >
+          <view class="picker-item-avatar {{item.reserved ? 'avatar-active' : ''}}">
+            <text>{{item.name}}</text>
+          </view>
+          <view class="picker-item-info">
+            <view class="picker-item-name">{{item.name}}</view>
+            <view class="picker-item-meta">{{item.age}} · {{item.gender}}</view>
+          </view>
+          <view class="picker-check {{item.reserved ? 'check-active' : ''}}">
+            <text wx:if="{{item.reserved}}">✓</text>
+          </view>
+        </view>
+      </scroll-view>
+      <view class="picker-actions">
+        <button class="picker-btn picker-btn-cancel" catchtap="onCancelChildPicker">取消</button>
+        <button class="picker-btn picker-btn-confirm" catchtap="onConfirmChildPicker">确认</button>
+      </view>
+    </view>
   </view>
 </view>

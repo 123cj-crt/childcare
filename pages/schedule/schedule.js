@@ -1,84 +1,91 @@
-const { request } = require('../../utils/request');
-
+// pages/schedule/schedule.js
 Page({
   data: {
-    schedules: [],
-    startDate: '',
-    endDate: '',
-    hasShownFallbackNotice: false
+    scheduleGroups: [],
+    hasChildren: false,
+    hasReservations: false
   },
 
   onLoad() {
-    const today = new Date();
-    const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    this.setData({ startDate: formattedDate, endDate: formattedDate });
+    this.loadSchedule()
   },
 
   onShow() {
-    this.loadSchedules();
+    this.loadSchedule()
   },
 
-  bindStartDateChange(e) {
-    this.setData({ startDate: e.detail.value }, () => this.loadSchedules());
-  },
+  loadSchedule() {
+    const myChildren = wx.getStorageSync('myChildren') || []
+    let myReservations = wx.getStorageSync('myReservations') || []
 
-  bindEndDateChange(e) {
-    this.setData({ endDate: e.detail.value }, () => this.loadSchedules());
-  },
-
-  loadSchedules() {
-    request({ path: '/api/courses' })
-      .then((courseResponse) => {
-        const courses = Array.isArray(courseResponse.data) ? courseResponse.data : [];
-        const courseMap = courses.reduce((result, course) => {
-          result[course.id] = course;
-          return result;
-        }, {});
-
-        return request({
-          path: '/api/reservations',
-          data: {
-            startDate: this.data.startDate,
-            endDate: this.data.endDate
-          }
-        }).then((reservationResponse) => ({ courseMap, reservations: reservationResponse.data }));
-      })
-      .then(({ courseMap, reservations }) => {
-        const schedules = (Array.isArray(reservations) ? reservations : []).map((reservation) => {
-          const course = courseMap[reservation.courseId];
-          return {
-            id: reservation.id,
-            name: `${course ? course.name : '未知课程'} - ${reservation.childName || '未登记儿童'}`,
-            courseStartDate: course ? String(course.startDate) : 'N/A',
-            courseEndDate: course ? String(course.endDate) : 'N/A',
-            courseSchedule: course ? course.schedule : 'N/A',
-            icon: '/icon/book.png'
-          };
-        });
-        this.setData({ schedules });
-      })
-      .catch((error) => {
-        console.warn('[课表] 课程或预约接口不可用，已显示示例数据。', error);
-        this.setData({ schedules: this.getSampleSchedules() });
-        this.showFallbackNotice();
-      });
-  },
-
-  showFallbackNotice() {
-    if (this.data.hasShownFallbackNotice) {
-      return;
+    if (!Array.isArray(myReservations)) {
+      myReservations = []
     }
 
-    this.setData({ hasShownFallbackNotice: true });
-    wx.showToast({ title: '后端不可用，已显示示例数据', icon: 'none' });
+    this.setData({
+      hasChildren: myChildren.length > 0,
+      hasReservations: myReservations.length > 0
+    })
+
+    if (myChildren.length === 0 || myReservations.length === 0) {
+      this.setData({ scheduleGroups: [] })
+      return
+    }
+
+    // 按儿童分组
+    const groups = myChildren.map(child => {
+      const childReservations = myReservations.filter(r =>
+        String(r.childId) === String(child.id)
+      )
+
+      // 按日期排序（8月10日 → 8月11日 → ...）
+      childReservations.sort((a, b) => {
+        const dateA = this.parseDate(a.date)
+        const dateB = this.parseDate(b.date)
+        if (dateA !== dateB) return dateA - dateB
+        // 同一天按时间排序
+        return (a.time || '').localeCompare(b.time || '')
+      })
+
+      return {
+        childId: child.id,
+        childName: child.name,
+        childAge: child.age,
+        childGender: child.gender,
+        avatarText: child.name ? child.name[0] : '?',
+        courses: childReservations.map(r => ({
+          courseId: r.courseId,
+          courseName: r.courseName,
+          date: r.date,
+          weekday: r.weekday,
+          time: r.time,
+          location: r.location,
+          teacher: r.teacher
+        }))
+      }
+    }).filter(g => g.courses.length > 0) // 只显示有课的儿童
+
+    this.setData({
+      scheduleGroups: groups,
+      hasReservations: groups.length > 0
+    })
   },
 
-  getSampleSchedules() {
-    return [
-      { id: 1, name: '创意美术课 - 小明', courseStartDate: '2024-01-15', courseEndDate: '2024-03-15', courseSchedule: '周一 09:00-10:30', icon: '/icon/book.png' },
-      { id: 2, name: '音乐启蒙课 - 小红', courseStartDate: '2024-01-16', courseEndDate: '2024-03-16', courseSchedule: '周二 14:00-15:30', icon: '/icon/book.png' },
-      { id: 3, name: '科学探索课 - 小刚', courseStartDate: '2024-01-17', courseEndDate: '2024-03-17', courseSchedule: '周三 10:00-11:30', icon: '/icon/book.png' },
-      { id: 4, name: '运动体能课 - 小丽', courseStartDate: '2024-01-18', courseEndDate: '2024-03-18', courseSchedule: '周四 15:00-16:30', icon: '/icon/book.png' }
-    ];
+  // 把 "8月10日" 转成可排序的数字 810
+  parseDate(dateStr) {
+    if (!dateStr) return 0
+    const match = dateStr.match(/(\d+)月(\d+)日/)
+    if (match) {
+      return parseInt(match[1]) * 100 + parseInt(match[2])
+    }
+    return 0
+  },
+
+  // 点击课程跳转到详情
+  onCourseTap(e) {
+    const courseId = e.currentTarget.dataset.id
+    wx.navigateTo({
+      url: `/pages/course-detail/course-detail?id=${courseId}`
+    })
   }
-});
+})
