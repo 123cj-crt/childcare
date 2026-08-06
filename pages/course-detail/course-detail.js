@@ -195,15 +195,18 @@ Page({
     if (DEBUG_MOCK_DATA) {
       const course = MOCK_COURSES.find(c => c.id === parseInt(id))
       if (course) {
+        // 优先使用缓存的真实人数，避免先显示 mock 默认值再跳变
+        const cachedCounts = wx.getStorageSync('cloud_course_counts') || {}
+        const initialCount = cachedCounts[course.id] !== undefined ? cachedCounts[course.id] : course.currentStudents
         this.setData({
           course: course,
           teacher: {
             name: course.teacher,
             phone: course.teacherPhone
           },
-          currentReservations: course.currentStudents,
-          isFull: course.currentStudents >= course.capacity,
-          capacityPercent: Math.round(course.currentStudents / course.capacity * 100)
+          currentReservations: initialCount,
+          isFull: initialCount >= course.capacity,
+          capacityPercent: Math.round(initialCount / course.capacity * 100)
         })
         // 云开发模式：用真实预约人数覆盖 mock 的 currentStudents
         if (USE_CLOUD_RESERVATION) {
@@ -337,6 +340,10 @@ Page({
       if (res.result && res.result.code === 0) {
         const count = res.result.total
         const capacity = this.data.course ? this.data.course.capacity : 0
+        // 更新缓存，其他页面进入时可先显示最新人数
+        const cachedCounts = wx.getStorageSync('cloud_course_counts') || {}
+        cachedCounts[courseId] = count
+        wx.setStorageSync('cloud_course_counts', cachedCounts)
         this.setData({
           currentReservations: count,
           isFull: count >= capacity,

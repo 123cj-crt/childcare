@@ -167,19 +167,31 @@ Page({
     courses: []
   },
 
+  // 防止过期云函数响应覆盖当前数据
+  _cloudCountReqId: 0,
+
   onLoad() {
     this.loadData()
   },
 
   onShow() {
-    this.loadData()
+    // 只在有缓存时刷新人数，不重置整个列表，避免明显跳动
+    if (USE_CLOUD_RESERVATION && DEBUG_MOCK_DATA) {
+      this.fetchCloudCounts()
+    }
   },
 
   loadData() {
     if (DEBUG_MOCK_DATA) {
+      // 先读本地缓存的真实人数，避免先显示 mock 默认值再跳变
+      const cachedCounts = wx.getStorageSync('cloud_course_counts') || {}
+      const courses = MOCK_COURSES.map(c => ({
+        ...c,
+        currentStudents: cachedCounts[c.id] !== undefined ? cachedCounts[c.id] : c.currentStudents
+      }))
       this.setData({
         banners: MOCK_BANNERS,
-        courses: MOCK_COURSES
+        courses: courses
       })
       // 云开发模式：批量查每门课的实时预约人数
       if (USE_CLOUD_RESERVATION) {
@@ -195,12 +207,17 @@ Page({
   // 云开发：批量查每门课的实时预约人数（跨用户共享）
   fetchCloudCounts() {
     const courseIds = MOCK_COURSES.map(c => c.id)
+    const reqId = ++this._cloudCountReqId
     wx.cloud.callFunction({
       name: 'reservation',
       data: { action: 'batchCount', courseIds: courseIds }
     }).then(res => {
+      // 忽略过期请求的结果
+      if (reqId !== this._cloudCountReqId) return
       if (res.result && res.result.code === 0) {
         const counts = res.result.data || {}
+        // 缓存到本地，下次进入页面时先显示缓存值，避免跳动
+        wx.setStorageSync('cloud_course_counts', counts)
         const courses = this.data.courses.map(c => ({
           ...c,
           currentStudents: counts[c.id] !== undefined ? counts[c.id] : c.currentStudents
