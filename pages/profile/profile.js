@@ -179,6 +179,17 @@ Page({
     });
   },
 
+  // 课程预约名单 —— 跳转到管理页面
+  viewReservations() {
+    if (!this.data.isLoggedIn) {
+      this.showLoginPrompt();
+      return;
+    }
+    wx.navigateTo({
+      url: '/pages/course-reservations/course-reservations'
+    });
+  },
+
   // 退出登录
   logout() {
     if (!this.data.isLoggedIn) {

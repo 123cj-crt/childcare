@@ -25,6 +25,16 @@ exports.main = async (event, context) => {
         return { code: 0, total: res.total }
       }
 
+      // ===== 查某课程的所有预约名单（管理用） =====
+      case 'courseList': {
+        const cid = parseInt(event.courseId)
+        const res = await db.collection('reservations')
+          .where({ courseId: cid })
+          .orderBy('reservedAt', 'desc')
+          .get()
+        return { code: 0, data: res.data, total: res.data.length }
+      }
+
       // ===== 批量查多门课的预约总数（首页用） =====
       case 'batchCount': {
         const { courseIds } = event

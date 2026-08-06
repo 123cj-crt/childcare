@@ -14,7 +14,8 @@
     "pages/bindchild/bindchild",
     "pages/webview/webview",
     "pages/my-reservations/my-reservations",
-    "pages/history-courses/history-courses"
+    "pages/history-courses/history-courses",
+    "pages/course-reservations/course-reservations"
   ],
   "window": {
     "backgroundTextStyle": "light",

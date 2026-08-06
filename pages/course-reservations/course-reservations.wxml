@@ -1,0 +1,86 @@
+<!--pages/course-reservations/course-reservations.wxml-->
+<view class="resv-page">
+  <!-- 顶部 Hero 区 -->
+  <view class="page-hero">
+    <view class="hero-row">
+      <view class="hero-icon-circle">📋</view>
+      <view class="hero-info">
+        <view class="hero-title">预约名单</view>
+        <view class="hero-subtitle">查看每节课的预约详情</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 主体内容 -->
+  <view class="page-body">
+    <!-- 课程选择器 -->
+    <view class="course-picker-card">
+      <view class="picker-label">选择课程</view>
+      <picker mode="selector" range="{{courseNames}}" value="{{selectedIndex}}" bindchange="onCourseChange">
+        <view class="picker-value">
+          <text class="picker-text">{{selectedCourse.name}}</text>
+          <text class="picker-arrow">▼</text>
+        </view>
+      </picker>
+      <view class="course-meta">
+        <text class="meta-item">{{selectedCourse.date}} {{selectedCourse.weekday}}</text>
+        <text class="meta-item">{{selectedCourse.time}}</text>
+        <text class="meta-item">容量 {{selectedCourse.capacity}}人</text>
+      </view>
+    </view>
+
+    <!-- 统计栏 -->
+    <view class="stats-bar">
+      <view class="stat-item">
+        <text class="stat-num">{{reservations.length}}</text>
+        <text class="stat-label">已预约</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-num">{{selectedCourse.capacity - reservations.length}}</text>
+        <text class="stat-label">剩余名额</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-num">{{selectedCourse.capacity}}</text>
+        <text class="stat-label">总容量</text>
+      </view>
+      <view class="stat-refresh" bindtap="onRefresh">↻ 刷新</view>
+    </view>
+
+    <!-- 加载中 -->
+    <view wx:if="{{loading}}" class="loading-box">
+      <text class="loading-text">正在查询预约名单...</text>
+    </view>
+
+    <!-- 空状态 -->
+    <view wx:elif="{{isEmpty}}" class="empty-box">
+      <text class="empty-icon">📭</text>
+      <text class="empty-text">暂无预约记录</text>
+    </view>
+
+    <!-- 预约名单列表 -->
+    <view wx:else class="resv-list">
+      <view class="list-header">
+        <text class="header-text">预约名单（按预约时间倒序）</text>
+      </view>
+      <view wx:for="{{reservations}}" wx:key="_id" class="resv-item">
+        <view class="item-index">{{index + 1}}</view>
+        <view class="item-info">
+          <view class="item-name-row">
+            <text class="item-name">{{item.childName || '未填写'}}</text>
+            <text wx:if="{{item.childGender}}" class="item-tag">{{item.childGender}}</text>
+            <text wx:if="{{item.childAge}}" class="item-tag">{{item.childAge}}</text>
+            <text wx:if="{{item.childRelation}}" class="item-tag">{{item.childRelation}}</text>
+          </view>
+          <view class="item-detail">
+            <text class="detail-text">预约时间：{{item.reservedAt || '未知'}}</text>
+          </view>
+          <view class="item-detail">
+            <text class="detail-text detail-id">用户ID：{{item._openid}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
