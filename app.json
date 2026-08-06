@@ -28,26 +28,26 @@
       {
         "pagePath": "pages/index/index",
         "text": "首页",
-        "iconPath": "icon/home.png",
-        "selectedIconPath": "icon/home-select.png"
+        "iconPath": "/icon/home.png",
+        "selectedIconPath": "/icon/home-select.png"
       },
       {
         "pagePath": "pages/schedule/schedule",
         "text": "课表",
-        "iconPath": "icon/schedule.png",
-        "selectedIconPath": "icon/schedule-select.png"
+        "iconPath": "/icon/schedule.png",
+        "selectedIconPath": "/icon/schedule-select.png"
       },
       {
         "pagePath": "pages/notice/notice",
         "text": "通知",
-        "iconPath": "icon/notice.png",
-        "selectedIconPath": "icon/notice-select.png"
+        "iconPath": "/icon/notice.png",
+        "selectedIconPath": "/icon/notice-select.png"
       },
       {
         "pagePath": "pages/profile/profile",
         "text": "我的",
-        "iconPath": "icon/my.png",
-        "selectedIconPath": "icon/my-select.png"
+        "iconPath": "/icon/my.png",
+        "selectedIconPath": "/icon/my-select.png"
       }
     ]
   },
