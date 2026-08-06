@@ -5,7 +5,9 @@
 const app = getApp()
 
 // 调试开关：true = 跳过登录直接 mock，false = 走真实登录流程
-const DEBUG_SKIP_LOGIN = false
+// ⚠️ 后端域名 gdufe-childcare.cn 未备案 + HTTP 协议，真机预览强制校验合法域名
+// 当前必须保持 true，等同事后端就绪（备案+HTTPS+配置合法域名）后才能改回 false
+const DEBUG_SKIP_LOGIN = true
 
 Page({
   data: {

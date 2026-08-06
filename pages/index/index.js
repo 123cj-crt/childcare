@@ -7,6 +7,9 @@ const app = getApp()
 // 调试开关
 const DEBUG_MOCK_DATA = true
 
+// 云开发预约开关：true = 预约人数走云数据库实时同步
+const USE_CLOUD_RESERVATION = true
+
 // mock 数据
 const MOCK_BANNERS = [
   { id: 1, image: '/images/1.jpg', title: '智慧托育中心', link: 'https://m.jyrmt.com/mob/2025/0831/83206.html?isDM=1&t=3730' },
@@ -178,11 +181,35 @@ Page({
         banners: MOCK_BANNERS,
         courses: MOCK_COURSES
       })
+      // 云开发模式：批量查每门课的实时预约人数
+      if (USE_CLOUD_RESERVATION) {
+        this.fetchCloudCounts()
+      }
       return
     }
 
     this.fetchBanners()
     this.fetchCourses()
+  },
+
+  // 云开发：批量查每门课的实时预约人数（跨用户共享）
+  fetchCloudCounts() {
+    const courseIds = MOCK_COURSES.map(c => c.id)
+    wx.cloud.callFunction({
+      name: 'reservation',
+      data: { action: 'batchCount', courseIds: courseIds }
+    }).then(res => {
+      if (res.result && res.result.code === 0) {
+        const counts = res.result.data || {}
+        const courses = this.data.courses.map(c => ({
+          ...c,
+          currentStudents: counts[c.id] !== undefined ? counts[c.id] : c.currentStudents
+        }))
+        this.setData({ courses })
+      }
+    }).catch(err => {
+      console.error('[云开发] 批量查询预约人数失败', err)
+    })
   },
 
   goToCourseDetail(e) {

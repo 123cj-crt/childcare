@@ -1,0 +1,9 @@
+{
+  "name": "reservation",
+  "version": "1.0.0",
+  "description": "课程预约云函数：查询人数、预约、取消、防超员、防重复",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

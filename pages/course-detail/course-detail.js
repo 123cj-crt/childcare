@@ -4,6 +4,9 @@ const app = getApp()
 // ========== 调试模式 ==========
 const DEBUG_MOCK_DATA = true
 
+// 云开发预约开关：true = 预约数据走云数据库（跨用户实时同步），false = 走本地存储
+const USE_CLOUD_RESERVATION = true
+
 const MOCK_COURSES = [
   {
     id: 1,
@@ -202,6 +205,10 @@ Page({
           isFull: course.currentStudents >= course.capacity,
           capacityPercent: Math.round(course.currentStudents / course.capacity * 100)
         })
+        // 云开发模式：用真实预约人数覆盖 mock 的 currentStudents
+        if (USE_CLOUD_RESERVATION) {
+          this.loadCloudReservationCount(course.id)
+        }
       }
       return
     }
@@ -280,8 +287,36 @@ Page({
     })
   },
 
-  // 检查本地存储中是否已预约（按当前课程+儿童）
+  // 检查是否已预约（路由：云端 / 本地）
   checkReservationStatus(courseId) {
+    if (USE_CLOUD_RESERVATION) {
+      this.checkCloudReservationStatus(courseId)
+    } else {
+      this.checkLocalReservationStatus(courseId)
+    }
+  },
+
+  // 云端版：从云数据库查当前用户在此课程的预约
+  checkCloudReservationStatus(courseId) {
+    wx.cloud.callFunction({
+      name: 'reservation',
+      data: { action: 'myList', courseId: parseInt(courseId) }
+    }).then(res => {
+      if (res.result && res.result.code === 0) {
+        const myRes = res.result.data || []
+        this.setData({
+          isReserved: myRes.length > 0,
+          reservedCount: myRes.length
+        })
+      }
+    }).catch(err => {
+      console.error('[云开发] 查询我的预约失败，回退到本地', err)
+      this.checkLocalReservationStatus(courseId)
+    })
+  },
+
+  // 本地版：从 storage 查
+  checkLocalReservationStatus(courseId) {
     let myReservations = wx.getStorageSync('myReservations')
     if (!Array.isArray(myReservations)) {
       myReservations = []
@@ -290,6 +325,26 @@ Page({
     this.setData({
       isReserved: reservedForThisCourse.length > 0,
       reservedCount: reservedForThisCourse.length
+    })
+  },
+
+  // 云端版：从云数据库查实时预约人数（跨用户共享）
+  loadCloudReservationCount(courseId) {
+    wx.cloud.callFunction({
+      name: 'reservation',
+      data: { action: 'count', courseId: parseInt(courseId) }
+    }).then(res => {
+      if (res.result && res.result.code === 0) {
+        const count = res.result.total
+        const capacity = this.data.course ? this.data.course.capacity : 0
+        this.setData({
+          currentReservations: count,
+          isFull: count >= capacity,
+          capacityPercent: capacity > 0 ? Math.round(count / capacity * 100) : 0
+        })
+      }
+    }).catch(err => {
+      console.error('[云开发] 查询预约人数失败', err)
     })
   },
 
@@ -385,17 +440,138 @@ Page({
       return
     }
 
-    // 读取已存在的预约
+    // 读取已存在的预约（用于对比 + 活动日志 + 本地双写）
     let myReservations = wx.getStorageSync('myReservations') || []
 
-    // 记录本次操作的"之前"状态（按课程+儿童）用于对比
+    // 记录操作前状态
     const beforeMap = {}
     myReservations.forEach(r => {
       if (String(r.courseId) === String(courseId)) {
         beforeMap[String(r.childId)] = r
       }
     })
+    const beforeIds = Object.keys(beforeMap)
+    const newReserved = pickerChildren.filter(c =>
+      c.reserved && !beforeIds.includes(String(c.id))
+    )
+    const cancelled = pickerChildren.filter(c =>
+      !c.reserved && beforeIds.includes(String(c.id))
+    )
 
+    // ===== 云开发模式：预约数据走云数据库（跨用户实时同步）=====
+    if (USE_CLOUD_RESERVATION) {
+      if (newReserved.length === 0 && cancelled.length === 0) {
+        this.setData({ showChildPicker: false, pickerChildren: [] })
+        wx.showToast({ title: '未做任何变更', icon: 'none' })
+        return
+      }
+
+      wx.showLoading({ title: '处理中...' })
+      const tasks = []
+
+      newReserved.forEach(c => {
+        tasks.push(wx.cloud.callFunction({
+          name: 'reservation',
+          data: {
+            action: 'reserve',
+            courseId: course.id,
+            childId: c.id,
+            childName: c.name,
+            childAge: c.age,
+            childGender: c.gender,
+            childRelation: c.relation,
+            courseInfo: {
+              name: course.name, date: course.date, weekday: course.weekday,
+              time: course.time, location: course.location,
+              description: course.description, teacher: course.teacher,
+              teacherPhone: course.teacherPhone, capacity: course.capacity
+            }
+          }
+        }))
+      })
+
+      cancelled.forEach(c => {
+        tasks.push(wx.cloud.callFunction({
+          name: 'reservation',
+          data: { action: 'cancel', courseId: course.id, childId: c.id }
+        }))
+      })
+
+      Promise.all(tasks).then(results => {
+        wx.hideLoading()
+
+        let hasError = false
+        let errorMsg = ''
+        results.forEach(r => {
+          if (r.result && r.result.code !== 0) {
+            hasError = true
+            errorMsg = r.result.msg
+          }
+        })
+
+        if (hasError) {
+          wx.showModal({ title: '部分操作失败', content: errorMsg, showCancel: false })
+        }
+
+        // 双写本地存储（保持历史课程等功能兼容）
+        myReservations = myReservations.filter(r => String(r.courseId) !== String(courseId))
+        pickerChildren.forEach(child => {
+          if (child.reserved) {
+            myReservations.push({
+              courseId: course.id, courseName: course.name,
+              childId: child.id, childName: child.name,
+              childAge: child.age, childGender: child.gender,
+              childRelation: child.relation, date: course.date,
+              weekday: course.weekday, time: course.time,
+              location: course.location, description: course.description,
+              teacher: course.teacher, teacherPhone: course.teacherPhone,
+              capacity: course.capacity, reservedAt: new Date().toLocaleString()
+            })
+          }
+        })
+        wx.setStorageSync('myReservations', myReservations)
+
+        // 活动日志
+        newReserved.forEach(c => {
+          app.recordActivityLog({
+            type: 'course', title: '预约课程',
+            summary: `已为「${c.name}」预约「${course.name}」（${course.date} ${course.time}）`,
+            icon: '📅', color: '#4f7cff'
+          })
+        })
+        cancelled.forEach(c => {
+          app.recordActivityLog({
+            type: 'course', title: '取消预约',
+            summary: `已为「${c.name}」取消「${course.name}」`,
+            icon: '❌', color: '#999'
+          })
+        })
+
+        const reservedCount = pickerChildren.filter(c => c.reserved).length
+        this.setData({
+          isReserved: reservedCount > 0,
+          reservedCount: reservedCount,
+          showChildPicker: false,
+          pickerChildren: []
+        })
+        this.loadCloudReservationCount(course.id)
+
+        if (newReserved.length > 0 && cancelled.length === 0) {
+          wx.showToast({ title: '预约成功', icon: 'success', duration: 2000 })
+        } else if (newReserved.length === 0 && cancelled.length > 0) {
+          wx.showToast({ title: `已取消 ${cancelled.length} 项预约`, icon: 'none' })
+        } else {
+          wx.showToast({ title: `预约 ${newReserved.length} 项，取消 ${cancelled.length} 项`, icon: 'none' })
+        }
+      }).catch(err => {
+        wx.hideLoading()
+        console.error('[云开发] 预约操作失败', err)
+        wx.showModal({ title: '操作失败', content: '网络错误，请重试', showCancel: false })
+      })
+      return
+    }
+
+    // ===== 本地模式（原逻辑）=====
     // 移除当前课程的所有预约
     myReservations = myReservations.filter(r => String(r.courseId) !== String(courseId))
 
@@ -426,18 +602,6 @@ Page({
     wx.setStorageSync('myReservations', myReservations)
 
     // ========== 记录预约/取消活动日志 ==========
-    const afterIds = pickerChildren.filter(c => c.reserved).map(c => String(c.id))
-    const beforeIds = Object.keys(beforeMap)
-
-    // 新增预约（在 afterIds 中但不在 beforeIds 中）
-    const newReserved = pickerChildren.filter(c =>
-      c.reserved && !beforeIds.includes(String(c.id))
-    )
-    // 取消预约（在 beforeIds 中但不在 afterIds 中）
-    const cancelled = pickerChildren.filter(c =>
-      !c.reserved && beforeIds.includes(String(c.id))
-    )
-
     newReserved.forEach(c => {
       app.recordActivityLog({
         type: 'course',
