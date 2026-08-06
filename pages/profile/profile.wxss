@@ -203,7 +203,14 @@
   font-size: 36rpx;
   font-weight: 600;
   color: #333;
+  margin-bottom: 8rpx;
+}
+
+.edit-subtitle {
+  font-size: 24rpx;
+  color: #888;
   margin-bottom: 30rpx;
+  text-align: center;
 }
 
 .avatar-btn {

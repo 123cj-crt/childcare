@@ -1,9 +1,12 @@
 // pages/profile/profile.js
 const app = getApp()
 
+// 微信官方默认头像（未设置头像前显示）
+const DEFAULT_AVATAR = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
+
 Page({
   data: {
-    avatarUrl: '/icon/my.png',
+    avatarUrl: DEFAULT_AVATAR,
     nickName: '未登录',
     isLoggedIn: false,
     isEditing: false,
@@ -32,15 +35,17 @@ Page({
 
     if (hasValidToken && userInfo && userInfo.nickName) {
       this.setData({
-        avatarUrl: userInfo.avatarUrl || '/icon/my.png',
+        avatarUrl: userInfo.avatarUrl || DEFAULT_AVATAR,
         nickName: userInfo.nickName,
         isLoggedIn: true
       });
 
-      // 首次登录后昵称仍是默认的"微信用户"时，自动弹出编辑弹窗
+      // 首次登录后若仍是默认昵称/头像，自动弹出编辑资料弹窗
       // 微信新版 API 不再自动返回真实头像/昵称，需用户手动选择一次
       // 用户设置过一次后，后续登录直接显示已保存的真实信息，不再弹窗
-      if (!this._hasAutoPrompted && userInfo.nickName === '微信用户') {
+      const isDefaultNick = userInfo.nickName === '微信用户' || userInfo.nickName === '调试用户' || !userInfo.nickName.trim();
+      const isDefaultAvatar = !userInfo.avatarUrl || userInfo.avatarUrl === DEFAULT_AVATAR || userInfo.avatarUrl === '/icon/my.png';
+      if (!this._hasAutoPrompted && (isDefaultNick || isDefaultAvatar)) {
         this._hasAutoPrompted = true;
         setTimeout(() => {
           this.startEdit();
@@ -48,7 +53,7 @@ Page({
       }
     } else {
       this.setData({
-        avatarUrl: '/icon/my.png',
+        avatarUrl: DEFAULT_AVATAR,
         nickName: '未登录',
         isLoggedIn: false
       });

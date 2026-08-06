@@ -140,18 +140,20 @@ Page({
   // ========== 调试用：mock 登录 ==========
   mockLogin() {
     // 写入 mock 用户数据
+    // 微信官方默认头像（未设置头像前显示灰色人形）
+    const defaultAvatar = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
     wx.setStorageSync('token', 'debug_mock_token')
     wx.setStorageSync('openId', 'debug_mock_openid')
     wx.setStorageSync('userInfo', {
-      avatarUrl: '/icon/my.png',
-      nickName: '调试用户'
+      avatarUrl: defaultAvatar,
+      nickName: '微信用户'
     })
 
     // 记录登录活动日志（系统通知）
     app.recordActivityLog({
       type: 'system',
       title: '登录成功',
-      summary: '调试用户 登录了小程序',
+      summary: '微信用户 登录了小程序',
       icon: '🔐',
       color: '#667eea'
     })

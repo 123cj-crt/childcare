@@ -60,12 +60,13 @@
   <!-- 编辑资料弹窗（保留原结构） -->
   <view wx:if="{{isEditing}}" class="edit-modal" catchtap="cancelEdit">
     <view class="edit-content" catchtap="stopBubble">
-      <view class="edit-title">编辑个人资料</view>
+      <view class="edit-title">完善个人资料</view>
+      <view class="edit-subtitle">微信新规需手动选择一次头像和昵称</view>
       <button class="avatar-btn"
               open-type="chooseAvatar"
               bind:chooseavatar="onChooseAvatar">
         <image src="{{editAvatarUrl}}" class="edit-avatar" />
-        <text class="avatar-hint">点击更换头像</text>
+        <text class="avatar-hint">点击选择微信头像</text>
       </button>
       <view class="form-item">
         <text class="form-label">昵称</text>
