@@ -14,9 +14,6 @@ Page({
     editNickName: ''
   },
 
-  // 页面级标记：本次页面实例是否已自动弹过编辑窗（防止反复弹）
-  _hasAutoPrompted: false,
-
   onLoad: function () {
     this.checkLoginStatus();
   },
@@ -40,16 +37,15 @@ Page({
         isLoggedIn: true
       });
 
-      // 首次登录后若仍是默认昵称/头像，自动弹出编辑资料弹窗
-      // 微信新版 API 不再自动返回真实头像/昵称，需用户手动选择一次
-      // 用户设置过一次后，后续登录直接显示已保存的真实信息，不再弹窗
-      const isDefaultNick = userInfo.nickName === '微信用户' || userInfo.nickName === '调试用户' || !userInfo.nickName.trim();
-      const isDefaultAvatar = !userInfo.avatarUrl || userInfo.avatarUrl === DEFAULT_AVATAR || userInfo.avatarUrl === '/icon/my.png';
-      if (!this._hasAutoPrompted && (isDefaultNick || isDefaultAvatar)) {
-        this._hasAutoPrompted = true;
+      // 登录时写入的 need_profile_setup 标记，提示需要完善资料
+      // 用 storage 级标记（而非页面实例标记），避免页面实例缓存导致弹窗不触发
+      const needSetup = wx.getStorageSync('need_profile_setup');
+      if (needSetup && !this.data.isEditing) {
+        // 先清除标记，防止重复弹窗
+        wx.removeStorageSync('need_profile_setup');
         setTimeout(() => {
           this.startEdit();
-        }, 300);
+        }, 400);
       }
     } else {
       this.setData({
@@ -113,7 +109,7 @@ Page({
       }
 
       const userInfo = {
-        avatarUrl: this.data.editAvatarUrl || '/icon/my.png',
+        avatarUrl: this.data.editAvatarUrl || DEFAULT_AVATAR,
         nickName: realNickName.trim()
       };
 
@@ -203,7 +199,7 @@ Page({
           this.setData({
             isLoggedIn: false,
             nickName: '未登录',
-            avatarUrl: '/icon/my.png'
+            avatarUrl: DEFAULT_AVATAR
           });
 
           wx.showToast({ title: '已退出登录', icon: 'success' });

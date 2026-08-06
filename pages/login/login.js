@@ -148,6 +148,8 @@ Page({
       avatarUrl: defaultAvatar,
       nickName: '微信用户'
     })
+    // 标记需要完善资料，profile 页面会据此自动弹出编辑窗
+    wx.setStorageSync('need_profile_setup', true)
 
     // 记录登录活动日志（系统通知）
     app.recordActivityLog({
