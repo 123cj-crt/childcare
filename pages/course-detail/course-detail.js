@@ -180,7 +180,7 @@ Page({
 
   // 加载已绑定的儿童列表
   loadChildren() {
-    let myChildren = wx.getStorageSync('myChildren') || []
+    let myChildren = app.getUserStorage('myChildren') || []
     // 兼容旧数据：如果缓存中的儿童没有 id，用 index 生成兜底 id
     myChildren = myChildren.map((child, index) => ({
       ...child,
@@ -320,7 +320,7 @@ Page({
 
   // 本地版：从 storage 查
   checkLocalReservationStatus(courseId) {
-    let myReservations = wx.getStorageSync('myReservations')
+    let myReservations = app.getUserStorage('myReservations')
     if (!Array.isArray(myReservations)) {
       myReservations = []
     }
@@ -394,7 +394,7 @@ Page({
     }
 
     // 构建选择器数据：每个儿童标记是否已预约本课程
-    const myReservations = wx.getStorageSync('myReservations') || []
+    const myReservations = app.getUserStorage('myReservations') || []
     const courseId = String(this.data.courseId)
     const pickerChildren = children.map(child => {
       const reserved = myReservations.some(r =>
@@ -448,7 +448,7 @@ Page({
     }
 
     // 读取已存在的预约（用于对比 + 活动日志 + 本地双写）
-    let myReservations = wx.getStorageSync('myReservations') || []
+    let myReservations = app.getUserStorage('myReservations') || []
 
     // 记录操作前状态
     const beforeMap = {}
@@ -536,7 +536,7 @@ Page({
             })
           }
         })
-        wx.setStorageSync('myReservations', myReservations)
+        app.setUserStorage('myReservations', myReservations)
 
         // 活动日志
         newReserved.forEach(c => {
@@ -606,7 +606,7 @@ Page({
       }
     })
 
-    wx.setStorageSync('myReservations', myReservations)
+    app.setUserStorage('myReservations', myReservations)
 
     // ========== 记录预约/取消活动日志 ==========
     newReserved.forEach(c => {

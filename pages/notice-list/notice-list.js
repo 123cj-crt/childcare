@@ -41,12 +41,12 @@ Page({
       return
     }
 
-    const allData = wx.getStorageSync('allNoticeData') || {}
+    const allData = app.getUserStorage('allNoticeData') || {}
     let notices = allData[type] || []
 
     // 系统通知直接从 activity_logs 读取（兜底，防止 allNoticeData 丢失）
     if (type === '系统通知') {
-      const logs = wx.getStorageSync('activity_logs') || []
+      const logs = app.getUserStorage('activity_logs') || []
       if (!Array.isArray(notices) || notices.length === 0) {
         notices = logs
       }
@@ -89,7 +89,7 @@ Page({
 
   // 标记活动日志为已读
   markAsRead(id) {
-    let logs = wx.getStorageSync('activity_logs') || []
+    let logs = app.getUserStorage('activity_logs') || []
     if (!Array.isArray(logs)) logs = []
 
     let changed = false
@@ -102,13 +102,13 @@ Page({
     })
 
     if (changed) {
-      wx.setStorageSync('activity_logs', logs)
+      app.setUserStorage('activity_logs', logs)
       // 同步刷新本页 + 同步到 notice 首页的 allNoticeData
       this.loadNotices(this.data.type)
-      const allData = wx.getStorageSync('allNoticeData') || {}
+      const allData = app.getUserStorage('allNoticeData') || {}
       if (allData && allData['系统通知']) {
         allData['系统通知'] = logs
-        wx.setStorageSync('allNoticeData', allData)
+        app.setUserStorage('allNoticeData', allData)
       }
       wx.showToast({ title: '已标记为已读', icon: 'none', duration: 800 })
     }

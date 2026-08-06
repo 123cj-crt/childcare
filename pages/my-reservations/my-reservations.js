@@ -66,10 +66,10 @@ Page({
 
   // 本地版：从 storage 读
   loadLocalReservations() {
-    let myReservations = wx.getStorageSync('myReservations')
+    let myReservations = app.getUserStorage('myReservations')
     if (!Array.isArray(myReservations)) {
       myReservations = []
-      wx.setStorageSync('myReservations', [])
+      app.setUserStorage('myReservations', [])
     }
     this.setData({
       reservations: myReservations,
@@ -100,11 +100,11 @@ Page({
               wx.hideLoading()
               if (cloudRes.result && cloudRes.result.code === 0) {
                 // 同步删除本地记录（双写保持兼容）
-                let myReservations = wx.getStorageSync('myReservations') || []
+                let myReservations = app.getUserStorage('myReservations') || []
                 myReservations = myReservations.filter(r => !(
                   String(r.courseId) === String(courseId) && String(r.childId) === String(childId)
                 ))
-                wx.setStorageSync('myReservations', myReservations)
+                app.setUserStorage('myReservations', myReservations)
 
                 app.recordActivityLog({
                   type: 'course',
@@ -126,11 +126,11 @@ Page({
             })
           } else {
             // 本地取消
-            let myReservations = wx.getStorageSync('myReservations') || []
+            let myReservations = app.getUserStorage('myReservations') || []
             myReservations = myReservations.filter(r => !(
               String(r.courseId) === String(courseId) && String(r.childId) === String(childId)
             ))
-            wx.setStorageSync('myReservations', myReservations)
+            app.setUserStorage('myReservations', myReservations)
 
             app.recordActivityLog({
               type: 'course',

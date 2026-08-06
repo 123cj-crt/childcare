@@ -26,7 +26,7 @@ Page({
 
   // 从本地存储加载儿童列表
   loadChildren: function () {
-    const myChildren = wx.getStorageSync('myChildren') || [];
+    const myChildren = app.getUserStorage('myChildren') || [];
     this.setData({ children: myChildren });
   },
 
@@ -88,7 +88,7 @@ Page({
       return;
     }
 
-    let myChildren = wx.getStorageSync('myChildren') || [];
+    let myChildren = app.getUserStorage('myChildren') || [];
 
     const newChild = {
       id: 'child_' + Date.now(),
@@ -102,7 +102,7 @@ Page({
     };
 
     myChildren.push(newChild);
-    wx.setStorageSync('myChildren', myChildren);
+    app.setUserStorage('myChildren', myChildren);
 
     // 记录添加儿童日志
     app.recordActivityLog({
@@ -125,7 +125,7 @@ Page({
   onDeleteChild(e) {
     const childId = e.currentTarget.dataset.id;
     // 先查一下要删除的儿童姓名（用于日志记录）
-    const myChildrenBefore = wx.getStorageSync('myChildren') || [];
+    const myChildrenBefore = app.getUserStorage('myChildren') || [];
     const targetChild = myChildrenBefore.find(c => String(c.id) === String(childId));
     const childName = targetChild ? targetChild.name : '该儿童';
 
@@ -134,15 +134,15 @@ Page({
       content: '确定要删除这个儿童信息吗？',
       success: (res) => {
         if (res.confirm) {
-          let myChildren = wx.getStorageSync('myChildren') || [];
+          let myChildren = app.getUserStorage('myChildren') || [];
           myChildren = myChildren.filter(c => String(c.id) !== String(childId));
-          wx.setStorageSync('myChildren', myChildren);
+          app.setUserStorage('myChildren', myChildren);
 
           // 同时清理该儿童的所有预约
-          let myReservations = wx.getStorageSync('myReservations') || [];
+          let myReservations = app.getUserStorage('myReservations') || [];
           const beforeCount = myReservations.length;
           myReservations = myReservations.filter(r => String(r.childId) !== String(childId));
-          wx.setStorageSync('myReservations', myReservations);
+          app.setUserStorage('myReservations', myReservations);
 
           // 记录删除儿童日志
           app.recordActivityLog({

@@ -96,8 +96,9 @@ Page({
 
   loadReminders() {
     // 系统通知 = 本地活动日志（登录、添加儿童、预约/取消课程、上课提醒等）
+    // 按当前登录用户隔离，换账号后不会看到其他账号的通知
     // DEBUG 模式：附加演示数据，便于用户首次进入时看到效果
-    let localLogs = wx.getStorageSync('activity_logs') || []
+    let localLogs = app.getUserStorage('activity_logs') || []
     if (!Array.isArray(localLogs)) localLogs = []
 
     if (DEBUG_MOCK_NOTICES) {
@@ -197,8 +198,8 @@ Page({
       'noticeCount.notice3': unreadCount
     })
 
-    // 同步到 notice-list.js 的存储（兜底）
-    wx.setStorageSync('allNoticeData', this.data.allNoticeData)
+    // 同步到 notice-list.js 的存储（兜底），按用户隔离
+    app.setUserStorage('allNoticeData', this.data.allNoticeData)
   },
 
   // 日期格式化辅助

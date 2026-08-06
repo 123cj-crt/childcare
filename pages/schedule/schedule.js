@@ -1,4 +1,6 @@
 // pages/schedule/schedule.js
+const app = getApp()
+
 Page({
   data: {
     scheduleGroups: [],
@@ -15,8 +17,8 @@ Page({
   },
 
   loadSchedule() {
-    const myChildren = wx.getStorageSync('myChildren') || []
-    let myReservations = wx.getStorageSync('myReservations') || []
+    const myChildren = app.getUserStorage('myChildren') || []
+    let myReservations = app.getUserStorage('myReservations') || []
 
     if (!Array.isArray(myReservations)) {
       myReservations = []

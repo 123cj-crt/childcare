@@ -47,7 +47,7 @@ Page({
   },
 
   loadHistory() {
-    let myReservations = wx.getStorageSync('myReservations')
+    let myReservations = app.getUserStorage('myReservations')
     if (!Array.isArray(myReservations)) {
       myReservations = []
     }

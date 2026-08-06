@@ -13,6 +13,41 @@ App({
       // 可以根据实际需求决定是否自动跳转
       console.log('未登录')
     }
+
+    // 将旧版全局存储的数据迁移到当前用户的隔离存储（一次性）
+    this.migrateToUserStorage()
+  },
+
+  // 一次性迁移：旧版所有用户共用同一个 storage key，现在按 openId 隔离
+  migrateToUserStorage: function () {
+    const openId = this.getCurrentOpenId()
+    if (openId === 'guest') return
+
+    const keysToMigrate = ['activity_logs', 'myReservations', 'myChildren', 'course_reminded_ids', 'allNoticeData']
+    let migrated = false
+
+    keysToMigrate.forEach(key => {
+      const oldValue = wx.getStorageSync(key)
+      const hasOldData = oldValue !== '' && oldValue !== undefined && oldValue !== null
+      if (!hasOldData) return
+
+      const userKey = this.getUserStorageKey(key)
+      const existing = wx.getStorageSync(userKey)
+      const hasUserData = existing !== '' && existing !== undefined && existing !== null
+
+      if (!hasUserData) {
+        wx.setStorageSync(userKey, oldValue)
+        migrated = true
+        console.log(`[Migrate] ${key} -> ${userKey}`)
+      }
+
+      // 迁移后删除旧的全局 key，避免未登录时还能看到其他账号数据
+      wx.removeStorageSync(key)
+    })
+
+    if (migrated) {
+      console.log('[Migrate] 用户隔离存储迁移完成')
+    }
   },
 
   onShow: function () {
@@ -25,6 +60,33 @@ App({
     userInfo: null,
     API_BASE_URL: 'http://gdufe-childcare.cn:8080', // 新服务器地址
     notifications: [] // 用于存储通知的数组
+  },
+
+  // ========== 用户隔离存储工具 ==========
+  // 获取当前登录用户的 openId，未登录时返回 'guest'
+  getCurrentOpenId: function () {
+    return wx.getStorageSync('openId') || 'guest'
+  },
+
+  // 生成带用户前缀的 storage key，例如 activity_logs_oNI9Iv...
+  getUserStorageKey: function (key) {
+    const openId = this.getCurrentOpenId()
+    return `${key}_${openId}`
+  },
+
+  // 读取当前用户的本地缓存
+  getUserStorage: function (key) {
+    return wx.getStorageSync(this.getUserStorageKey(key))
+  },
+
+  // 写入当前用户的本地缓存
+  setUserStorage: function (key, value) {
+    wx.setStorageSync(this.getUserStorageKey(key), value)
+  },
+
+  // 移除当前用户的本地缓存
+  removeUserStorage: function (key) {
+    wx.removeStorageSync(this.getUserStorageKey(key))
   },
 
   // 添加通知的方法
@@ -71,12 +133,12 @@ App({
       isRead: false
     }
 
-    let logs = wx.getStorageSync('activity_logs') || []
+    let logs = this.getUserStorage('activity_logs') || []
     if (!Array.isArray(logs)) logs = []
     logs.unshift(log)
     // 最多保留 100 条记录
     if (logs.length > 100) logs = logs.slice(0, 100)
-    wx.setStorageSync('activity_logs', logs)
+    this.setUserStorage('activity_logs', logs)
 
     console.log('[ActivityLog] 已记录:', log.title, log.summary)
     return log
@@ -85,11 +147,11 @@ App({
   // 检查即将开始的课程（距离开始 ≤15 分钟）并弹本地提醒
   checkUpcomingCourses: function () {
     try {
-      const myReservations = wx.getStorageSync('myReservations') || []
+      const myReservations = this.getUserStorage('myReservations') || []
       if (!Array.isArray(myReservations) || myReservations.length === 0) return
 
       // 已提醒过的课程 id（避免每次 onShow 都重复弹窗）
-      const remindedIds = wx.getStorageSync('course_reminded_ids') || []
+      const remindedIds = this.getUserStorage('course_reminded_ids') || []
 
       // 课程日期映射：把 "8月10日" 解析为今年日期
       const currentYear = new Date().getFullYear()
@@ -128,17 +190,17 @@ App({
             color: '#ff7a45',
             isRead: false
           }
-          let logs = wx.getStorageSync('activity_logs') || []
+          let logs = this.getUserStorage('activity_logs') || []
           if (!Array.isArray(logs)) logs = []
           // 避免重复添加同样的提醒
           if (!logs.some(l => l.id === remindLog.id)) {
             logs.unshift(remindLog)
             if (logs.length > 100) logs = logs.slice(0, 100)
-            wx.setStorageSync('activity_logs', logs)
+            this.setUserStorage('activity_logs', logs)
           }
           // 标记已提醒
           remindedIds.push(r.courseId)
-          wx.setStorageSync('course_reminded_ids', remindedIds)
+          this.setUserStorage('course_reminded_ids', remindedIds)
 
           // 弹本地弹窗
           wx.showModal({
