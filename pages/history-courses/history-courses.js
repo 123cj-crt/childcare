@@ -4,7 +4,7 @@ const app = getApp()
 // ========== 调试模式 ==========
 // true: 没有历史课程时显示所有未取消的预约作为演示（带"演示"标记）
 // false: 严格按"课程结束时间 < 当前时间"过滤
-const DEBUG_SHOW_ALL = true
+const DEBUG_SHOW_ALL = false
 
 Page({
   data: {

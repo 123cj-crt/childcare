@@ -2,7 +2,7 @@
 const app = getApp()
 
 // ========== 调试模式 ==========
-const DEBUG_MOCK_DATA = true
+const DEBUG_MOCK_DATA = false
 
 // 云开发预约开关：true = 预约数据走云数据库（跨用户实时同步），false = 走本地存储
 const USE_CLOUD_RESERVATION = true

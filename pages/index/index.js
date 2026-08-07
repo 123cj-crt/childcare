@@ -5,7 +5,7 @@
 const app = getApp()
 
 // 调试开关
-const DEBUG_MOCK_DATA = true
+const DEBUG_MOCK_DATA = false
 
 // 云开发预约开关：true = 预约人数走云数据库实时同步
 const USE_CLOUD_RESERVATION = true
@@ -176,7 +176,7 @@ Page({
 
   onShow() {
     // 只在有缓存时刷新人数，不重置整个列表，避免明显跳动
-    if (USE_CLOUD_RESERVATION && DEBUG_MOCK_DATA) {
+    if (USE_CLOUD_RESERVATION) {
       this.fetchCloudCounts()
     }
   },
@@ -206,7 +206,10 @@ Page({
 
   // 云开发：批量查每门课的实时预约人数（跨用户共享）
   fetchCloudCounts() {
-    const courseIds = MOCK_COURSES.map(c => c.id)
+    // 兼容 mock 模式和真实 API 模式：优先用当前页面课程列表，fallback 到 mock
+    const sourceCourses = (this.data.courses && this.data.courses.length > 0) ? this.data.courses : MOCK_COURSES
+    const courseIds = sourceCourses.map(c => c.id)
+    if (courseIds.length === 0) return
     const reqId = ++this._cloudCountReqId
     wx.cloud.callFunction({
       name: 'reservation',
@@ -338,6 +341,10 @@ Page({
           }
           if (list.length > 0) {
             this.setData({ courses: list })
+            // 真实 API 模式下也刷新云端预约人数
+            if (USE_CLOUD_RESERVATION) {
+              this.fetchCloudCounts()
+            }
             return
           }
         }

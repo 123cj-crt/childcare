@@ -2,7 +2,7 @@
 const app = getApp()
 
 // ========== 调试模式 ==========
-const DEBUG_MOCK_NOTICES = true
+const DEBUG_MOCK_NOTICES = false
 // =================================
 
 // 内置公告详情内容
