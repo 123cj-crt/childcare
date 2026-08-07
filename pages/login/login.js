@@ -110,8 +110,15 @@ Page({
                 wx.showToast({ title: '登录成功', icon: 'success', duration: 1500 });
                 setTimeout(() => { wx.switchTab({ url: '/pages/index/index' }) }, 1500);
               },
-              fail: () => {
-                wx.showToast({ title: '网络请求失败', icon: 'none' });
+              fail: (err) => {
+                console.error('===== 登录请求失败 =====', err)
+                let msg = '网络请求失败'
+                if (err.errMsg && err.errMsg.includes('url not in domain list')) {
+                  msg = '域名未加入合法域名列表，请检查配置'
+                } else if (err.errMsg && err.errMsg.includes('request:fail')) {
+                  msg = '网络连接失败，请检查网络'
+                }
+                wx.showToast({ title: msg, icon: 'none', duration: 3000 })
               }
             });
           },
