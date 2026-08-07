@@ -58,7 +58,7 @@ App({
   globalData: {
     // 全局数据
     userInfo: null,
-    API_BASE_URL: 'http://gdufe-childcare.cn:8080', // 新服务器地址
+    API_BASE_URL: 'https://gdufe-childcare.cn', // 新服务器地址（已配置 SSL，走 HTTPS 443 端口）
     notifications: [] // 用于存储通知的数组
   },
 
