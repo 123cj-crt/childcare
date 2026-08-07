@@ -17,6 +17,41 @@ const MOCK_BANNERS = [
   { id: 3, image: '/images/3.jpg', title: '财税启蒙之旅', link: 'https://mp.weixin.qq.com/s/uL6q4FX0CuAjtSXkCGz2cg' }
 ]
 
+// 后端课程数据字段 → 前端课程卡片字段转换
+function normalizeCourse(c) {
+  const startDate = c.startDate || ''
+  const dateObj = startDate ? new Date(startDate.replace(/-/g, '/')) : null
+
+  let date = startDate
+  let weekday = ''
+  if (dateObj && !isNaN(dateObj.getTime())) {
+    const month = dateObj.getMonth() + 1
+    const day = dateObj.getDate()
+    date = `${month}月${day}日`
+    const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+    weekday = weekDays[dateObj.getDay()]
+  }
+
+  // 后端 schedule 字段目前只有日期没有具体时段，先用默认时间兜底
+  // 等后端补充时间字段后可改为此字段
+  const time = '09:00-11:00'
+
+  return {
+    id: c.id,
+    name: c.name || '',
+    date: date,
+    weekday: weekday,
+    time: time,
+    location: c.location || '',
+    description: c.description || '',
+    targetAge: '6-12岁儿童',
+    capacity: c.capacity || 0,
+    currentStudents: 0,
+    teacher: '小明',
+    teacherPhone: '666666'
+  }
+}
+
 // 2026年8月10-14日课程安排
 const MOCK_COURSES = [
   {
@@ -340,7 +375,8 @@ Page({
             list = raw.data
           }
           if (list.length > 0) {
-            this.setData({ courses: list })
+            const courses = list.map(normalizeCourse)
+            this.setData({ courses: courses })
             // 真实 API 模式下也刷新云端预约人数
             if (USE_CLOUD_RESERVATION) {
               this.fetchCloudCounts()

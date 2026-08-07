@@ -222,29 +222,55 @@ Page({
       method: 'GET',
       success: (res) => {
         if (res.statusCode === 200) {
-          const course = res.data
-          this.setData({
-            course: {
-              id: course.id,
-              name: course.name,
-              date: course.startDate,
-              endDate: course.endDate,
-              time: course.schedule,
-              location: course.location,
-              intro: course.description,
-              capacity: course.capacity || 0
-            }
-          })
-          if (course.teacherId) {
-            this.loadTeacherInfo(course.teacherId)
+          const backendCourse = res.data
+          const course = this.normalizeCourse(backendCourse)
+          this.setData({ course })
+          this.loadTeacherInfo(course.teacherId)
+          if (USE_CLOUD_RESERVATION) {
+            this.loadCloudReservationCount(course.id)
+          } else {
+            this.loadCurrentReservations(id)
           }
-          this.loadCurrentReservations(id)
         }
       },
       fail: (err) => {
         console.error('请求课程详情失败', err)
       }
     })
+  },
+
+  // 后端课程字段 → 前端 wxml 字段统一转换
+  normalizeCourse(c) {
+    const startDate = c.startDate || ''
+    const dateObj = startDate ? new Date(startDate.replace(/-/g, '/')) : null
+
+    let date = startDate
+    let weekday = ''
+    if (dateObj && !isNaN(dateObj.getTime())) {
+      const month = dateObj.getMonth() + 1
+      const day = dateObj.getDate()
+      date = `${month}月${day}日`
+      const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+      weekday = weekDays[dateObj.getDay()]
+    }
+
+    return {
+      id: c.id,
+      name: c.name || '',
+      date: date,
+      weekday: weekday,
+      time: '09:00-11:00', // 后端暂无具体时间字段，先用默认时间
+      endDate: c.endDate || startDate,
+      schedule: c.schedule || '',
+      location: c.location || '',
+      description: c.description || '',
+      targetAge: '6-12岁儿童',
+      capacity: c.capacity || 0,
+      currentStudents: 0,
+      teacherId: c.teacherId,
+      price: c.price || 0,
+      type: c.type || '托育课程'
+    }
   },
 
   loadTeacherInfo(teacherId) {
