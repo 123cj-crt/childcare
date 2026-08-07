@@ -5,14 +5,16 @@ Page({
   data: {
     children: [],
     showForm: false,
-    formData: {
-      name: '',
-      age: '',
-      gender: '男',
-      relation: '',
-      parentName: '',
-      phoneNumber: ''
-    },
+      formData: {
+        name: '',
+        age: '',
+        gender: '男',
+        relation: '',
+        parentName: '',
+        phoneNumber: '',
+        address: '',
+        grade: ''
+      },
     genderOptions: ['男', '女']
   },
 
@@ -40,7 +42,9 @@ Page({
         gender: '男',
         relation: '',
         parentName: '',
-        phoneNumber: ''
+        phoneNumber: '',
+        address: '',
+        grade: ''
       }
     });
   },
@@ -73,7 +77,7 @@ Page({
 
   // 保存儿童
   onSaveChild() {
-    const { name, age, gender, relation, parentName, phoneNumber } = this.data.formData;
+    const { name, age, gender, relation, parentName, phoneNumber, address, grade } = this.data.formData;
 
     if (!name.trim()) {
       wx.showToast({ title: '请输入儿童姓名', icon: 'none' });
@@ -98,6 +102,8 @@ Page({
       relation: relation.trim(),
       parentName: parentName.trim() || '未设置',
       phoneNumber: phoneNumber.trim() || '',
+      address: address.trim() || '',
+      grade: grade.trim() || '',
       avatar: '/images/default-avatar.png'
     };
 
