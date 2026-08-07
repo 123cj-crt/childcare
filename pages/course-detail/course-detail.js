@@ -217,10 +217,17 @@ Page({
     }
 
     // 正式版：从服务器加载
+    const openId = wx.getStorageSync('openId')
     wx.request({
       url: `${app.globalData.API_BASE_URL}/api/courses/${id}`,
       method: 'GET',
+      timeout: 10000,
+      header: {
+        'content-type': 'application/json',
+        'X-WX-OPENID': openId || ''
+      },
       success: (res) => {
+        console.log('[course-detail] 响应:', res.statusCode, res.data)
         if (res.statusCode === 200) {
           const backendCourse = res.data
           const course = this.normalizeCourse(backendCourse)
@@ -234,7 +241,23 @@ Page({
         }
       },
       fail: (err) => {
-        console.error('请求课程详情失败', err)
+        console.error('[course-detail] 请求失败:', err)
+        // 兜底：用 mock 数据
+        const course = MOCK_COURSES.find(c => c.id === parseInt(id))
+        if (course) {
+          const cachedCounts = wx.getStorageSync('cloud_course_counts') || {}
+          const initialCount = cachedCounts[course.id] !== undefined ? cachedCounts[course.id] : course.currentStudents
+          this.setData({
+            course: course,
+            teacher: { name: course.teacher, phone: course.teacherPhone },
+            currentReservations: initialCount,
+            isFull: initialCount >= course.capacity,
+            capacityPercent: Math.round(initialCount / course.capacity * 100)
+          })
+          if (USE_CLOUD_RESERVATION) {
+            this.loadCloudReservationCount(course.id)
+          }
+        }
       }
     })
   },
@@ -274,16 +297,25 @@ Page({
   },
 
   loadTeacherInfo(teacherId) {
+    const openId = wx.getStorageSync('openId')
     wx.request({
       url: `${app.globalData.API_BASE_URL}/api/teachers/${teacherId}`,
       method: 'GET',
+      timeout: 10000,
+      header: {
+        'content-type': 'application/json',
+        'X-WX-OPENID': openId || ''
+      },
       success: (res) => {
+        console.log('[course-detail] 教师信息响应:', res.statusCode, res.data)
         if (res.statusCode === 200) {
           this.setData({ teacher: res.data })
         }
       },
       fail: (err) => {
-        console.error('请求教师信息失败', err)
+        console.error('[course-detail] 请求教师信息失败:', err)
+        // 兜底：用默认教师信息
+        this.setData({ teacher: { name: '小明', phone: '666666' } })
       }
     })
   },

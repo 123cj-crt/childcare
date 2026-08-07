@@ -318,15 +318,17 @@ Page({
 
   fetchBanners() {
     const openId = wx.getStorageSync('openId')
+    console.log('[fetchBanners] 开始请求:', `${app.globalData.API_BASE_URL}/api/tweets`)
     wx.request({
       url: `${app.globalData.API_BASE_URL}/api/tweets`,
       method: 'GET',
+      timeout: 10000,
       header: {
         'content-type': 'application/json',
         'X-WX-OPENID': openId || ''
       },
       success: (res) => {
-        console.log('===== 首页 fetchBanners 响应 =====', res)
+        console.log('[fetchBanners] 响应 statusCode:', res.statusCode, 'data:', res.data)
         if (res.statusCode === 200) {
           const raw = res.data
           let list = []
@@ -336,36 +338,45 @@ Page({
             list = raw.data
           }
           if (list.length > 0) {
-            this.setData({
-              banners: list.map((tweet, i) => ({
-                id: tweet.id || i + 1,
-                image: this.processImageUrl(tweet.image),
-                title: tweet.title || `推文 ${tweet.id}`,
-                link: tweet.link
-              }))
-            })
-            return
+            // 过滤掉 picsum.photos 占位图，用 mock 图兜底
+            const filtered = list.filter(t => t.image && !t.image.includes('picsum.photos'))
+            if (filtered.length > 0) {
+              this.setData({
+                banners: filtered.map((tweet, i) => ({
+                  id: tweet.id || i + 1,
+                  image: this.processImageUrl(tweet.image),
+                  title: tweet.title || `推文 ${tweet.id}`,
+                  link: tweet.link
+                }))
+              })
+              return
+            }
+            // 后端全是 picsum 占位图，用 mock
+            console.warn('[fetchBanners] 后端推文全是 picsum 占位图，使用 mock 图')
           }
         }
-        this.setData({ banners: [] })
+        this.setData({ banners: MOCK_BANNERS })
       },
-      fail: () => {
-        this.setData({ banners: [] })
+      fail: (err) => {
+        console.error('[fetchBanners] 请求失败:', err)
+        this.setData({ banners: MOCK_BANNERS })
       }
     })
   },
 
   fetchCourses() {
     const openId = wx.getStorageSync('openId')
+    console.log('[fetchCourses] 开始请求:', `${app.globalData.API_BASE_URL}/api/courses`)
     wx.request({
       url: `${app.globalData.API_BASE_URL}/api/courses`,
       method: 'GET',
+      timeout: 10000,
       header: {
         'content-type': 'application/json',
         'X-WX-OPENID': openId || ''
       },
       success: (res) => {
-        console.log('===== 首页 fetchCourses 响应 =====', res)
+        console.log('[fetchCourses] 响应 statusCode:', res.statusCode, 'data:', res.data)
         if (res.statusCode === 200) {
           const raw = res.data
           let list = []
@@ -376,6 +387,7 @@ Page({
           }
           if (list.length > 0) {
             const courses = list.map(normalizeCourse)
+            console.log('[fetchCourses] 转换后课程数:', courses.length, '第一条:', courses[0])
             this.setData({ courses: courses })
             // 真实 API 模式下也刷新云端预约人数
             if (USE_CLOUD_RESERVATION) {
@@ -384,11 +396,30 @@ Page({
             return
           }
         }
-        this.setData({ courses: [] })
+        console.warn('[fetchCourses] API 返回为空或格式不符，使用 mock 数据兜底')
+        this.fallbackToMock()
       },
-      fail: () => {
-        this.setData({ courses: [] })
+      fail: (err) => {
+        console.error('[fetchCourses] 请求失败:', err)
+        console.error('[fetchCourses] 可能原因: 合法域名未配置/未生效, 或网络不通')
+        this.fallbackToMock()
       }
     })
+  },
+
+  // API 请求失败时的兜底：使用 mock 数据，保证页面不空白
+  fallbackToMock() {
+    const cachedCounts = wx.getStorageSync('cloud_course_counts') || {}
+    const courses = MOCK_COURSES.map(c => ({
+      ...c,
+      currentStudents: cachedCounts[c.id] !== undefined ? cachedCounts[c.id] : c.currentStudents
+    }))
+    this.setData({
+      banners: MOCK_BANNERS,
+      courses: courses
+    })
+    if (USE_CLOUD_RESERVATION) {
+      this.fetchCloudCounts()
+    }
   }
 })
