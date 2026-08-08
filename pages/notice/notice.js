@@ -64,7 +64,7 @@ Page({
         'allNoticeData.公告通知': formatted,
         'noticeCount.notice1': unreadCount
       })
-      wx.setStorageSync('notice_announcements', MOCK_ANNOUNCEMENTS)
+      app.setUserStorage('notice_announcements', MOCK_ANNOUNCEMENTS)
       return
     }
 
@@ -87,7 +87,7 @@ Page({
             'allNoticeData.公告通知': formatted,
             'noticeCount.notice1': unreadCount
           })
-          wx.setStorageSync('notice_announcements', finalNotices)
+          app.setUserStorage('notice_announcements', finalNotices)
         } else {
           // 接口状态异常时，也用本地默认公告兜底
           this.applyMockAnnouncements()
@@ -284,7 +284,7 @@ Page({
       'allNoticeData.公告通知': formatted,
       'noticeCount.notice1': unreadCount
     })
-    wx.setStorageSync('notice_announcements', MOCK_ANNOUNCEMENTS)
+    app.setUserStorage('notice_announcements', MOCK_ANNOUNCEMENTS)
   },
 
   formatNotices(notices) {

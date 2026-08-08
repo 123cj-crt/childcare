@@ -112,14 +112,20 @@ Page({
   },
 
   loadNoticeDetail(id) {
-    if (DEBUG_MOCK_NOTICES && NOTICE_CONTENTS[id]) {
-      this.setData({ notice: NOTICE_CONTENTS[id] })
+    // 优先从用户隔离存储读取公告列表
+    const notices = app.getUserStorage('notice_announcements') || []
+    const notice = notices.find(n => String(n.id) === String(id))
+
+    // 本地内置了完整正文（sections）的公告，用内置内容兜底/补全，
+    // 避免后端/storage 数据缺少 sections 导致详情页空白
+    if (NOTICE_CONTENTS[id]) {
+      this.setData({
+        notice: { ...NOTICE_CONTENTS[id], ...(notice || {}) }
+      })
       wx.setNavigationBarTitle({ title: NOTICE_CONTENTS[id].title })
       return
     }
 
-    const notices = wx.getStorageSync('notice_announcements') || []
-    const notice = notices.find(n => String(n.id) === String(id))
     if (notice) {
       this.setData({ notice })
       wx.setNavigationBarTitle({ title: notice.title || '公告详情' })

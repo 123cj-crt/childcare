@@ -36,7 +36,7 @@ Page({
 
   loadNotices(type) {
     if (DEBUG_MOCK_NOTICES && type === '公告通知') {
-      const notices = wx.getStorageSync('notice_announcements') || []
+      const notices = app.getUserStorage('notice_announcements') || []
       this.setData({ notices: this.formatNoticeList(notices) })
       return
     }
