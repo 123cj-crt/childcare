@@ -79,17 +79,23 @@ Page({
       success: (res) => {
         if (res.statusCode === 200 && res.data.code === 200) {
           const notices = res.data.data || []
-          const formatted = this.formatNotices(notices)
-          const unreadCount = notices.filter(n => !n.isRead).length
+          // 后端没有公告时，用本地默认公告兜底，避免页面空白
+          const finalNotices = notices.length > 0 ? notices : MOCK_ANNOUNCEMENTS
+          const formatted = this.formatNotices(finalNotices)
+          const unreadCount = finalNotices.filter(n => !n.isRead).length
           this.setData({
             'allNoticeData.公告通知': formatted,
             'noticeCount.notice1': unreadCount
           })
-          wx.setStorageSync('notice_announcements', notices)
+          wx.setStorageSync('notice_announcements', finalNotices)
+        } else {
+          // 接口状态异常时，也用本地默认公告兜底
+          this.applyMockAnnouncements()
         }
       },
       fail: (err) => {
         console.error('获取公告通知失败', err)
+        this.applyMockAnnouncements()
       }
     })
   },
@@ -268,6 +274,17 @@ Page({
         console.error('获取学生通知失败', err)
       }
     })
+  },
+
+  // 用本地默认公告兜底
+  applyMockAnnouncements() {
+    const formatted = this.formatNotices(MOCK_ANNOUNCEMENTS)
+    const unreadCount = MOCK_ANNOUNCEMENTS.filter(n => !n.isRead).length
+    this.setData({
+      'allNoticeData.公告通知': formatted,
+      'noticeCount.notice1': unreadCount
+    })
+    wx.setStorageSync('notice_announcements', MOCK_ANNOUNCEMENTS)
   },
 
   formatNotices(notices) {
