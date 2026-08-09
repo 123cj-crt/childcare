@@ -6,6 +6,7 @@
 const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
+const _ = db.command
 
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
@@ -18,9 +19,13 @@ exports.main = async (event, context) => {
     switch (action) {
 
       // ===== 查询当前用户的所有儿童（按创建时间倒序） =====
+      // 兼容两种存储方式：系统字段 _openid 或自定义字段 openid
       case 'list': {
         const res = await db.collection('children')
-          .where({ _openid: openid })
+          .where(_.or([
+            { _openid: openid },
+            { openid: openid }
+          ]))
           .orderBy('createTime', 'desc')
           .get()
         return { code: 0, data: res.data }
@@ -40,6 +45,7 @@ exports.main = async (event, context) => {
             address: child.address || '',
             grade: child.grade || '',
             avatar: child.avatar || '/images/default-avatar.png',
+            openid: openid, // 自定义字段，确保无 _openid 时也能正确隔离与查询
             createTime: db.serverDate()
           }
         })
@@ -50,7 +56,7 @@ exports.main = async (event, context) => {
       case 'update': {
         const { id, child } = event
         const exist = await db.collection('children').doc(id).get()
-        if (!exist.data || exist.data._openid !== openid) {
+        if (!exist.data || (exist.data._openid !== openid && exist.data.openid !== openid)) {
           return { code: -1, msg: '无权修改该儿童信息' }
         }
         await db.collection('children').doc(id).update({
@@ -73,7 +79,7 @@ exports.main = async (event, context) => {
       case 'remove': {
         const { id } = event
         const exist = await db.collection('children').doc(id).get()
-        if (!exist.data || exist.data._openid !== openid) {
+        if (!exist.data || (exist.data._openid !== openid && exist.data.openid !== openid)) {
           return { code: -1, msg: '无权删除该儿童信息' }
         }
         await db.collection('children').doc(id).remove()
