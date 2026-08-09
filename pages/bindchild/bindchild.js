@@ -120,18 +120,23 @@ Page({
       }).then(res => {
         wx.hideLoading();
         if (res.result && res.result.code === 0) {
-          this.setData({ showForm: false });
-          this.loadChildren();
-          wx.showToast({ title: '添加成功', icon: 'success' });
+          // 云端保存成功：把返回的 _id 作为 id 写入本地缓存并立即显示
+          const savedChild = Object.assign({}, newChild, { id: res.result._id })
+          let myChildren = app.getUserStorage('myChildren') || []
+          myChildren.push(savedChild)
+          app.setUserStorage('myChildren', myChildren)
+          this.setData({ showForm: false, children: myChildren })
+          wx.showToast({ title: '云端保存成功', icon: 'success' })
         } else {
           // 云端失败，兜底存本地
-          this.saveLocalFallback(newChild);
-          wx.showToast({ title: '已存本地（云端未同步）', icon: 'none' });
+          this.saveLocalFallback(newChild)
+          wx.showToast({ title: '已存本地（云端未同步）', icon: 'none' })
         }
-      }).catch(() => {
+      }).catch((err) => {
         wx.hideLoading();
-        this.saveLocalFallback(newChild);
-        wx.showToast({ title: '网络异常，已存本地', icon: 'none' });
+        console.error('[bindchild] 添加儿童云函数失败:', err)
+        this.saveLocalFallback(newChild)
+        wx.showToast({ title: '网络异常，已存本地', icon: 'none' })
       });
       return;
     }

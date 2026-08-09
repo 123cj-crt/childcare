@@ -115,11 +115,14 @@ App({
         data: { action: 'list' }
       }).then(function (res) {
         if (res.result && res.result.code === 0) {
-          const list = (res.result.data || []).map(function (c) {
+          const localList = self.getUserStorage('myChildren') || []
+          const cloudList = (res.result.data || []).map(function (c) {
             return Object.assign({}, c, { id: c._id })
           })
-          self.setUserStorage('myChildren', list)
-          resolve(list)
+          // 防御：云端返回空但本地有数据时，优先保留本地，避免 add 未同步完成或查询延迟导致显示空白
+          const finalList = cloudList.length > 0 ? cloudList : localList
+          self.setUserStorage('myChildren', finalList)
+          resolve(finalList)
         } else {
           resolve(self.getUserStorage('myChildren') || [])
         }
