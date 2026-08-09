@@ -1,0 +1,22 @@
+<!--pages/tweet-detail/tweet-detail.wxml-->
+<view class="tweet-detail">
+  <view class="hero">
+    <image class="hero-img" src="{{cover}}" mode="aspectFill" wx:if="{{cover}}" />
+    <view class="hero-mask"></view>
+    <view class="hero-title">{{title}}</view>
+  </view>
+
+  <view class="content">
+    <view class="summary" wx:if="{{summary}}">{{summary}}</view>
+
+    <block wx:for="{{blocks}}" wx:key="index">
+      <view class="paragraph" wx:if="{{item.type === 'text'}}">{{item.text}}</view>
+      <image wx:elif="{{item.type === 'image'}}" class="inline-img" src="{{item.src}}" mode="widthFix" />
+    </block>
+
+    <view class="link-area" wx:if="{{link}}">
+      <button class="link-btn" bindtap="copyLink">查看 / 复制原文链接</button>
+      <view class="link-tip">如页面无法加载，可复制链接到微信或浏览器打开</view>
+    </view>
+  </view>
+</view>

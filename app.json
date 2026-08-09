@@ -18,6 +18,7 @@
     "pages/userPolicy/userPolicy",
     "pages/bindchild/bindchild",
     "pages/webview/webview",
+    "pages/tweet-detail/tweet-detail",
     "pages/my-reservations/my-reservations",
     "pages/history-courses/history-courses",
     "pages/course-reservations/course-reservations"

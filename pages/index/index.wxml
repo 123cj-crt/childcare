@@ -4,7 +4,7 @@
   <swiper class="banner" indicator-dots="true" autoplay="true" interval="3000" duration="500">
     <block wx:for="{{banners}}" wx:key="id">
       <swiper-item>
-        <view class="banner-item" bindtap="onBannerTap" data-link="{{item.link}}" data-title="{{item.title}}">
+        <view class="banner-item" bindtap="onBannerTap" data-id="{{item.id}}" data-link="{{item.link}}" data-title="{{item.title}}" data-image="{{item.image}}">
           <image class="banner-img" src="{{item.image}}" mode="aspectFill" binderror="onImageError" data-index="{{index}}" />
           <view class="banner-overlay" wx:if="{{item.link}}">
             <view class="banner-title">{{item.title}}</view>

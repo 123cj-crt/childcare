@@ -283,29 +283,21 @@ Page({
   },
 
   onBannerTap(e) {
+    const id = e.currentTarget.dataset.id
     const link = e.currentTarget.dataset.link
     const title = e.currentTarget.dataset.title
+    const image = e.currentTarget.dataset.image
 
-    if (!link) {
-      wx.showToast({ title: '推文链接不存在', icon: 'none' })
-      return
-    }
+    // 改为原生推文详情页，避免 web-view 在真机受业务域名/公众号文章限制
+    const params = [
+      `id=${id}`,
+      `title=${encodeURIComponent(title || '')}`,
+      `image=${encodeURIComponent(image || '')}`,
+      `link=${encodeURIComponent(link || '')}`
+    ].join('&')
 
     wx.navigateTo({
-      url: `/pages/webview/webview?url=${encodeURIComponent(link)}&title=${encodeURIComponent(title || '微信公众号推文')}`,
-      fail: () => {
-        wx.setClipboardData({
-          data: link,
-          success: () => {
-            wx.showModal({
-              title: '链接已复制',
-              content: '已复制推文链接到剪贴板，请在微信中打开查看。',
-              showCancel: false,
-              confirmText: '知道了'
-            })
-          }
-        })
-      }
+      url: `/pages/tweet-detail/tweet-detail?${params}`
     })
   },
 
