@@ -55,15 +55,18 @@ Page({
         childAge: child.age,
         childGender: child.gender,
         avatarText: child.name ? child.name[0] : '?',
-        courses: childReservations.map(r => ({
-          courseId: r.courseId,
-          courseName: r.courseName,
-          date: r.date,
-          weekday: r.weekday,
-          time: r.time,
-          location: r.location,
-          teacher: r.teacher
-        }))
+        courses: childReservations.map(r => {
+          const standardTeacher = app.getStandardTeacher(r.courseName, r.teacher)
+          return {
+            courseId: r.courseId,
+            courseName: r.courseName,
+            date: r.date,
+            weekday: r.weekday,
+            time: r.time,
+            location: r.location,
+            teacher: standardTeacher.name
+          }
+        })
       }
     }).filter(g => g.courses.length > 0) // 只显示有课的儿童
 

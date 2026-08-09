@@ -84,6 +84,15 @@ App({
     wx.setStorageSync(this.getUserStorageKey(key), value)
   },
 
+  // 规范化教师信息：所有课程电话统一，音乐课单独指定老师
+  getStandardTeacher: function (courseName, rawName) {
+    const isMusicCourse = courseName && String(courseName).includes('听见旋律里的心情')
+    return {
+      name: isMusicCourse ? '陈劲' : (rawName || '小明'),
+      phone: '13660566366'
+    }
+  },
+
   // 移除当前用户的本地缓存
   removeUserStorage: function (key) {
     wx.removeStorageSync(this.getUserStorageKey(key))

@@ -47,10 +47,14 @@ function normalizeCourse(c) {
     description: c.description || '',
     targetAge: '6-12岁儿童',
     capacity: c.capacity || 0,
-    currentStudents: 0,
-    teacher: '小明',
-    teacherPhone: '666666'
+    currentStudents: 0
   }
+
+  const standardTeacher = app.getStandardTeacher(result.name, c.teacherName)
+  result.teacher = standardTeacher.name
+  result.teacherPhone = standardTeacher.phone
+
+  return result
 }
 
 // 2026年8月10-14日课程安排
@@ -67,7 +71,7 @@ const MOCK_COURSES = [
     capacity: 40,
     currentStudents: 15,
     teacher: '小明',
-    teacherPhone: '666666'
+    teacherPhone: '13660566366'
   },
   {
     id: 2,
@@ -81,7 +85,7 @@ const MOCK_COURSES = [
     capacity: 40,
     currentStudents: 18,
     teacher: '小明',
-    teacherPhone: '666666'
+    teacherPhone: '13660566366'
   },
   {
     id: 3,
@@ -95,7 +99,7 @@ const MOCK_COURSES = [
     capacity: 40,
     currentStudents: 12,
     teacher: '小明',
-    teacherPhone: '666666'
+    teacherPhone: '13660566366'
   },
   {
     id: 4,
@@ -109,7 +113,7 @@ const MOCK_COURSES = [
     capacity: 40,
     currentStudents: 20,
     teacher: '小明',
-    teacherPhone: '666666'
+    teacherPhone: '13660566366'
   },
   {
     id: 5,
@@ -123,7 +127,7 @@ const MOCK_COURSES = [
     capacity: 40,
     currentStudents: 14,
     teacher: '小明',
-    teacherPhone: '666666'
+    teacherPhone: '13660566366'
   },
   {
     id: 6,
@@ -136,8 +140,8 @@ const MOCK_COURSES = [
     targetAge: '6-12岁儿童',
     capacity: 40,
     currentStudents: 22,
-    teacher: '小明',
-    teacherPhone: '666666'
+    teacher: '陈劲',
+    teacherPhone: '13660566366'
   },
   {
     id: 7,
@@ -151,7 +155,7 @@ const MOCK_COURSES = [
     capacity: 40,
     currentStudents: 16,
     teacher: '小明',
-    teacherPhone: '666666'
+    teacherPhone: '13660566366'
   },
   {
     id: 8,
@@ -165,7 +169,7 @@ const MOCK_COURSES = [
     capacity: 40,
     currentStudents: 13,
     teacher: '小明',
-    teacherPhone: '666666'
+    teacherPhone: '13660566366'
   },
   {
     id: 9,
@@ -179,7 +183,7 @@ const MOCK_COURSES = [
     capacity: 40,
     currentStudents: 25,
     teacher: '小明',
-    teacherPhone: '666666'
+    teacherPhone: '13660566366'
   },
   {
     id: 10,
@@ -193,7 +197,7 @@ const MOCK_COURSES = [
     capacity: 40,
     currentStudents: 19,
     teacher: '小明',
-    teacherPhone: '666666'
+    teacherPhone: '13660566366'
   }
 ]
 

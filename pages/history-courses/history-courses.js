@@ -76,6 +76,16 @@ Page({
       return tb - ta
     })
 
+    // 规范化教师信息（兼容旧存储数据）
+    historyList = historyList.map(r => {
+      const standardTeacher = app.getStandardTeacher(r.courseName || r.name, r.teacher)
+      return {
+        ...r,
+        teacher: standardTeacher.name,
+        teacherPhone: standardTeacher.phone
+      }
+    })
+
     this.setData({
       historyList: historyList,
       isEmpty: historyList.length === 0,

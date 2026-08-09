@@ -35,24 +35,27 @@ Page({
       if (res.result && res.result.code === 0) {
         const cloudRes = res.result.data || []
         // 映射字段，兼容前端 wxml 模板
-        const reservations = cloudRes.map(r => ({
-          courseId: r.courseId,
-          courseName: r.courseName || '',
-          childId: r.childId,
-          childName: r.childName || '',
-          childAge: r.childAge || '',
-          childGender: r.childGender || '',
-          childRelation: r.childRelation || '',
-          date: r.courseDate || '',
-          weekday: r.courseWeekday || '',
-          time: r.courseTime || '',
-          location: r.courseLocation || '',
-          description: r.courseDescription || '',
-          teacher: r.courseTeacher || '',
-          teacherPhone: r.courseTeacherPhone || '',
-          capacity: r.courseCapacity || 40,
-          reservedAt: r.reservedAt || ''
-        }))
+        const reservations = cloudRes.map(r => {
+          const standardTeacher = app.getStandardTeacher(r.courseName, r.courseTeacher)
+          return {
+            courseId: r.courseId,
+            courseName: r.courseName || '',
+            childId: r.childId,
+            childName: r.childName || '',
+            childAge: r.childAge || '',
+            childGender: r.childGender || '',
+            childRelation: r.childRelation || '',
+            date: r.courseDate || '',
+            weekday: r.courseWeekday || '',
+            time: r.courseTime || '',
+            location: r.courseLocation || '',
+            description: r.courseDescription || '',
+            teacher: standardTeacher.name,
+            teacherPhone: standardTeacher.phone,
+            capacity: r.courseCapacity || 40,
+            reservedAt: r.reservedAt || ''
+          }
+        })
         this.setData({
           reservations: reservations,
           isEmpty: reservations.length === 0
@@ -71,9 +74,18 @@ Page({
       myReservations = []
       app.setUserStorage('myReservations', [])
     }
+    // 规范化教师信息（兼容旧存储数据）
+    const reservations = myReservations.map(r => {
+      const standardTeacher = app.getStandardTeacher(r.courseName || r.name, r.teacher)
+      return {
+        ...r,
+        teacher: standardTeacher.name,
+        teacherPhone: standardTeacher.phone
+      }
+    })
     this.setData({
-      reservations: myReservations,
-      isEmpty: myReservations.length === 0
+      reservations: reservations,
+      isEmpty: reservations.length === 0
     })
   },
 

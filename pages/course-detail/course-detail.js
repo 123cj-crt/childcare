@@ -20,7 +20,7 @@ const MOCK_COURSES = [
     capacity: 40,
     currentStudents: 15,
     teacher: '小明',
-    teacherPhone: '666666'
+    teacherPhone: '13660566366'
   },
   {
     id: 2,
@@ -34,7 +34,7 @@ const MOCK_COURSES = [
     capacity: 40,
     currentStudents: 18,
     teacher: '小明',
-    teacherPhone: '666666'
+    teacherPhone: '13660566366'
   },
   {
     id: 3,
@@ -48,7 +48,7 @@ const MOCK_COURSES = [
     capacity: 40,
     currentStudents: 12,
     teacher: '小明',
-    teacherPhone: '666666'
+    teacherPhone: '13660566366'
   },
   {
     id: 4,
@@ -62,7 +62,7 @@ const MOCK_COURSES = [
     capacity: 40,
     currentStudents: 20,
     teacher: '小明',
-    teacherPhone: '666666'
+    teacherPhone: '13660566366'
   },
   {
     id: 5,
@@ -76,7 +76,7 @@ const MOCK_COURSES = [
     capacity: 40,
     currentStudents: 14,
     teacher: '小明',
-    teacherPhone: '666666'
+    teacherPhone: '13660566366'
   },
   {
     id: 6,
@@ -89,8 +89,8 @@ const MOCK_COURSES = [
     targetAge: '6-12岁儿童',
     capacity: 40,
     currentStudents: 22,
-    teacher: '小明',
-    teacherPhone: '666666'
+    teacher: '陈劲',
+    teacherPhone: '13660566366'
   },
   {
     id: 7,
@@ -104,7 +104,7 @@ const MOCK_COURSES = [
     capacity: 40,
     currentStudents: 16,
     teacher: '小明',
-    teacherPhone: '666666'
+    teacherPhone: '13660566366'
   },
   {
     id: 8,
@@ -118,7 +118,7 @@ const MOCK_COURSES = [
     capacity: 40,
     currentStudents: 13,
     teacher: '小明',
-    teacherPhone: '666666'
+    teacherPhone: '13660566366'
   },
   {
     id: 9,
@@ -132,7 +132,7 @@ const MOCK_COURSES = [
     capacity: 40,
     currentStudents: 25,
     teacher: '小明',
-    teacherPhone: '666666'
+    teacherPhone: '13660566366'
   },
   {
     id: 10,
@@ -146,7 +146,7 @@ const MOCK_COURSES = [
     capacity: 40,
     currentStudents: 19,
     teacher: '小明',
-    teacherPhone: '666666'
+    teacherPhone: '13660566366'
   }
 ]
 // =================================
@@ -294,6 +294,12 @@ Page({
       price: c.price || 0,
       type: c.type || '托育课程'
     }
+
+    const standardTeacher = app.getStandardTeacher(result.name, c.teacherName)
+    result.teacher = standardTeacher.name
+    result.teacherPhone = standardTeacher.phone
+
+    return result
   },
 
   loadTeacherInfo(teacherId) {
@@ -309,13 +315,16 @@ Page({
       success: (res) => {
         console.log('[course-detail] 教师信息响应:', res.statusCode, res.data)
         if (res.statusCode === 200) {
-          this.setData({ teacher: res.data })
+          const courseName = this.data.course ? this.data.course.name : ''
+          const standard = app.getStandardTeacher(courseName, res.data && res.data.name)
+          this.setData({ teacher: standard })
         }
       },
       fail: (err) => {
         console.error('[course-detail] 请求教师信息失败:', err)
         // 兜底：用默认教师信息
-        this.setData({ teacher: { name: '小明', phone: '666666' } })
+        const courseName = this.data.course ? this.data.course.name : ''
+        this.setData({ teacher: app.getStandardTeacher(courseName, '小明') })
       }
     })
   },
