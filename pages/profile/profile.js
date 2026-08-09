@@ -222,7 +222,7 @@ Page({
   contactUs: function () {
     wx.showModal({
       title: '联系我们',
-      content: '请拨打客服热线：123-4567-8901',
+      content: '请拨打客服热线：13660566366',
       showCancel: false
     });
   }
