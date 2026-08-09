@@ -1,0 +1,9 @@
+{
+  "name": "children",
+  "version": "1.0.0",
+  "description": "儿童信息云端同步云函数：list/add/update/remove",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

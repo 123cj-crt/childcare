@@ -178,17 +178,22 @@ Page({
     this.loadChildren()
   },
 
-  // 加载已绑定的儿童列表
+  // 加载已绑定的儿童列表（云端优先，本地缓存兜底）
   loadChildren() {
-    let myChildren = app.getUserStorage('myChildren') || []
-    // 兼容旧数据：如果缓存中的儿童没有 id，用 index 生成兜底 id
-    myChildren = myChildren.map((child, index) => ({
+    const normalize = (list) => (list || []).map((child, index) => ({
       ...child,
       id: child.id !== undefined && child.id !== null && child.id !== ''
         ? child.id
         : ('child_' + index)
     }))
-    this.setData({ children: myChildren })
+
+    // 先显示本地缓存，避免闪烁
+    this.setData({ children: normalize(app.getUserStorage('myChildren')) })
+
+    // 异步从云端拉取（跨设备同步）
+    app.loadChildrenFromCloud().then(list => {
+      this.setData({ children: normalize(list) })
+    }).catch(() => {})
   },
 
   loadCourse(id) {

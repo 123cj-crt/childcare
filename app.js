@@ -16,6 +16,9 @@ App({
 
     // 将旧版全局存储的数据迁移到当前用户的隔离存储（一次性）
     this.migrateToUserStorage()
+
+    // 清空测试阶段遗留的预约/儿童/日志等本地假数据（仅一次）
+    this.clearTestDataOnce()
   },
 
   // 一次性迁移：旧版所有用户共用同一个 storage key，现在按 openId 隔离
@@ -96,6 +99,55 @@ App({
   // 移除当前用户的本地缓存
   removeUserStorage: function (key) {
     wx.removeStorageSync(this.getUserStorageKey(key))
+  },
+
+  // 从云端加载儿童列表并同步到本地缓存（离线兜底 + 兼容同步读取的页面）
+  // 返回 Promise<list>，list 中每个儿童以云数据库 _id 作为唯一 id
+  loadChildrenFromCloud: function () {
+    const self = this
+    return new Promise(function (resolve) {
+      if (!wx.cloud) {
+        resolve(self.getUserStorage('myChildren') || [])
+        return
+      }
+      wx.cloud.callFunction({
+        name: 'children',
+        data: { action: 'list' }
+      }).then(function (res) {
+        if (res.result && res.result.code === 0) {
+          const list = (res.result.data || []).map(function (c) {
+            return Object.assign({}, c, { id: c._id })
+          })
+          self.setUserStorage('myChildren', list)
+          resolve(list)
+        } else {
+          resolve(self.getUserStorage('myChildren') || [])
+        }
+      }).catch(function () {
+        resolve(self.getUserStorage('myChildren') || [])
+      })
+    })
+  },
+
+  // 一次性清理测试遗留数据（仅在初次启动时执行一次）
+  // 清空本地预约缓存、儿童缓存、活动日志、课程提醒及人数缓存，
+  // 保证从云端拉取的是干净数据，避免旧设备上的假测试数据串入
+  clearTestDataOnce: function () {
+    const flag = wx.getStorageSync('__cleared_test_data_v1')
+    if (flag) return
+    try {
+      const allKeys = wx.getStorageInfoSync().keys
+      const patterns = /^(myReservations|myChildren|activity_logs|course_reminded_ids)_/
+      allKeys.forEach(function (k) {
+        if (patterns.test(k) || k.indexOf('reserved_course_') === 0 || k === 'cloud_course_counts') {
+          wx.removeStorageSync(k)
+        }
+      })
+      wx.setStorageSync('__cleared_test_data_v1', true)
+      console.log('[Cleanup] 已清理本地测试遗留数据')
+    } catch (e) {
+      console.error('[Cleanup] 清理异常', e)
+    }
   },
 
   // 添加通知的方法
