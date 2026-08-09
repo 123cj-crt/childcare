@@ -35,5 +35,15 @@
         </view>
       </block>
     </view>
+
+  <view
+    class="tax-agent-fab"
+    wx:if="{{showTaxAgent}}"
+    bindtap="goToTaxAgent"
+    hover-class="tax-agent-fab-pressed"
+    hover-stay-time="80"
+  >
+    <image class="tax-agent-fab-image" src="/images/tax-agent/mascot-fab-v2.png" mode="aspectFit" />
+    <view class="tax-agent-fab-bubble">问问小税宝</view>
   </view>
 </view>

@@ -1,0 +1,9 @@
+:host { display: block; }
+.tax-tabbar { position: fixed; z-index: 100; right: 0; bottom: 0; left: 0; display: flex; box-sizing: border-box; padding: 10rpx 10rpx calc(10rpx + env(safe-area-inset-bottom)); background: rgba(255, 255, 255, .98); border-top: 1rpx solid #e2efeb; box-shadow: 0 -8rpx 24rpx rgba(31, 103, 90, .07); }
+.tax-tabbar-item { display: flex; flex: 1; flex-direction: column; align-items: center; justify-content: center; min-height: 92rpx; color: #829b95; }
+.tax-tabbar-icon { display: flex; align-items: center; justify-content: center; width: 48rpx; height: 44rpx; border-radius: 16rpx; }
+.tax-tabbar-icon-image { width: 40rpx; height: 40rpx; opacity: .72; }
+.tax-tabbar-label { margin-top: 2rpx; color: inherit; font-size: 20rpx; line-height: 1.35; white-space: nowrap; }
+.tax-tabbar-item.is-active { color: #148b75; font-weight: 700; }
+.tax-tabbar-item.is-active .tax-tabbar-icon { background: #e2f6ef; }
+.tax-tabbar-item.is-active .tax-tabbar-icon-image { opacity: 1; }

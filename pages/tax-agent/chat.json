@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "问问小税宝",
+  "usingComponents": {
+    "tax-tabbar": "/components/tax-tabbar/index"
+  }
+}

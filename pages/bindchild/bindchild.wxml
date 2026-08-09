@@ -38,14 +38,6 @@
           <text class="info-label">家长电话</text>
           <text class="info-value">{{item.phoneNumber || '未填写'}}</text>
         </view>
-        <view class="info-row">
-          <text class="info-label">家庭住址</text>
-          <text class="info-value">{{item.address || '未填写'}}</text>
-        </view>
-        <view class="info-row">
-          <text class="info-label">年级</text>
-          <text class="info-value">{{item.grade || '未填写'}}</text>
-        </view>
       </view>
     </view>
   </view>
@@ -82,20 +74,12 @@
         <input class="form-input" placeholder="如：爸爸、妈妈" value="{{formData.relation}}" data-field="relation" bindinput="onInputChange" />
       </view>
       <view class="form-group">
-        <view class="form-label">家长姓名</view>
+        
         <input class="form-input" placeholder="请输入家长姓名" value="{{formData.parentName}}" data-field="parentName" bindinput="onInputChange" />
       </view>
       <view class="form-group">
         <view class="form-label">家长电话</view>
         <input class="form-input" type="number" placeholder="请输入家长电话" value="{{formData.phoneNumber}}" data-field="phoneNumber" bindinput="onInputChange" />
-      </view>
-      <view class="form-group">
-        <view class="form-label">家庭住址</view>
-        <input class="form-input" placeholder="请输入家庭住址" value="{{formData.address}}" data-field="address" bindinput="onInputChange" />
-      </view>
-      <view class="form-group">
-        <view class="form-label">年级</view>
-        <input class="form-input" placeholder="如：一年级" value="{{formData.grade}}" data-field="grade" bindinput="onInputChange" />
       </view>
       <view class="form-actions">
         <button class="form-btn form-btn-cancel" catchtap="onHideForm">取消</button>

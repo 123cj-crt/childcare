@@ -3,6 +3,7 @@
 // 正式上线后把 DEBUG_MOCK_DATA 改成 false
 
 const app = getApp()
+const { enableTaxAgent } = require('../../utils/config')
 
 // 调试开关
 const DEBUG_MOCK_DATA = false
@@ -199,7 +200,8 @@ const MOCK_COURSES = [
 Page({
   data: {
     banners: [],
-    courses: []
+    courses: [],
+    showTaxAgent: enableTaxAgent
   },
 
   // 防止过期云函数响应覆盖当前数据
@@ -214,6 +216,12 @@ Page({
     if (USE_CLOUD_RESERVATION) {
       this.fetchCloudCounts()
     }
+  },
+
+  goToTaxAgent() {
+    wx.navigateTo({
+      url: '/pages/tax-agent/index'
+    })
   },
 
   loadData() {
