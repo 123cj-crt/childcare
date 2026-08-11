@@ -6,6 +6,7 @@ const STORAGE_KEYS = {
   userInfo: 'userInfo',
   agentAccessToken: 'agentAccessToken',
   agentAccessTokenExpiresAt: 'agentAccessTokenExpiresAt',
+  agentIdentity: 'taxAgentIdentity',
   legacyAgentIdentity: 'taxAgentDevIdentity'
 };
 
@@ -61,6 +62,7 @@ function parseLoginPayload(loginData) {
 }
 
 function clearAgentRuntimeIdentity() {
+  wx.removeStorageSync(STORAGE_KEYS.agentIdentity);
   wx.removeStorageSync(STORAGE_KEYS.legacyAgentIdentity);
   if (typeof getApp === 'function') {
     const app = getApp();

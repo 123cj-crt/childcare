@@ -3,9 +3,15 @@ const {
   agentApiBaseUrl,
   agentTenantCode
 } = require('../utils/config');
+const {
+  STORAGE_KEYS,
+  ensureAgentAccessToken,
+  refreshAgentAccessToken,
+  redirectToLoginAfterAuthenticationFailure
+} = require('./wechat-auth');
 const mockData = require('../mock/tax-agent/index');
 
-const IDENTITY_STORAGE_KEY = 'taxAgentDevIdentity';
+const IDENTITY_STORAGE_KEY = STORAGE_KEYS.agentIdentity;
 const REQUEST_TIMEOUT = 15000;
 let mockQuizSession = null;
 
@@ -52,7 +58,7 @@ function buildUrl(path, query) {
   return `${baseUrl}${normalizedPath}${queryItems.length ? `?${queryItems.join('&')}` : ''}`;
 }
 
-function requestAgent({ path, method = 'GET', data, query }) {
+function performAgentRequest({ path, method = 'GET', data, query, token }) {
   ensureConfigured();
   const url = buildUrl(path, query);
 
@@ -64,7 +70,8 @@ function requestAgent({ path, method = 'GET', data, query }) {
       timeout: REQUEST_TIMEOUT,
       header: {
         'content-type': 'application/json',
-        'X-Agent-App': agentTenantCode
+        'X-Agent-App': agentTenantCode,
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
       },
       success(response) {
         if (response.statusCode >= 200 && response.statusCode < 300) {
@@ -97,6 +104,31 @@ function requestAgent({ path, method = 'GET', data, query }) {
   });
 }
 
+function requestAgent(options) {
+  if (!options.requiresAuth) {
+    return performAgentRequest(options);
+  }
+
+  return ensureAgentAccessToken()
+    .then((token) => performAgentRequest({ ...options, token }))
+    .catch((error) => {
+      if (!error || error.statusCode !== 401) {
+        throw error;
+      }
+
+      return refreshAgentAccessToken()
+        .then((token) => performAgentRequest({ ...options, token }))
+        .catch((retryError) => {
+          if (retryError && (
+            retryError.statusCode === 401 || retryError.type === 'authentication'
+          )) {
+            redirectToLoginAfterAuthenticationFailure();
+          }
+          throw retryError;
+        });
+    });
+}
+
 function requireObject(value, path) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
     throw createAgentError({
@@ -107,15 +139,6 @@ function requireObject(value, path) {
     });
   }
   return value;
-}
-
-function getStoredIdentity() {
-  const identity = wx.getStorageSync(IDENTITY_STORAGE_KEY);
-  if (!identity || identity.tenant_code !== agentTenantCode
-    || !identity.user_id || !identity.child_profile_id) {
-    return null;
-  }
-  return identity;
 }
 
 function saveIdentity(identity) {
@@ -151,18 +174,21 @@ function healthCheck() {
   });
 }
 
-function bootstrap() {
+function getCurrentIdentity() {
   if (agentUseMock) {
     return delay(getMockIdentity(), 80);
   }
 
-  return requestAgent({ path: '/api/v1/client/bootstrap' }).then((response) => {
-    const identity = requireObject(response, '/api/v1/client/bootstrap');
+  return requestAgent({
+    path: '/api/v1/client/me',
+    requiresAuth: true
+  }).then((response) => {
+    const identity = requireObject(response, '/api/v1/client/me');
     if (identity.tenant_code !== agentTenantCode || !identity.user_id || !identity.child_profile_id) {
       throw createAgentError({
         type: 'format',
-        message: '智能体服务未返回有效的开发测试身份。',
-        path: '/api/v1/client/bootstrap',
+        message: '智能体服务未返回有效的学习身份。',
+        path: '/api/v1/client/me',
         data: identity
       });
     }
@@ -170,18 +196,11 @@ function bootstrap() {
   });
 }
 
-function getDevelopmentIdentity() {
+function initializeAgent() {
   if (agentUseMock) {
     return Promise.resolve(getMockIdentity());
   }
-  return Promise.resolve(getStoredIdentity() || bootstrap());
-}
-
-function initializeAgent() {
-  if (agentUseMock) {
-    return getDevelopmentIdentity();
-  }
-  return healthCheck().then(() => getDevelopmentIdentity());
+  return healthCheck().then(() => getCurrentIdentity());
 }
 
 function getAgentHome() {
@@ -201,6 +220,7 @@ function sendChat({ message, sessionId }) {
   return requestAgent({
     path: '/api/v1/client/chat',
     method: 'POST',
+    requiresAuth: true,
     data: {
       message,
       session_id: sessionId || null
@@ -292,6 +312,7 @@ function createQuizSession({ topic = 'tax', difficulty = 1, targetQuestionCount 
   return requestAgent({
     path: '/api/v1/client/quiz/sessions',
     method: 'POST',
+    requiresAuth: true,
     data: {
       topic,
       difficulty,
@@ -325,6 +346,7 @@ function submitQuizAnswer({ sessionId, questionId, answer }) {
   return requestAgent({
     path: '/api/v1/client/quiz/submit',
     method: 'POST',
+    requiresAuth: true,
     data: {
       session_id: sessionId,
       question_id: questionId,
@@ -336,8 +358,7 @@ function submitQuizAnswer({ sessionId, questionId, answer }) {
 module.exports = {
   IDENTITY_STORAGE_KEY,
   healthCheck,
-  bootstrap,
-  getDevelopmentIdentity,
+  getCurrentIdentity,
   initializeAgent,
   getAgentHome,
   sendChat,
