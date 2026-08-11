@@ -4,7 +4,52 @@
   "compileType": "miniprogram",
   "libVersion": "2.31.0",
   "packOptions": {
-    "ignore": [],
+    "ignore": [
+      {
+        "type": "folder",
+        "value": "child2"
+      },
+      {
+        "type": "folder",
+        "value": ".git"
+      },
+      {
+        "type": "folder",
+        "value": ".vscode"
+      },
+      {
+        "type": "file",
+        "value": "services/agent-api.test.js"
+      },
+      {
+        "type": "file",
+        "value": "services/wechat-auth.test.js"
+      },
+      {
+        "type": "file",
+        "value": "components/tax-tabbar/index.test.js"
+      },
+      {
+        "type": "file",
+        "value": "pages/tax-agent/challenge-quiz.test.js"
+      },
+      {
+        "type": "file",
+        "value": "pages/tax-agent/chat.test.js"
+      },
+      {
+        "type": "file",
+        "value": "pages/webview/webview.test.js"
+      },
+      {
+        "type": "file",
+        "value": "app.test.js"
+      },
+      {
+        "type": "file",
+        "value": "utils/tweetContents.test.js"
+      }
+    ],
     "include": []
   },
   "setting": {
