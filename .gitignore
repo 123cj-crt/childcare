@@ -3,6 +3,18 @@ node_modules/
 
 # 忽略个人/本地配置文件（包含AppID等敏感信息）
 project.private.config.json
+.env
+
+# 本地后端凭据
+child2/.env
+child2/application-local.properties
+
+# Local runtime logs, build artifacts, and embedded database files
+*.log
+child2/target/
+child2/childdb*.db
+child2/childdb*.trace.db
 
 # 忽略微信开发者工具生成的临时文件
 .DS_Store
+.vscode/
