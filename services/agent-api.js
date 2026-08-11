@@ -35,7 +35,7 @@ function friendlyRequestMessage(statusCode, detail) {
   if (statusCode === 400 || statusCode === 422) return '这次的小请求不完整，请再试一次。';
   if (statusCode === 404) return '暂时没有找到需要的内容。';
   if (statusCode >= 500) return '小税正在休息一下，请稍后再试。';
-  return detail && typeof detail === 'string' && detail.length <= 30
+  return detail && typeof detail === 'string' && detail.length <= 60
     ? detail
     : '小税暂时没有收到消息，请稍后再试。';
 }
@@ -292,7 +292,7 @@ function getQuizQuestions({ topic = 'tax', difficulty = 1, limit = 20 } = {}) {
   });
 }
 
-function createQuizSession({ topic = 'tax', difficulty = 1, targetQuestionCount = 3 } = {}) {
+function createQuizSession({ topic = 'tax', difficulty = 1, targetQuestionCount = 10 } = {}) {
   if (agentUseMock) {
     const questions = mockData.quizQuestions.slice(0, targetQuestionCount);
     mockQuizSession = {

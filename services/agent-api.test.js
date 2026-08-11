@@ -166,3 +166,29 @@ test('403 不刷新 Token 也不循环重试', async () => {
   assert.equal(loginCalls, 0);
   assert.equal(requests.length, 1);
 });
+
+test('闯关会话未指定题数时默认请求 10 题', async () => {
+  responses.push({
+    statusCode: 201,
+    data: {
+      session_id: 'quiz-session-10',
+      question: null,
+      score: 0,
+      session_status: 'started'
+    }
+  });
+
+  await agentApi.createQuizSession({ topic: 'invoice', difficulty: 1 });
+
+  assert.equal(requests[0].data.target_question_count, 10);
+});
+
+test('题库不足时保留后端返回的明确提示', async () => {
+  const detail = '当前主题题目正在补充中，暂时无法开始 10 题闯关，请稍后再试。';
+  responses.push({ statusCode: 409, data: { detail } });
+
+  await assert.rejects(
+    agentApi.createQuizSession({ topic: 'invoice', difficulty: 1 }),
+    (error) => error.statusCode === 409 && error.message === detail
+  );
+});
