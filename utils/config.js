@@ -26,6 +26,11 @@ const TAX_AGENT_ENVIRONMENTS = {
 };
 
 const AGENT_CURRENT_ENV = CURRENT_ENV;
+const WECHAT_LOGIN_MODES = {
+  development: 'mock',
+  production: 'wechat'
+};
+const wechatLoginMode = WECHAT_LOGIN_MODES[CURRENT_ENV];
 const TAX_AGENT_CONFIG = {
   enableTaxAgent: true,
   // 正式服务器接入：不使用本地模拟数据。
@@ -40,5 +45,7 @@ module.exports = {
   ENVIRONMENTS,
   AGENT_CURRENT_ENV,
   TAX_AGENT_ENVIRONMENTS,
+  WECHAT_LOGIN_MODES,
+  wechatLoginMode,
   ...TAX_AGENT_CONFIG
 };

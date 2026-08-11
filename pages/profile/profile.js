@@ -1,5 +1,6 @@
 // pages/profile/profile.js
 const app = getApp()
+const { clearAuthentication } = require('../../services/wechat-auth')
 
 // 微信官方默认头像（未设置头像前显示）
 const DEFAULT_AVATAR = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
@@ -203,9 +204,7 @@ Page({
       success: (res) => {
         if (res.confirm) {
           // 只清除登录相关的存储，保留其他数据
-          wx.removeStorageSync('token');
-          wx.removeStorageSync('openId');
-          wx.removeStorageSync('userInfo');
+          clearAuthentication();
 
           this.setData({
             isLoggedIn: false,

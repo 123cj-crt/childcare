@@ -39,6 +39,10 @@
       },
       {
         "type": "file",
+        "value": "pages/login/login.test.js"
+      },
+      {
+        "type": "file",
         "value": "pages/webview/webview.test.js"
       },
       {
