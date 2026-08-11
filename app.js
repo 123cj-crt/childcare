@@ -1,4 +1,5 @@
 // app.js
+const { API_BASE_URL } = require('./utils/config')
 App({
   onLaunch: function () {
     wx.cloud.init({
@@ -61,8 +62,10 @@ App({
   globalData: {
     // 全局数据
     userInfo: null,
-    API_BASE_URL: 'https://gdufe-childcare.cn', // 新服务器地址（已配置 SSL，走 HTTPS 443 端口）
-    notifications: [] // 用于存储通知的数组
+    API_BASE_URL,
+    notifications: [], // 用于存储通知的数组
+    // 仅在本次小程序运行期间保存财税聊天，避免持久化儿童对话。
+    taxAgentChat: null
   },
 
   // ========== 用户隔离存储工具 ==========

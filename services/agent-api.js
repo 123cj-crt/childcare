@@ -188,14 +188,6 @@ function getAgentHome() {
   return delay({ recommendedQuestions: mockData.recommendedQuestions }, agentUseMock ? 160 : 0);
 }
 
-function withIdentity(data) {
-  return getDevelopmentIdentity().then((identity) => ({
-    ...data,
-    user_id: identity.user_id,
-    child_profile_id: identity.child_profile_id
-  }));
-}
-
 function sendChat({ message, sessionId }) {
   if (agentUseMock) {
     return delay({
@@ -206,14 +198,14 @@ function sendChat({ message, sessionId }) {
     }, 650);
   }
 
-  return withIdentity({
-    message,
-    session_id: sessionId || null
-  }).then((data) => requestAgent({
+  return requestAgent({
     path: '/api/v1/client/chat',
     method: 'POST',
-    data
-  })).then((response) => {
+    data: {
+      message,
+      session_id: sessionId || null
+    }
+  }).then((response) => {
     const chat = requireObject(response, '/api/v1/client/chat');
     if (typeof chat.answer !== 'string' || !chat.answer.trim() || !chat.session_id) {
       throw createAgentError({
@@ -297,15 +289,15 @@ function createQuizSession({ topic = 'tax', difficulty = 1, targetQuestionCount 
     });
   }
 
-  return withIdentity({
-    topic,
-    difficulty,
-    target_question_count: targetQuestionCount
-  }).then((data) => requestAgent({
+  return requestAgent({
     path: '/api/v1/client/quiz/sessions',
     method: 'POST',
-    data
-  })).then((response) => requireObject(response, '/api/v1/client/quiz/sessions'));
+    data: {
+      topic,
+      difficulty,
+      target_question_count: targetQuestionCount
+    }
+  }).then((response) => requireObject(response, '/api/v1/client/quiz/sessions'));
 }
 
 function submitQuizAnswer({ sessionId, questionId, answer }) {
