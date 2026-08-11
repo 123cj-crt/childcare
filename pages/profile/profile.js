@@ -218,6 +218,13 @@ Page({
     });
   },
 
+  // 老师考勤管理入口
+  goAttendanceAdmin() {
+    wx.navigateTo({
+      url: '/pages/attendance-admin/attendance-admin'
+    });
+  },
+
   contactUs: function () {
     wx.showModal({
       title: '联系我们',

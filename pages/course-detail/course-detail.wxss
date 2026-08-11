@@ -102,6 +102,19 @@ page {
   color: #4a5568;
   line-height: 1.9;
 }
+/* 课程介绍折叠（默认收起 3 行，点"展开全部介绍"看全文） */
+.intro-text.clamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+.toggle-desc {
+  margin-top: 14rpx;
+  font-size: 28rpx;
+  color: #4f7cff;
+  font-weight: 500;
+}
 .card-sub {
   font-size: 26rpx;
   color: #9ca3af;

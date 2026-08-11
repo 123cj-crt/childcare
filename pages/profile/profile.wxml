@@ -49,6 +49,11 @@
         <text class="names">课程预约名单</text>
         <text class="menu-arrow">›</text>
       </view>
+      <view class="menu-item" bind:tap="goAttendanceAdmin">
+        <image src="/icon/3.png" class="menu-icon" />
+        <text class="names">老师考勤管理</text>
+        <text class="menu-arrow">›</text>
+      </view>
       <view class="menu-item" bind:tap="contactUs">
         <image src="/icon/3.png" class="menu-icon" />
         <text class="names">联系我们</text>

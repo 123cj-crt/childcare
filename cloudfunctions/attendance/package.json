@@ -1,0 +1,9 @@
+{
+  "name": "attendance",
+  "version": "1.0.0",
+  "description": "考勤云函数：口令校验、老师标记考勤、家长查看",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

@@ -78,7 +78,7 @@ const MOCK_COURSES = [
     name: '个人所得税小课堂：爸爸妈妈的工资去哪了',
     date: '8月10日',
     weekday: '周一',
-    time: '15:00-17:00',
+    time: '14:45-17:00',
     location: '广东省江门市鹤山市沙坪街道新升社区',
     description: '个人所得税是与每个家庭最直接相关的税种。本课程通过工资条、家庭生活等孩子熟悉的场景，将抽象的税收概念转化为生活常识，帮助孩子理解"公民义务"，体会税收与日常生活的紧密联系。',
     targetAge: '6-12岁儿童',
@@ -106,7 +106,7 @@ const MOCK_COURSES = [
     name: '粘土筑童趣——创意粘土DIY课堂',
     date: '8月11日',
     weekday: '周二',
-    time: '15:00-17:00',
+    time: '14:45-17:00',
     location: '广东省江门市鹤山市沙坪街道新升社区',
     description: '为丰富托管服务形式、劳逸结合、缓解孩子们课堂学习疲劳，在系列财税科普课堂之余开设趣味手工拓展课程，依托超轻粘土开展美育实践活动。孩子们可以在动手创作中锻炼动手能力、想象力与专注力。',
     targetAge: '6-12岁儿童',
@@ -134,7 +134,7 @@ const MOCK_COURSES = [
     name: '听见旋律里的心情——音乐情感表达探秘趣味课',
     date: '8月12日',
     weekday: '周三',
-    time: '15:00-17:00',
+    time: '14:45-17:00',
     location: '广东省江门市鹤山市沙坪街道新升社区',
     description: '以趣味互动、游戏闯关、创意实践为核心，带领学生聆听不同风格的音乐，探索音乐与情绪之间的关联，在轻松欢乐的氛围中提升音乐感知力与审美素养。',
     targetAge: '6-12岁儿童',
@@ -162,7 +162,7 @@ const MOCK_COURSES = [
     name: '发票大揭秘 生活寻税行',
     date: '8月13日',
     weekday: '周四',
-    time: '15:00-17:00',
+    time: '14:45-17:00',
     location: '广东省江门市鹤山市沙坪街道新升社区',
     description: '以生活化认知为核心，以孩子看得见、摸得着的消费场景和发票实例为切入点，结合真实生活案例讲解税收的来源与用途，让学生在真实、趣味、直观的课堂体验中读懂税收、理解税收。',
     targetAge: '6-12岁儿童',
@@ -190,7 +190,7 @@ const MOCK_COURSES = [
     name: '童心绘税 知行同行',
     date: '8月14日',
     weekday: '周五',
-    time: '15:00-17:00',
+    time: '14:45-17:00',
     location: '广东省江门市鹤山市沙坪街道新升社区',
     description: '为帮助大家系统回顾课堂知识、加深学习印象，进一步把所学内容和生活实物对应结合，特开展本次总结提升课。课程延续趣味互动形式，以绘画、小游戏为主，在轻松的氛围中梳理知识点，巩固学习成果。',
     targetAge: '6-12岁儿童',
@@ -342,6 +342,8 @@ Page({
             list = raw.data
           }
           if (list.length > 0) {
+            // 缓存原始推文（含后端可能返回的 content 正文），供详情页取真实原文
+            app.globalData.tweetsCache = list
             // 过滤掉 picsum.photos 占位图，用 mock 图兜底
             const filtered = list.filter(t => t.image && !t.image.includes('picsum.photos'))
             if (filtered.length > 0) {

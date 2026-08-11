@@ -56,14 +56,46 @@ Page({
             reservedAt: r.reservedAt || ''
           }
         })
-        this.setData({
-          reservations: reservations,
-          isEmpty: reservations.length === 0
-        })
+        this.attachAttendance(reservations)
       }
     }).catch(err => {
       console.error('[云开发] 查询我的预约失败，回退到本地', err)
       this.loadLocalReservations()
+    })
+  },
+
+  // 合并考勤记录：先取家长名下所有孩子的 childId，再查考勤，按 courseId+childId 映射
+  attachAttendance(reservations) {
+    const self = this
+    app.loadChildrenFromCloud().then(children => {
+      const childIds = (children || []).map(c => c.id || c._id)
+      if (!childIds.length) {
+        self.setData({ reservations: reservations, isEmpty: reservations.length === 0 })
+        return
+      }
+      wx.cloud.callFunction({
+        name: 'attendance',
+        data: { action: 'listByChild', childIds: childIds }
+      }).then(attRes => {
+        const attMap = {}
+        if (attRes.result && attRes.result.code === 0) {
+          ;(attRes.result.data || []).forEach(a => {
+            attMap[a.courseId + '_' + a.childId] = a
+          })
+        }
+        const list = reservations.map(r => {
+          const att = attMap[r.courseId + '_' + r.childId]
+          return Object.assign({}, r, {
+            attendanceStatus: att ? att.status : '',
+            attendanceFeedback: att ? att.feedback : ''
+          })
+        })
+        self.setData({ reservations: list, isEmpty: list.length === 0 })
+      }).catch(() => {
+        self.setData({ reservations: reservations, isEmpty: reservations.length === 0 })
+      })
+    }).catch(() => {
+      self.setData({ reservations: reservations, isEmpty: reservations.length === 0 })
     })
   },
 

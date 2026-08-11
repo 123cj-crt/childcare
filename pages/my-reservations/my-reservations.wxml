@@ -49,6 +49,15 @@
         <text class="info-label">预约时间</text>
         <text class="info-value reserved-time">{{item.reservedAt}}</text>
       </view>
+      <!-- 考勤状态（老师标记后显示） -->
+      <view class="info-row" wx:if="{{item.attendanceStatus}}">
+        <text class="info-label">考勤</text>
+        <text class="info-value att-tag att-{{item.attendanceStatus}}">{{item.attendanceStatus === 'present' ? '已到课' : (item.attendanceStatus === 'late' ? '迟到' : '缺勤')}}</text>
+      </view>
+      <view class="info-row" wx:if="{{item.attendanceFeedback}}">
+        <text class="info-label">老师反馈</text>
+        <text class="info-value feedback-text">{{item.attendanceFeedback}}</text>
+      </view>
       <!-- 取消按钮 -->
       <view class="cancel-btn-wrap">
         <button class="cancel-btn" bindtap="onCancelReservation" data-course-id="{{item.courseId}}" data-child-id="{{item.childId}}" data-name="{{item.courseName}}" data-child-name="{{item.childName}}">取消预约</button>

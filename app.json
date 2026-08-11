@@ -21,7 +21,8 @@
     "pages/tweet-detail/tweet-detail",
     "pages/my-reservations/my-reservations",
     "pages/history-courses/history-courses",
-    "pages/course-reservations/course-reservations"
+    "pages/course-reservations/course-reservations",
+    "pages/attendance-admin/attendance-admin"
   ],
   "window": {
     "backgroundTextStyle": "light",

@@ -1,0 +1,39 @@
+<!--pages/attendance-admin/attendance-admin.wxml-->
+<view class="page">
+  <!-- 未验证：口令登录 -->
+  <view wx:if="{{!isTeacher}}" class="login-box">
+    <view class="login-card">
+      <view class="login-title">老师考勤入口</view>
+      <view class="login-sub">请输入老师口令进入</view>
+      <input class="pwd-input" password="{{true}}" value="{{password}}" bindinput="onPasswordInput" placeholder="老师口令" placeholder-class="ph" />
+      <button class="login-btn" bindtap="onLogin">进入考勤</button>
+      <view class="login-tip">口令由机构管理员提供</view>
+    </view>
+  </view>
+
+  <!-- 已验证：考勤操作 -->
+  <view wx:else class="admin-box">
+    <view class="admin-header">
+      <text class="admin-title">课程考勤</text>
+      <picker mode="selector" range="{{courses}}" range-key="name" value="{{courseIndex}}" bindchange="onCourseChange">
+        <view class="course-picker">{{selectedCourseName || '请选择课程'}} ›</view>
+      </picker>
+    </view>
+
+    <view wx:if="{{loading}}" class="tip">加载中...</view>
+    <view wx:elif="{{students.length === 0}}" class="tip">该课程暂无预约儿童</view>
+
+    <view wx:else class="student-list">
+      <view class="student-card" wx:for="{{students}}" wx:key="childId">
+        <view class="student-name">{{item.childName}}</view>
+        <view class="status-row">
+          <view class="status-btn {{item.status==='present'?'active present':''}}" data-child-id="{{item.childId}}" data-status="present" bindtap="onStatusTap">已到课</view>
+          <view class="status-btn {{item.status==='late'?'active late':''}}" data-child-id="{{item.childId}}" data-status="late" bindtap="onStatusTap">迟到</view>
+          <view class="status-btn {{item.status==='absent'?'active absent':''}}" data-child-id="{{item.childId}}" data-status="absent" bindtap="onStatusTap">缺勤</view>
+        </view>
+        <input class="feedback-input" placeholder="老师反馈（选填）" value="{{item.feedback}}" data-child-id="{{item.childId}}" bindinput="onFeedbackInput" />
+      </view>
+      <button class="save-btn" bindtap="onSave">保存考勤</button>
+    </view>
+  </view>
+</view>

@@ -26,9 +26,10 @@
   <!-- 课程介绍 -->
   <view class="card">
     <view class="card-label">课程介绍</view>
-    <view class="card-content intro-text">
+    <view class="card-content intro-text {{!descExpanded ? 'clamp' : ''}}">
       <text>{{course.description}}</text>
     </view>
+    <view class="toggle-desc" bindtap="toggleDesc">{{descExpanded ? '收起 ↑' : '展开全部介绍 ↓'}}</view>
     <view class="card-sub">适合对象：{{course.targetAge}}</view>
   </view>
   <!-- 教师信息 -->

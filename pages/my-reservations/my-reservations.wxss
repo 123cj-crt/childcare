@@ -150,6 +150,29 @@ page {
   color: #9ca3af;
   font-size: 26rpx;
 }
+/* ===== 考勤状态标签 ===== */
+.att-tag {
+  display: inline-block;
+  padding: 4rpx 20rpx;
+  border-radius: 30rpx;
+  font-weight: 600;
+  font-size: 26rpx;
+}
+.att-present {
+  background: #e6fffa;
+  color: #319795;
+}
+.att-late {
+  background: #fffaf0;
+  color: #b7791f;
+}
+.att-absent {
+  background: #fff5f5;
+  color: #e53e3e;
+}
+.feedback-text {
+  color: #4a5568;
+}
 /* ===== 取消按钮 ===== */
 .cancel-btn-wrap {
   margin-top: 24rpx;

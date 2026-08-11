@@ -7,16 +7,58 @@
   </view>
 
   <view class="content">
-    <view class="summary" wx:if="{{summary}}">{{summary}}</view>
+    <!-- 后端真实正文（HTML 富文本） -->
+    <view wx:if="{{hasContent}}" class="rich-wrap">
+      <rich-text nodes="{{contentHtml}}"></rich-text>
+    </view>
 
-    <block wx:for="{{blocks}}" wx:key="index">
-      <view class="paragraph" wx:if="{{item.type === 'text'}}">{{item.text}}</view>
-      <image wx:elif="{{item.type === 'image'}}" class="inline-img" src="{{item.src}}" mode="widthFix" />
+    <!-- 降级：本地占位正文 -->
+    <block wx:else>
+      <view class="summary" wx:if="{{summary}}">{{summary}}</view>
+      <block wx:for="{{blocks}}" wx:key="index">
+        <view class="paragraph" wx:if="{{item.type === 'text'}}">{{item.text}}</view>
+        <image wx:elif="{{item.type === 'image'}}" class="inline-img" src="{{item.src}}" mode="widthFix" />
+      </block>
+      <!-- 无正文但有原文链接：提供跳转 -->
+      <view wx:if="{{link}}" class="redirect-card">
+        <view class="redirect-icon">↗</view>
+        <view class="redirect-title">前往查看原文</view>
+        <view class="redirect-desc">小程序内暂未收录该推文正文，可复制原文链接到微信打开</view>
+        <button class="redirect-btn" bindtap="copyLink">复制原文链接</button>
+      </view>
     </block>
+  </view>
 
-    <view class="link-area" wx:if="{{link}}">
-      <button class="link-btn" bindtap="copyLink">查看 / 复制原文链接</button>
-      <view class="link-tip">如页面无法加载，可复制链接到微信或浏览器打开</view>
+  <!-- 互动区：点赞 + 评论 -->
+  <view class="interaction">
+    <!-- 点赞 -->
+    <view class="like-bar">
+      <view class="like-btn {{liked ? 'liked' : ''}}" bindtap="toggleLike">
+        <text class="like-icon">{{liked ? '❤️' : '🤍'}}</text>
+        <text class="like-text">{{liked ? '已赞' : '点赞'}} · {{likeCount}}</text>
+      </view>
+    </view>
+
+    <!-- 评论列表 -->
+    <view class="comment-section">
+      <view class="section-title">评论（{{commentCount}}）</view>
+      <view class="comment-list" wx:if="{{comments.length > 0}}">
+        <view class="comment-item" wx:for="{{comments}}" wx:key="_id">
+          <view class="comment-head">
+            <text class="comment-nick">{{item.nickName}}</text>
+            <text class="comment-time">{{item.timeText}}</text>
+          </view>
+          <view class="comment-content">{{item.content}}</view>
+        </view>
+      </view>
+      <view class="comment-empty" wx:else>暂无评论，来抢沙发吧～</view>
+    </view>
+
+    <!-- 评论输入 -->
+    <view class="comment-input-area">
+      <input class="nick-input" placeholder="昵称" value="{{commentNick}}" bindinput="onNickInput" maxlength="20" />
+      <textarea class="comment-input" placeholder="说点什么吧…" value="{{commentContent}}" bindinput="onCommentInput" maxlength="200" auto-height />
+      <button class="comment-submit" bindtap="submitComment" loading="{{commentLoading}}">发布</button>
     </view>
   </view>
 </view>
