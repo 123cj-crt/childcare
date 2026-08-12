@@ -28,13 +28,16 @@ const TAX_AGENT_ENVIRONMENTS = {
 const AGENT_CURRENT_ENV = CURRENT_ENV;
 const WECHAT_LOGIN_MODES = {
   development: 'mock',
-  production: 'wechat'
+  // [临时体验版 2026-08-12] 后端 /api/wechat/login 尚未稳定，先走本地身份登录，不依赖 Spring Boot。
+  // 8/15 前后端联调、后端登录接口稳定后，请改回 'wechat'。
+  production: 'mock'
 };
 const wechatLoginMode = WECHAT_LOGIN_MODES[CURRENT_ENV];
 const TAX_AGENT_CONFIG = {
   enableTaxAgent: true,
-  // 正式服务器接入：不使用本地模拟数据。
-  agentUseMock: false,
+  // [临时体验版 2026-08-12] 后端 / 智能体鉴权尚未就绪，先用内置演示数据，保证智能体页面不崩、不踢人。
+  // 8/15 前后端联调、真实登录与智能体服务可用后，请改回 false。
+  agentUseMock: true,
   agentApiBaseUrl: TAX_AGENT_ENVIRONMENTS[AGENT_CURRENT_ENV].baseUrl,
   agentTenantCode: 'childcare_miniprogram'
 };
