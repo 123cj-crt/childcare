@@ -1,5 +1,4 @@
 const agentApi = require('../../services/agent-api');
-const { redirectToLoginAfterAuthenticationFailure } = require('../../services/wechat-auth');
 
 Page({
   data: {
@@ -14,17 +13,13 @@ Page({
         this.setData({ isLoading: false, isReady: true, errorMessage: '' });
       })
       .catch((error) => {
-        if (error && error.type === 'authentication') {
-          redirectToLoginAfterAuthenticationFailure();
-          return;
-        }
         console.warn('[财税学习] 服务初始化失败', error);
         this.setData({
           isLoading: false,
           isReady: false,
           errorMessage: error.message || '智能体服务暂时不可用'
         });
-        wx.showToast({ title: '财税智能体服务暂时不可用', icon: 'none' });
+        wx.showToast({ title: '请检查本地 FastAPI 服务', icon: 'none' });
       });
   },
 
@@ -41,16 +36,10 @@ Page({
     this.setData({ isLoading: true, errorMessage: '' });
     agentApi.initializeAgent()
       .then(() => this.setData({ isLoading: false, isReady: true }))
-      .catch((error) => {
-        if (error && error.type === 'authentication') {
-          redirectToLoginAfterAuthenticationFailure();
-          return;
-        }
-        this.setData({
-          isLoading: false,
-          isReady: false,
-          errorMessage: error.message || '智能体服务暂时不可用'
-        });
-      });
+      .catch((error) => this.setData({
+        isLoading: false,
+        isReady: false,
+        errorMessage: error.message || '智能体服务暂时不可用'
+      }));
   }
 });
