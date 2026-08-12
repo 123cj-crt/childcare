@@ -70,27 +70,15 @@ Page({
     });
   },
 
-  // [临时体验版 2026-08-12] 本地身份登录：不依赖后端 /api/wechat/login。
-  // 为每台设备生成独立 openId，确保家长数据隔离；云开发的儿童/预约等仍按真实微信 OPENID 隔离，互不影响。
-  // 8/15 前后端联调后，把 config.js 的 wechatLoginMode 改回 'wechat' 即可恢复真实登录。
   mockLogin() {
-    let openId = wx.getStorageSync('openId')
-    // 避免沿用旧的公共调试 openId，确保每位家长独立
-    if (!openId || openId === 'debug_mock_openid') {
-      openId = 'exp_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 9)
-      wx.setStorageSync('openId', openId)
-    }
-    // 本地登录令牌（体验版用，不依赖后端）
-    wx.setStorageSync('token', 'exp_token_' + openId)
-
-    const stored = wx.getStorageSync('userInfo') || {}
-    if (!stored.avatarUrl) {
-      wx.setStorageSync('userInfo', {
-        avatarUrl: 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0',
-        nickName: '微信用户'
-      })
-    }
-    wx.setStorageSync('need_profile_setup', true)
+    const defaultAvatar = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0';
+    wx.setStorageSync('token', 'debug_mock_token');
+    wx.setStorageSync('openId', 'debug_mock_openid');
+    wx.setStorageSync('userInfo', {
+      avatarUrl: defaultAvatar,
+      nickName: '微信用户'
+    });
+    wx.setStorageSync('need_profile_setup', true);
     app.recordActivityLog({
       type: 'system',
       title: '登录成功',
@@ -98,7 +86,7 @@ Page({
       icon: '🔐',
       color: '#667eea'
     });
-    wx.showToast({ title: '登录成功', icon: 'success', duration: 1000 });
+    wx.showToast({ title: '免登录调试模式', icon: 'success', duration: 1000 });
     setTimeout(() => wx.switchTab({ url: '/pages/index/index' }), 1000);
   }
 });
