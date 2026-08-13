@@ -15,6 +15,13 @@ function getApiUrl(path) {
 function request({ path, method = 'GET', data, header = {} }) {
   const url = getApiUrl(path);
 
+  // 统一携带登录身份：经后端登录后写入 storage 的 token / openId
+  const authHeader = {};
+  const token = wx.getStorageSync('token');
+  const openId = wx.getStorageSync('openId');
+  if (token) authHeader['Authorization'] = 'Bearer ' + token;
+  if (openId) authHeader['X-WX-OPENID'] = openId;
+
   return new Promise((resolve, reject) => {
     wx.request({
       url,
@@ -22,6 +29,7 @@ function request({ path, method = 'GET', data, header = {} }) {
       data,
       header: {
         'content-type': 'application/json',
+        ...authHeader,
         ...header
       },
       success(response) {

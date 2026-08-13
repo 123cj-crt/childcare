@@ -16,7 +16,9 @@
   
   <view class="error" wx:if="{{error}}">
     <view class="error-icon">⚠️</view>
-    <view class="error-text">页面加载失败</view>
+    <view class="error-text">{{errorMsg || '页面加载失败'}}</view>
+    <view class="error-tip" wx:if="{{isWeChatArticle}}">微信公众号文章受平台限制无法在小程序内打开，请点击下方按钮复制链接，再到微信中粘贴打开。</view>
+    <button class="copy-btn" bindtap="copyLink">复制文章链接</button>
     <button class="retry-btn" bindtap="retry">重试</button>
   </view>
 </view>

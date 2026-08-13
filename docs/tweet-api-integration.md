@@ -1,6 +1,8 @@
 # 托育小程序 · 推文接口对接说明（后端 → 小程序）
 
-> 用途：转发给后端同事，说明「推文接口」需要补充哪些字段，才能让小程序**直接显示完整真实正文**，而不是只给一个微信文章链接。
+> 用途：说明「推文接口」的数据契约。现已**由陈劲在后端实现并落库**（Spring Boot + JPA，`tweets` 表，`ddl-auto=update` 自动建表），小程序端用 `rich-text` 渲染。
+
+> ✅ 状态：**已实现**。后端返回带 `title` + `content` 的推文列表，小程序详情页直接渲染完整正文。
 
 ---
 
@@ -20,30 +22,39 @@
 GET /api/tweets
 ```
 
-### 当前返回（实测）
+### 当前返回（已实现，实测）
 
 ```json
 [
   {
+    "id": 1,
+    "title": "智慧托育中心",
+    "content": "<p>各位家长好，欢迎来到<strong>智慧托育中心</strong>！</p><p>我们致力于为 3-6 岁幼儿提供科学、安全、温馨的托育服务……</p>",
     "image": "https://picsum.photos/400/200?random=1",
-    "link": "https://mp.weixin.qq.com/s/example1",
-    "id": 1
+    "link": "https://m.jyrmt.com/mob/2025/0831/83206.html?isDM=1&t=3730",
+    "createTime": "2026-08-10T10:00:00"
   },
   {
+    "id": 2,
+    "title": "税理奇妙课堂",
+    "content": "<p>今天的小课堂主题是《钱从哪里来》。</p>……",
     "image": "https://picsum.photos/400/200?random=2",
-    "link": "https://mp.weixin.qq.com/s/example2",
-    "id": 2
+    "link": "https://mp.weixin.qq.com/s/hsGNAtJXbq6wHB2jQI4yBQ",
+    "createTime": "2026-08-11T10:00:00"
   }
 ]
 ```
 
-问题：只有 `image` / `link` / `id`，**缺 `title`，完全没有正文 `content`**。
+说明：
+- 接口从「纯内存 Map」改为 **JPA 实体 `Tweet` + `TweetRepository`**，数据落 MySQL（`tweets` 表，随应用启动自动建表）。
+- 启动且表为空时，`TweetController` 会播种 3 条示例推文（id 1/2/3，与小程序首页 `MOCK_BANNERS` 对应），保证首屏演示链路通顺。
+- 字段已补齐：`title`、`content`（HTML 正文）、`image`、`link`、`createTime`；`content` 即小程序 `rich-text` 渲染的原文。
 
 ---
 
-## 3. 需要后端补充的字段
+## 3. 推文对象字段（已实现）
 
-每篇推文对象请补充以下字段：
+每篇推文对象包含以下字段：
 
 | 字段 | 类型 | 必填 | 说明 |
 |---|---|---|---|

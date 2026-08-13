@@ -18,6 +18,8 @@ Page({
     // 后端真实正文（HTML 富文本）
     hasContent: false,
     contentHtml: '',
+    contentBlocks: [],
+    imageList: [],
     // 降级用的本地正文
     summary: '',
     blocks: [],
@@ -61,7 +63,8 @@ Page({
     const cache = (app.globalData && app.globalData.tweetsCache) || []
     const fromCache = cache.find(t => String(t.id) === String(id))
     if (fromCache && fromCache.content) {
-      this.setData({ hasContent: true, contentHtml: fromCache.content })
+      const parsed = this.parseContent(fromCache.content)
+      this.setData({ hasContent: true, contentHtml: fromCache.content, contentBlocks: parsed.blocks, imageList: parsed.images })
       return
     }
     // 2) 缓存没有，自己拉后端列表找对应 id
@@ -76,7 +79,8 @@ Page({
         const list = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.data) ? raw.data : [])
         const item = list.find(t => String(t.id) === String(id))
         if (item && item.content) {
-          this.setData({ hasContent: true, contentHtml: item.content })
+          const parsed = this.parseContent(item.content)
+          this.setData({ hasContent: true, contentHtml: item.content, contentBlocks: parsed.blocks, imageList: parsed.images })
         } else {
           this.fallbackLocal(id)
         }
@@ -85,16 +89,55 @@ Page({
     })
   },
 
+  // 将后端 content HTML 拆分为文本块 + 图片块
+  parseContent(html) {
+    if (!html) return { blocks: [], images: [] }
+    const images = []
+    // 先替换被 <p>...</p> 包裹的图片（整段替换成标记，避免拆坏标签）
+    const marked = html.replace(/<p[^>]*>\s*<img[^>]*src=["']([^"']+)["'][^>]*>\s*<\/p>/gi, (match, src) => {
+      images.push(src)
+      return `###IMG{${src}}###`
+    })
+    // 兜底：处理未包裹的裸 <img>
+    const marked2 = marked.replace(/<img[^>]*src=["']([^"']+)["'][^>]*>/gi, (match, src) => {
+      if (!images.includes(src)) images.push(src)
+      return `###IMG{${src}}###`
+    })
+    const parts = marked2.split(/###IMG\{([^}]+)\}###/)
+    const blocks = []
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i]
+      if (i % 2 === 0) {
+        const trimmed = part.trim()
+        if (trimmed) blocks.push({ type: 'text', html: trimmed })
+      } else {
+        blocks.push({ type: 'image', src: part })
+      }
+    }
+    return { blocks, images }
+  },
+
+  // 点击图片放大预览
+  previewImage(e) {
+    const { src, list } = e.currentTarget.dataset
+    wx.previewImage({
+      current: src,
+      urls: list && list.length ? list : [src]
+    })
+  },
+
   // 降级：用本地 tweetContents.js 占位正文
   fallbackLocal(id) {
     const local = getTweetContent(id)
     if (local) {
       const blocks = (local.blocks || []).map(b => (typeof b === 'string' ? { type: 'text', text: b } : b))
-      this.setData({ summary: local.summary || '', blocks, hasContent: false })
+      const imageList = blocks.filter(b => b.type === 'image').map(b => b.src)
+      this.setData({ summary: local.summary || '', blocks, imageList, hasContent: false })
     } else {
       this.setData({
         summary: '',
         blocks: [{ type: 'text', text: '该推文暂未收录正文内容。' }],
+        imageList: [],
         hasContent: false
       })
     }

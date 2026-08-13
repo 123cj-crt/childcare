@@ -156,7 +156,7 @@ function bootstrap() {
     return delay(getMockIdentity(), 80);
   }
 
-  return requestAgent({ path: '/api/v1/client/bootstrap' }).then((response) => {
+  return requestAgent({ path: '/api/v1/client/bootstrap', method: 'GET' }).then((response) => {
     const identity = requireObject(response, '/api/v1/client/bootstrap');
     if (identity.tenant_code !== agentTenantCode || !identity.user_id || !identity.child_profile_id) {
       throw createAgentError({
@@ -185,7 +185,26 @@ function initializeAgent() {
 }
 
 function getAgentHome() {
-  return delay({ recommendedQuestions: mockData.recommendedQuestions }, agentUseMock ? 160 : 0);
+  if (agentUseMock) {
+    return delay({ recommendedQuestions: mockData.recommendedQuestions }, 160);
+  }
+
+  // 真实后端用知识卡片接口，取卡片标题作为推荐问题。
+  return requestAgent({ path: '/api/v1/client/knowledge/cards' }).then((response) => {
+    if (!Array.isArray(response)) {
+      throw createAgentError({
+        type: 'format',
+        message: '智能体服务未返回知识卡片列表。',
+        path: '/api/v1/client/knowledge/cards',
+        data: response
+      });
+    }
+    const recommendedQuestions = response
+      .map((card) => card && card.title ? String(card.title) : '')
+      .filter((title) => title)
+      .slice(0, 6);
+    return { recommendedQuestions };
+  });
 }
 
 function withIdentity(data) {
@@ -206,14 +225,16 @@ function sendChat({ message, sessionId }) {
     }, 650);
   }
 
-  return withIdentity({
-    message,
-    session_id: sessionId || null
-  }).then((data) => requestAgent({
+  // 后端 /api/v1/client/chat 只接受 message 与 session_id 字段，
+  // 不接收 user_id / child_profile_id（实测返回 422 extra_forbidden）。
+  return requestAgent({
     path: '/api/v1/client/chat',
     method: 'POST',
-    data
-  })).then((response) => {
+    data: {
+      message,
+      session_id: sessionId || null
+    }
+  }).then((response) => {
     const chat = requireObject(response, '/api/v1/client/chat');
     if (typeof chat.answer !== 'string' || !chat.answer.trim() || !chat.session_id) {
       throw createAgentError({
@@ -297,15 +318,17 @@ function createQuizSession({ topic = 'tax', difficulty = 1, targetQuestionCount 
     });
   }
 
-  return withIdentity({
-    topic,
-    difficulty,
-    target_question_count: targetQuestionCount
-  }).then((data) => requestAgent({
+  // 后端 /api/v1/client/quiz/sessions 只接受 topic/difficulty/target_question_count，
+  // 不接收 user_id / child_profile_id（实测返回 422 extra_forbidden）。
+  return requestAgent({
     path: '/api/v1/client/quiz/sessions',
     method: 'POST',
-    data
-  })).then((response) => requireObject(response, '/api/v1/client/quiz/sessions'));
+    data: {
+      topic,
+      difficulty,
+      target_question_count: targetQuestionCount
+    }
+  }).then((response) => requireObject(response, '/api/v1/client/quiz/sessions'));
 }
 
 function submitQuizAnswer({ sessionId, questionId, answer }) {

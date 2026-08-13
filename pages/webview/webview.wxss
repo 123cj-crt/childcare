@@ -95,7 +95,25 @@ web-view {
 .error-text {
   font-size: 28rpx;
   color: #666;
+  margin-bottom: 20rpx;
+}
+
+.error-tip {
+  font-size: 24rpx;
+  color: #999;
+  line-height: 1.6;
   margin-bottom: 30rpx;
+  max-width: 420rpx;
+}
+
+.copy-btn {
+  background-color: #1989fa;
+  color: white;
+  border: none;
+  border-radius: 10rpx;
+  padding: 20rpx 40rpx;
+  font-size: 28rpx;
+  margin-bottom: 20rpx;
 }
 
 .retry-btn {

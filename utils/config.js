@@ -35,9 +35,8 @@ const WECHAT_LOGIN_MODES = {
 const wechatLoginMode = WECHAT_LOGIN_MODES[CURRENT_ENV];
 const TAX_AGENT_CONFIG = {
   enableTaxAgent: true,
-  // [临时体验版 2026-08-12] 后端 / 智能体鉴权尚未就绪，先用内置演示数据，保证智能体页面不崩、不踢人。
-  // 8/15 前后端联调、真实登录与智能体服务可用后，请改回 false。
-  agentUseMock: true,
+  // 智能体服务已可用，走真实后端 AI 回答。
+  agentUseMock: false,
   agentApiBaseUrl: TAX_AGENT_ENVIRONMENTS[AGENT_CURRENT_ENV].baseUrl,
   agentTenantCode: 'childcare_miniprogram'
 };

@@ -288,11 +288,12 @@ Page({
 
   onBannerTap(e) {
     const id = e.currentTarget.dataset.id
-    const link = e.currentTarget.dataset.link
     const title = e.currentTarget.dataset.title
     const image = e.currentTarget.dataset.image
+    const link = e.currentTarget.dataset.link
 
-    // 改为原生推文详情页，避免 web-view 在真机受业务域名/公众号文章限制
+    // 个人小程序不支持 web-view：统一跳原生详情页，
+    // 由 tweet-detail 用 rich-text 渲染后端返回的真实正文(content)
     const params = [
       `id=${id}`,
       `title=${encodeURIComponent(title || '')}`,
@@ -344,21 +345,22 @@ Page({
           if (list.length > 0) {
             // 缓存原始推文（含后端可能返回的 content 正文），供详情页取真实原文
             app.globalData.tweetsCache = list
-            // 过滤掉 picsum.photos 占位图，用 mock 图兜底
-            const filtered = list.filter(t => t.image && !t.image.includes('picsum.photos'))
-            if (filtered.length > 0) {
-              this.setData({
-                banners: filtered.map((tweet, i) => ({
-                  id: tweet.id || i + 1,
-                  image: this.processImageUrl(tweet.image),
-                  title: tweet.title || `推文 ${tweet.id}`,
-                  link: tweet.link
-                }))
-              })
-              return
-            }
-            // 后端全是 picsum 占位图，用 mock
-            console.warn('[fetchBanners] 后端推文全是 picsum 占位图，使用 mock 图')
+            // 用后端推文（保留真实 link），picsum/空封面替换为本地默认图，不再整体回退 MOCK
+            const defaultCovers = ['/images/1.jpg', '/images/2.jpg', '/images/3.jpg']
+            const banners = list.map((tweet, i) => {
+              const rawImg = tweet.image
+              const img = (!rawImg || rawImg.includes('picsum.photos'))
+                ? defaultCovers[i % defaultCovers.length]
+                : this.processImageUrl(rawImg)
+              return {
+                id: tweet.id || (i + 1),
+                image: img,
+                title: tweet.title || `推文 ${tweet.id}`,
+                link: tweet.link
+              }
+            })
+            this.setData({ banners })
+            return
           }
         }
         this.setData({ banners: MOCK_BANNERS })

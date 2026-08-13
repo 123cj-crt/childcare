@@ -8,8 +8,18 @@
 
   <view class="content">
     <!-- 后端真实正文（HTML 富文本） -->
-    <view wx:if="{{hasContent}}" class="rich-wrap">
-      <rich-text nodes="{{contentHtml}}"></rich-text>
+    <view wx:if="{{hasContent}}">
+      <view class="rich-wrap">
+        <block wx:for="{{contentBlocks}}" wx:key="index">
+          <view wx:if="{{item.type === 'text'}}" class="text-block">
+            <rich-text nodes="{{item.html}}"></rich-text>
+          </view>
+          <view wx:elif="{{item.type === 'image'}}" class="image-16-9" bindtap="previewImage" data-src="{{item.src}}" data-list="{{imageList}}">
+            <image src="{{item.src}}" mode="aspectFill" lazy-load />
+          </view>
+        </block>
+      </view>
+      <view wx:if="{{link}}" class="source-link-btn" bindtap="copyLink">阅读原文 / 复制原文链接 ↗</view>
     </view>
 
     <!-- 降级：本地占位正文 -->
@@ -17,7 +27,9 @@
       <view class="summary" wx:if="{{summary}}">{{summary}}</view>
       <block wx:for="{{blocks}}" wx:key="index">
         <view class="paragraph" wx:if="{{item.type === 'text'}}">{{item.text}}</view>
-        <image wx:elif="{{item.type === 'image'}}" class="inline-img" src="{{item.src}}" mode="widthFix" />
+        <view wx:elif="{{item.type === 'image'}}" class="image-16-9" bindtap="previewImage" data-src="{{item.src}}" data-list="{{imageList}}">
+          <image src="{{item.src}}" mode="aspectFill" lazy-load />
+        </view>
       </block>
       <!-- 无正文但有原文链接：提供跳转 -->
       <view wx:if="{{link}}" class="redirect-card">
