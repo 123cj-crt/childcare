@@ -104,33 +104,36 @@ App({
     wx.removeStorageSync(this.getUserStorageKey(key))
   },
 
-  // 从云端加载儿童列表并同步到本地缓存（离线兜底 + 兼容同步读取的页面）
-  // 返回 Promise<list>，list 中每个儿童以云数据库 _id 作为唯一 id
+  // 从后端加载当前家长绑定的儿童列表（按 X-WX-OPENID 隔离），并同步到本地缓存兜底。
+  // 返回 Promise<list>，list 中每个儿童的 id 即后端 studentId，供预约/考勤/通知使用。
   loadChildrenFromCloud: function () {
     const self = this
     return new Promise(function (resolve) {
-      if (!wx.cloud) {
-        resolve(self.getUserStorage('myChildren') || [])
-        return
-      }
-      wx.cloud.callFunction({
-        name: 'children',
-        data: { action: 'list' }
-      }).then(function (res) {
-        if (res.result && res.result.code === 0) {
-          const localList = self.getUserStorage('myChildren') || []
-          const cloudList = (res.result.data || []).map(function (c) {
-            return Object.assign({}, c, { id: c._id })
-          })
-          // 防御：云端返回空但本地有数据时，优先保留本地，避免 add 未同步完成或查询延迟导致显示空白
-          const finalList = cloudList.length > 0 ? cloudList : localList
-          self.setUserStorage('myChildren', finalList)
-          resolve(finalList)
-        } else {
+      const openId = wx.getStorageSync('openId') || ''
+      wx.request({
+        url: self.globalData.API_BASE_URL + '/api/child/list',
+        method: 'GET',
+        header: {
+          'content-type': 'application/json',
+          'X-WX-OPENID': openId
+        },
+        success: function (res) {
+          if (res.statusCode === 200 && res.data && res.data.code === 200) {
+            const cloudList = (res.data.data || []).map(function (c) {
+              return Object.assign({}, c, { id: c.id })
+            })
+            const localList = self.getUserStorage('myChildren') || []
+            // 后端返回空但本地有数据时，优先保留本地，避免网络抖动导致显示空白
+            const finalList = cloudList.length > 0 ? cloudList : localList
+            self.setUserStorage('myChildren', finalList)
+            resolve(finalList)
+          } else {
+            resolve(self.getUserStorage('myChildren') || [])
+          }
+        },
+        fail: function () {
           resolve(self.getUserStorage('myChildren') || [])
         }
-      }).catch(function () {
-        resolve(self.getUserStorage('myChildren') || [])
       })
     })
   },

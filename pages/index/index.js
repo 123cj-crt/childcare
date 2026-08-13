@@ -251,31 +251,35 @@ Page({
     this.fetchCourses()
   },
 
-  // 云开发：批量查每门课的实时预约人数（跨用户共享）
+  // 后端版：一次性拉取全部预约并按课程计数（与网页管理端共用 reservations 表）
   fetchCloudCounts() {
-    // 兼容 mock 模式和真实 API 模式：优先用当前页面课程列表，fallback 到 mock
-    const sourceCourses = (this.data.courses && this.data.courses.length > 0) ? this.data.courses : MOCK_COURSES
-    const courseIds = sourceCourses.map(c => c.id)
-    if (courseIds.length === 0) return
     const reqId = ++this._cloudCountReqId
-    wx.cloud.callFunction({
-      name: 'reservation',
-      data: { action: 'batchCount', courseIds: courseIds }
-    }).then(res => {
-      // 忽略过期请求的结果
-      if (reqId !== this._cloudCountReqId) return
-      if (res.result && res.result.code === 0) {
-        const counts = res.result.data || {}
-        // 缓存到本地，下次进入页面时先显示缓存值，避免跳动
-        wx.setStorageSync('cloud_course_counts', counts)
-        const courses = this.data.courses.map(c => ({
-          ...c,
-          currentStudents: counts[c.id] !== undefined ? counts[c.id] : c.currentStudents
-        }))
-        this.setData({ courses })
+    wx.request({
+      url: `${app.globalData.API_BASE_URL}/api/reservations`,
+      method: 'GET',
+      header: {
+        'content-type': 'application/json',
+        'X-WX-OPENID': wx.getStorageSync('openId') || ''
+      },
+      success: (res) => {
+        // 忽略过期请求的结果
+        if (reqId !== this._cloudCountReqId) return
+        if (res.statusCode === 200) {
+          const list = res.data || []
+          const counts = {}
+          list.forEach(r => { if (r.courseId != null) counts[r.courseId] = (counts[r.courseId] || 0) + 1 })
+          // 缓存到本地，下次进入页面时先显示缓存值，避免跳动
+          wx.setStorageSync('cloud_course_counts', counts)
+          const courses = this.data.courses.map(c => ({
+            ...c,
+            currentStudents: counts[c.id] !== undefined ? counts[c.id] : (c.currentStudents || 0)
+          }))
+          this.setData({ courses })
+        }
+      },
+      fail: (err) => {
+        console.error('[后端] 批量查询预约人数失败', err)
       }
-    }).catch(err => {
-      console.error('[云开发] 批量查询预约人数失败', err)
     })
   },
 

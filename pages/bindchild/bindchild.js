@@ -1,8 +1,12 @@
 // pages/bindchild/bindchild.js
 const app = getApp()
 
-// 儿童信息云同步开关：true = 读写云端数据库（跨设备同步），false = 仅本地存储
-const USE_CLOUD_CHILDREN = true
+// 儿童信息统一走后端（与网页管理端共用 child_info 表，按 X-WX-OPENID 隔离）
+const USE_BACKEND_CHILDREN = true
+
+function getOpenId() {
+  return wx.getStorageSync('openId') || ''
+}
 
 Page({
   data: {
@@ -29,15 +33,28 @@ Page({
     this.loadChildren();
   },
 
-  // 加载儿童列表（云端优先，本地缓存兜底）
+  // 加载儿童列表（后端优先，本地缓存兜底）
   loadChildren: function () {
     const local = app.getUserStorage('myChildren') || []
     this.setData({ children: local })
-    if (!USE_CLOUD_CHILDREN) return
+    if (!USE_BACKEND_CHILDREN) return
 
-    app.loadChildrenFromCloud().then(list => {
-      this.setData({ children: list })
-    }).catch(() => {})
+    wx.request({
+      url: app.globalData.API_BASE_URL + '/api/child/list',
+      method: 'GET',
+      header: {
+        'content-type': 'application/json',
+        'X-WX-OPENID': getOpenId()
+      },
+      success: (res) => {
+        if (res.statusCode === 200 && res.data && res.data.code === 200) {
+          const list = (res.data.data || []).map(c => Object.assign({}, c, { id: c.id }))
+          app.setUserStorage('myChildren', list)
+          this.setData({ children: list })
+        }
+      },
+      fail: () => {}
+    })
   },
 
   // 显示添加表单
@@ -100,51 +117,58 @@ Page({
       return;
     }
 
-    const newChild = {
-      name: name.trim(),
-      age: age.trim(),
+    const ageNum = parseInt(age, 10);
+    // 后端 child_info 表 phoneNumber 等字段非空约束，留空时用 openId 兜底
+    const payload = {
+      childName: name.trim(),
+      age: isNaN(ageNum) ? 0 : ageNum,
       gender: gender,
-      relation: relation.trim(),
+      relationship: relation.trim(),
       parentName: parentName.trim() || '未设置',
-      phoneNumber: phoneNumber.trim() || '',
-      address: address.trim() || '',
-      grade: grade.trim() || '',
-      avatar: '/images/default-avatar.png'
+      phoneNumber: phoneNumber.trim() || getOpenId() || '00000000000'
     };
 
-    if (USE_CLOUD_CHILDREN) {
-      wx.showLoading({ title: '保存中...' });
-      wx.cloud.callFunction({
-        name: 'children',
-        data: { action: 'add', child: newChild }
-      }).then(res => {
-        wx.hideLoading();
-        if (res.result && res.result.code === 0) {
-          // 云端保存成功：把返回的 _id 作为 id 写入本地缓存并立即显示
-          const savedChild = Object.assign({}, newChild, { id: res.result._id })
-          let myChildren = app.getUserStorage('myChildren') || []
-          myChildren.push(savedChild)
-          app.setUserStorage('myChildren', myChildren)
-          this.setData({ showForm: false, children: myChildren })
-          wx.showToast({ title: '云端保存成功', icon: 'success' })
-        } else {
-          // 云端失败，兜底存本地
-          this.saveLocalFallback(newChild)
-          wx.showToast({ title: '已存本地（云端未同步）', icon: 'none' })
-        }
-      }).catch((err) => {
-        wx.hideLoading();
-        console.error('[bindchild] 添加儿童云函数失败:', err)
-        this.saveLocalFallback(newChild)
-        wx.showToast({ title: '网络异常，已存本地', icon: 'none' })
-      });
+    if (!USE_BACKEND_CHILDREN) {
+      const newChild = {
+        name: name.trim(), age: age.trim(), gender, relation: relation.trim(),
+        parentName: parentName.trim() || '未设置', phoneNumber: phoneNumber.trim(),
+        address: address.trim(), grade: grade.trim(), avatar: '/images/default-avatar.png'
+      };
+      this.saveLocalFallback(newChild);
+      this.setData({ showForm: false });
+      wx.showToast({ title: '添加成功', icon: 'success' });
       return;
     }
 
-    // 本地模式
-    this.saveLocalFallback(newChild);
-    this.setData({ showForm: false });
-    wx.showToast({ title: '添加成功', icon: 'success' });
+    wx.showLoading({ title: '保存中...' });
+    wx.request({
+      url: app.globalData.API_BASE_URL + '/api/child/bind',
+      method: 'POST',
+      header: {
+        'content-type': 'application/json',
+        'X-WX-OPENID': getOpenId()
+      },
+      data: payload,
+      success: (res) => {
+        wx.hideLoading();
+        if (res.statusCode === 200 && res.data && res.data.code === 200) {
+          const saved = res.data.data;
+          const item = Object.assign({}, saved, { id: saved.id });
+          let myChildren = app.getUserStorage('myChildren') || [];
+          myChildren.push(item);
+          app.setUserStorage('myChildren', myChildren);
+          this.setData({ showForm: false, children: myChildren });
+          wx.showToast({ title: '保存成功', icon: 'success' });
+        } else {
+          wx.showToast({ title: (res.data && res.data.msg) || '保存失败', icon: 'none' });
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.error('[bindchild] 绑定儿童失败', err);
+        wx.showToast({ title: '网络异常，请重试', icon: 'none' });
+      }
+    });
   },
 
   // 本地兜底保存
@@ -165,27 +189,29 @@ Page({
 
     wx.showModal({
       title: '确认删除',
-      content: '确定要删除这个儿童信息吗？删除后所有设备都将同步移除',
+      content: '确定要删除这个儿童信息吗？',
       success: (res) => {
         if (!res.confirm) return;
 
-        if (USE_CLOUD_CHILDREN) {
+        if (USE_BACKEND_CHILDREN) {
           wx.showLoading({ title: '删除中...' });
-          wx.cloud.callFunction({
-            name: 'children',
-            data: { action: 'remove', id: childId }
-          }).then(res2 => {
-            wx.hideLoading();
-            if (res2.result && res2.result.code === 0) {
+          wx.request({
+            url: app.globalData.API_BASE_URL + '/api/child/' + childId,
+            method: 'DELETE',
+            header: {
+              'content-type': 'application/json',
+              'X-WX-OPENID': getOpenId()
+            },
+            success: () => {
+              wx.hideLoading();
               this.loadChildren();
               this.cleanupReservationsForChild(childId, childName);
               wx.showToast({ title: '已删除', icon: 'success' });
-            } else {
+            },
+            fail: () => {
+              wx.hideLoading();
               this.deleteLocalFallback(childId, childName);
             }
-          }).catch(() => {
-            wx.hideLoading();
-            this.deleteLocalFallback(childId, childName);
           });
           return;
         }
@@ -205,7 +231,7 @@ Page({
     wx.showToast({ title: '已删除', icon: 'success' });
   },
 
-  // 删除儿童后清理关联预约的本地缓存（云端记录由 reservation 云函数单独取消）
+  // 删除儿童后清理关联预约的本地缓存
   cleanupReservationsForChild(childId, childName) {
     let myReservations = app.getUserStorage('myReservations') || [];
     myReservations = myReservations.filter(r => String(r.childId) !== String(childId));

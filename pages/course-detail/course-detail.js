@@ -292,6 +292,7 @@ Page({
       id: c.id,
       name: c.name || '',
       date: date,
+      startDate: startDate, // 供预约写入 reservationDate 使用
       weekday: weekday,
       time: '09:00-11:00', // 后端暂无具体时间字段，先用默认时间
       endDate: c.endDate || startDate,
@@ -377,22 +378,29 @@ Page({
     }
   },
 
-  // 云端版：从云数据库查当前用户在此课程的预约
+  // 后端版：查询当前用户孩子在本课程的预约状态（与网页管理端共用 reservations 表）
   checkCloudReservationStatus(courseId) {
-    wx.cloud.callFunction({
-      name: 'reservation',
-      data: { action: 'myList', courseId: parseInt(courseId) }
-    }).then(res => {
-      if (res.result && res.result.code === 0) {
-        const myRes = res.result.data || []
-        this.setData({
-          isReserved: myRes.length > 0,
-          reservedCount: myRes.length
-        })
+    const openId = wx.getStorageSync('openId')
+    const myStudentIds = (this.data.children || []).map(c => String(c.id))
+    wx.request({
+      url: `${app.globalData.API_BASE_URL}/api/reservations?courseId=${courseId}`,
+      method: 'GET',
+      header: {
+        'content-type': 'application/json',
+        'X-WX-OPENID': openId
+      },
+      success: (res) => {
+        if (res.statusCode === 200) {
+          const list = (res.data || []).filter(r => r.studentId != null && myStudentIds.indexOf(String(r.studentId)) !== -1)
+          this.setData({
+            isReserved: list.length > 0,
+            reservedCount: list.length
+          })
+        }
+      },
+      fail: (err) => {
+        console.error('[后端] 查询我的预约失败', err)
       }
-    }).catch(err => {
-      console.error('[云开发] 查询我的预约失败，回退到本地', err)
-      this.checkLocalReservationStatus(courseId)
     })
   },
 
@@ -409,27 +417,34 @@ Page({
     })
   },
 
-  // 云端版：从云数据库查实时预约人数（跨用户共享）
+  // 后端版：查询本课程实时预约人数（与网页管理端共用 reservations 表）
   loadCloudReservationCount(courseId) {
-    wx.cloud.callFunction({
-      name: 'reservation',
-      data: { action: 'count', courseId: parseInt(courseId) }
-    }).then(res => {
-      if (res.result && res.result.code === 0) {
-        const count = res.result.total
-        const capacity = this.data.course ? this.data.course.capacity : 0
-        // 更新缓存，其他页面进入时可先显示最新人数
-        const cachedCounts = wx.getStorageSync('cloud_course_counts') || {}
-        cachedCounts[courseId] = count
-        wx.setStorageSync('cloud_course_counts', cachedCounts)
-        this.setData({
-          currentReservations: count,
-          isFull: count >= capacity,
-          capacityPercent: capacity > 0 ? Math.round(count / capacity * 100) : 0
-        })
+    const openId = wx.getStorageSync('openId')
+    wx.request({
+      url: `${app.globalData.API_BASE_URL}/api/reservations?courseId=${courseId}`,
+      method: 'GET',
+      header: {
+        'content-type': 'application/json',
+        'X-WX-OPENID': openId
+      },
+      success: (res) => {
+        if (res.statusCode === 200) {
+          const count = (res.data || []).length
+          const capacity = this.data.course ? this.data.course.capacity : 0
+          // 更新缓存，其他页面进入时可先显示最新人数
+          const cachedCounts = wx.getStorageSync('cloud_course_counts') || {}
+          cachedCounts[courseId] = count
+          wx.setStorageSync('cloud_course_counts', cachedCounts)
+          this.setData({
+            currentReservations: count,
+            isFull: count >= capacity,
+            capacityPercent: capacity > 0 ? Math.round(count / capacity * 100) : 0
+          })
+        }
+      },
+      fail: (err) => {
+        console.error('[后端] 查询预约人数失败', err)
       }
-    }).catch(err => {
-      console.error('[云开发] 查询预约人数失败', err)
     })
   },
 
@@ -554,31 +569,54 @@ Page({
       wx.showLoading({ title: '处理中...' })
       const tasks = []
 
+      const openId = wx.getStorageSync('openId')
+      const backendCourseId = course.id
+      const backendCourseName = course.name
+      const reservationDate = course.startDate || ''
+      const reservationTime = (course.time || '09:00-11:00').split('-')[0].trim() + ':00'
+
+      // 预约：调用后端 POST /api/reservations（与网页管理端共用数据库）
       newReserved.forEach(c => {
-        tasks.push(wx.cloud.callFunction({
-          name: 'reservation',
-          data: {
-            action: 'reserve',
-            courseId: course.id,
-            childId: c.id,
-            childName: c.name,
-            childAge: c.age,
-            childGender: c.gender,
-            childRelation: c.relation,
-            courseInfo: {
-              name: course.name, date: course.date, weekday: course.weekday,
-              time: course.time, location: course.location,
-              description: course.description, teacher: course.teacher,
-              teacherPhone: course.teacherPhone, capacity: course.capacity
-            }
-          }
+        tasks.push(new Promise((resolve, reject) => {
+          wx.request({
+            url: `${app.globalData.API_BASE_URL}/api/reservations`,
+            method: 'POST',
+            header: { 'content-type': 'application/json', 'X-WX-OPENID': openId },
+            data: {
+              courseId: backendCourseId,
+              courseName: backendCourseName,
+              studentId: c.id,
+              childName: c.name,
+              reservationDate: reservationDate,
+              reservationTime: reservationTime,
+              status: 'pending'
+            },
+            success: (res) => { if (res.statusCode === 200 || res.statusCode === 201) resolve(res); else reject(res); },
+            fail: reject
+          })
         }))
       })
 
+      // 取消：先按 studentId+courseId 找到 reservation id，再 DELETE
       cancelled.forEach(c => {
-        tasks.push(wx.cloud.callFunction({
-          name: 'reservation',
-          data: { action: 'cancel', courseId: course.id, childId: c.id }
+        tasks.push(new Promise((resolve, reject) => {
+          wx.request({
+            url: `${app.globalData.API_BASE_URL}/api/reservations?courseId=${backendCourseId}`,
+            method: 'GET',
+            header: { 'content-type': 'application/json', 'X-WX-OPENID': openId },
+            success: (res) => {
+              const list = (res.data || []).filter(r => r.studentId != null && String(r.studentId) === String(c.id))
+              if (list.length === 0) { resolve(); return }
+              wx.request({
+                url: `${app.globalData.API_BASE_URL}/api/reservations/${list[0].id}`,
+                method: 'DELETE',
+                header: { 'content-type': 'application/json', 'X-WX-OPENID': openId },
+                success: () => resolve(),
+                fail: reject
+              })
+            },
+            fail: reject
+          })
         }))
       })
 
