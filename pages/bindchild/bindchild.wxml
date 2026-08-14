@@ -10,9 +10,9 @@
     <view class="child-card" wx:for="{{children}}" wx:key="id">
       <view class="child-header">
         <view class="child-avatar">
-          <text>{{item.name[0]}}</text>
+          <text>{{item.childName[0]}}</text>
         </view>
-        <view class="child-name">{{item.name}}</view>
+        <view class="child-name">{{item.childName}}</view>
         <view class="child-delete" catchtap="onDeleteChild" data-id="{{item.id}}">
           <text>删除</text>
         </view>
@@ -28,7 +28,7 @@
         </view>
         <view class="info-row">
           <text class="info-label">关系</text>
-          <text class="info-value">{{item.relation}}</text>
+          <text class="info-value">{{item.relationship}}</text>
         </view>
         <view class="info-row">
           <text class="info-label">家长姓名</text>

@@ -290,7 +290,7 @@ Page({
 
     return {
       id: c.id,
-      name: c.name || '',
+      name: c.childName || '',
       date: date,
       startDate: startDate, // 供预约写入 reservationDate 使用
       weekday: weekday,
@@ -495,10 +495,10 @@ Page({
       )
       return {
         id: child.id,
-        name: child.name,
+        name: child.childName,
         age: child.age,
         gender: child.gender,
-        relation: child.relation,
+        relation: child.relationship,
         reserved: reserved
       }
     })
@@ -586,7 +586,7 @@ Page({
               courseId: backendCourseId,
               courseName: backendCourseName,
               studentId: c.id,
-              childName: c.name,
+              childName: c.childName,
               reservationDate: reservationDate,
               reservationTime: reservationTime,
               status: 'pending'
@@ -642,9 +642,9 @@ Page({
           if (child.reserved) {
             myReservations.push({
               courseId: course.id, courseName: course.name,
-              childId: child.id, childName: child.name,
+              childId: child.id, childName: child.childName,
               childAge: child.age, childGender: child.gender,
-              childRelation: child.relation, date: course.date,
+              childRelation: child.relationship, date: course.date,
               weekday: course.weekday, time: course.time,
               location: course.location, description: course.description,
               teacher: course.teacher, teacherPhone: course.teacherPhone,
@@ -658,14 +658,14 @@ Page({
         newReserved.forEach(c => {
           app.recordActivityLog({
             type: 'course', title: '预约课程',
-            summary: `已为「${c.name}」预约「${course.name}」（${course.date} ${course.time}）`,
+            summary: `已为「${c.childName}」预约「${course.name}」（${course.date} ${course.time}）`,
             icon: '📅', color: '#4f7cff'
           })
         })
         cancelled.forEach(c => {
           app.recordActivityLog({
             type: 'course', title: '取消预约',
-            summary: `已为「${c.name}」取消「${course.name}」`,
+            summary: `已为「${c.childName}」取消「${course.name}」`,
             icon: '❌', color: '#999'
           })
         })
@@ -705,10 +705,10 @@ Page({
           courseId: course.id,
           courseName: course.name,
           childId: child.id,
-          childName: child.name,
+          childName: child.childName,
           childAge: child.age,
           childGender: child.gender,
-          childRelation: child.relation,
+          childRelation: child.relationship,
           date: course.date,
           weekday: course.weekday,
           time: course.time,
@@ -729,7 +729,7 @@ Page({
       app.recordActivityLog({
         type: 'course',
         title: '预约课程',
-        summary: `已为「${c.name}」预约「${course.name}」（${course.date} ${course.time}）`,
+        summary: `已为「${c.childName}」预约「${course.name}」（${course.date} ${course.time}）`,
         icon: '📅',
         color: '#4f7cff'
       })
@@ -739,7 +739,7 @@ Page({
       app.recordActivityLog({
         type: 'course',
         title: '取消预约',
-        summary: `已为「${c.name}」取消「${course.name}」`,
+        summary: `已为「${c.childName}」取消「${course.name}」`,
         icon: '❌',
         color: '#999'
       })

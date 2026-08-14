@@ -130,7 +130,7 @@ Page({
 
     if (!USE_BACKEND_CHILDREN) {
       const newChild = {
-        name: name.trim(), age: age.trim(), gender, relation: relation.trim(),
+        childName: name.trim(), age: age.trim(), gender, relationship: relation.trim(),
         parentName: parentName.trim() || '未设置', phoneNumber: phoneNumber.trim(),
         address: address.trim(), grade: grade.trim(), avatar: '/images/default-avatar.png'
       };
@@ -185,7 +185,7 @@ Page({
     const childId = e.currentTarget.dataset.id;
     const childrenBefore = this.data.children;
     const targetChild = childrenBefore.find(c => String(c.id) === String(childId));
-    const childName = targetChild ? targetChild.name : '该儿童';
+    const childName = targetChild ? targetChild.childName : '该儿童';
 
     wx.showModal({
       title: '确认删除',
